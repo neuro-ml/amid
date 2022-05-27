@@ -1,0 +1,7 @@
+.idea/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+.coverage
+docs/build/
+docs/source/_*/
