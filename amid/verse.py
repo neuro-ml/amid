@@ -8,16 +8,24 @@ import nibabel
 import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
-from connectome.utils import AntiSet
 
-from .repo import CacheAndCheck
+from .internals import checksum
 
 
+@checksum('verse')
 class VerSe(Source):
     """
     A Vertebral Segmentation Dataset with Fracture Grading [1]_
 
     The dataset was used in the MICCAI-2019 and MICCAI-2020 Vertebrae Segmentation Challenges.
+
+    Parameters
+    ----------
+    root: str, Path, optional
+        path to the folder containing the raw downloaded archives.
+        If not provided, the cache is assumed to be already populated.
+    version: str, optional
+        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -41,10 +49,6 @@ class VerSe(Source):
     """
 
     _root: str = None
-
-    @classmethod
-    def checked(cls, root=None):
-        return cls(root=root) >> CacheAndCheck(AntiSet(['id', 'ids']), 'verse')
 
     @meta
     def ids(_root: Silent):
@@ -72,7 +76,7 @@ class VerSe(Source):
 
         return sorted(result)
 
-    def _file(i, _root):
+    def _file(i, _root: Silent):
         for archive in Path(_root).glob('*.zip'):
             with ZipFile(archive) as zf:
                 for file in zf.namelist():
@@ -87,6 +91,7 @@ class VerSe(Source):
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 # most ct scans are integer-valued, this will help us improve compression rates
+                #  (instead of using `image.get_fdata()`)
                 return np.asarray(image.dataobj)
 
     def affine(_file):
@@ -97,7 +102,8 @@ class VerSe(Source):
                 return image.affine
 
     def split(_file):
-        return _file.parent.parent.parent.name[3:]
+        # it's ugly, but it gets the job done (;
+        return _file.parent.parent.parent.name.split('_')[-1].split('9')[-1]
 
     def patient(_file):
         return _file.parent.name[4:]
@@ -126,7 +132,7 @@ class VerSe(Source):
             k['label']: [k['X'], k['Y'], k['Z']] for k in ann[1:]
         }
 
-    def vertebrae(i, _derivatives):
+    def vertebrae_mask(i, _derivatives):
         ann = [f for f in _derivatives.iterdir() if f.name.endswith('.nii.gz') and i in f.name]
         if not ann:
             return
