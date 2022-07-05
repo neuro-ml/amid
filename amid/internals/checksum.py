@@ -16,7 +16,6 @@ from connectome.interface.blocks import CacheLayer
 from connectome.utils import node_to_dict, AntiSet
 from more_itertools import zip_equal
 from tarn import ReadError
-from dpipe.io import save_text
 from tqdm.auto import tqdm
 
 from .base import get_repo
@@ -198,7 +197,8 @@ class CheckSumEdge(StaticGraph, StaticHash):
             for k, v in tree.items():
                 k = base / k
                 k.parent.mkdir(parents=True, exist_ok=True)
-                save_text(v, k)
+                with open(k, 'w') as file:
+                    file.write(v)
 
             try:
                 return self._serializer.load(base, self._storage), True
