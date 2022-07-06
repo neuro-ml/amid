@@ -2,7 +2,7 @@ import codecs
 import datetime
 import json
 import warnings
-from functools import cache
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -25,10 +25,10 @@ class MoscowCancer500(Source):
 
     Parameters
     ----------
-    root: str, Path, optional
+    root : str, Path, optional
         path to the folder containing the raw downloaded files.
         If not provided, the cache is assumed to be already populated.
-    version: str, optional
+    version : str, optional
         the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
@@ -38,7 +38,7 @@ class MoscowCancer500(Source):
 
     Examples
     --------
-    # Place the downloaded files in any folder and pass the path to the constructor:
+    >>> # Place the downloaded files in any folder and pass the path to the constructor:
     >>> ds = MoscowCancer500(root='/path/to/files/root')
     >>> print(len(ds.ids))
     # 979
@@ -48,7 +48,7 @@ class MoscowCancer500(Source):
 
     _root: str = None
 
-    @cache
+    @lru_cache(None)
     def _mapping(_root: Silent):
         if _root is None:
             raise ValueError('Please pass the location of the downloaded files')

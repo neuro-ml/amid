@@ -16,10 +16,10 @@ class MoscowCovid1110(Source):
 
     Parameters
     ----------
-    root: str, Path, optional
+    root : str, Path, optional
         path to the folder containing the raw downloaded files.
         If not provided, the cache is assumed to be already populated.
-    version: str, optional
+    version : str, optional
         the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
@@ -29,7 +29,7 @@ class MoscowCovid1110(Source):
 
     Examples
     --------
-    # Place the downloaded files in any folder and pass the path to the constructor:
+    >>> # Place the downloaded files in any folder and pass the path to the constructor:
     >>> ds = MoscowCovid1110(root='/path/to/files/root')
     >>> print(len(ds.ids))
     # 1110

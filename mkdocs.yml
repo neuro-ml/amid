@@ -1,0 +1,38 @@
+site_name: AMID
+site_url: https://neuro-ml.github.io/amid
+repo_url: https://github.com/neuro-ml/amid
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python_connectome
+      handlers:
+        python_connectome:
+          selection:
+            docstring_style: numpy
+          rendering:
+            merge_init_into_class: true
+            members_order: source
+            show_if_no_docstring: true
+            show_bases: false
+            show_signature_annotations: true
+            show_root_heading: true
+            show_source: false
+      watch:
+        - amid
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github-alt
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
