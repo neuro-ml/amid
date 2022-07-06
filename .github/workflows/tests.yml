@@ -1,0 +1,36 @@
+name: Python package
+
+on: [ push, pull_request ]
+
+env:
+  MODULE_NAME: amid
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Check the version and build the package
+        run: |
+          VERSION=$(python -c "from pathlib import Path; import runpy; folder, = {d.parent for d in Path().resolve().glob('*/__init__.py') if d.parent.is_dir() and (d.parent / '__version__.py').exists()}; print(runpy.run_path(folder / '__version__.py')['__version__'])")
+          MATCH=$(pip index versions $MODULE_NAME | grep "Available versions:" | grep $VERSION) || echo
+          echo $MATCH
+          if [ "$GITHUB_BASE_REF" = "master" ] && [ "$MATCH" != "" ]; then exit 1; fi
+          python setup.py sdist
+
+      - name: Install
+        run: |
+          pip install dist/*
+
+      - name: Make sure all is importable
+        run: |
+          python -c "import importlib, amid, pathlib; [importlib.import_module(f'amid.{f.stem}') for f in pathlib.Path(amid.__path__[0]).iterdir()]"

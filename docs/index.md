@@ -1,10 +1,6 @@
-[![docs](https://img.shields.io/badge/-docs-success)](https://neuro-ml.github.io/amid/)
-[![pypi](https://img.shields.io/pypi/v/amid?logo=pypi&label=PyPi)](https://pypi.org/project/amid/)
-![License](https://img.shields.io/github/license/neuro-ml/amid)
-
 Awesome Medical Imaging Datasets (AMID) - a curated list of medical imaging datasets with unified interfaces
 
-# Getting started
+## Getting started
 
 Just import a dataset and start using it!
 
@@ -29,9 +25,7 @@ x, y = entry.image, entry.masks
 print(entry.split, entry.patient)
 ```
 
-Check out [our docs](https://neuro-ml.github.io/amid/) for a list of available datasets and their fields.
-
-# Install
+## Install
 
 Just get it from PyPi:
 

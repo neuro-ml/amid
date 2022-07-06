@@ -1,4 +1,7 @@
 connectome>=0.1.1,<0.2.0
-bev>=0.2.0,<0.3.0
+bev>=0.3.0,<0.4.0
 numpy
 nibabel
+more-itertools
+dicom-csv
+tqdm

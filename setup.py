@@ -7,10 +7,11 @@ classifiers = '''Development Status :: 3 - Alpha
 Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
-Programming Language :: Python :: 3.9'''
+Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.10'''
 
 name = 'amid'
-root = Path(__file__).parent
+root = Path(__file__).resolve().parent
 with open(root / 'requirements.txt', encoding='utf-8') as file:
     requirements = file.read().splitlines()
 with open(root / 'README.md', encoding='utf-8') as file:
