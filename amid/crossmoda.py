@@ -15,7 +15,7 @@ from connectome.interface.nodes import Silent, Output
 from .internals import checksum
 
 
-@checksum('crossmoda')
+@checksum('crossmoda2022')
 class CrossMoDA(Source):
     """
     Parameters
