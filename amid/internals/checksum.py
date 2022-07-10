@@ -28,7 +28,7 @@ from .cache import default_serializer, CacheToDisk
 # TODO: add possibility to check the entire tree without the need to pull anything from remote
 
 
-def checksum(path: str):
+def checksum(path: str, ignore=()):
     serializer = default_serializer(None)
 
     def decorator(cls):
@@ -55,7 +55,7 @@ def checksum(path: str):
                 repository = get_repo()
                 ids = self.ids
 
-                fields = sorted(set(dir(self[0])) - {'ids', 'id'})
+                fields = sorted(set(dir(self[0])) - {'ids', 'id', *ignore})
                 ds = self[0] >> CacheToDisk(AntiSet(('id',)), serializer=serializer) >> CacheAndCheck(
                     fields, repository, path, fetch=True,
                     serializer=serializer, version=self._version, return_tree=True,
