@@ -137,20 +137,12 @@ class CrossMoDA(Source):
     def masks(i, _file) -> Union[np.ndarray, None]:
         """ Combined mask of schwannoma and cochlea (1 and 2 respectively) """
         if 'T2' in _file.name:
-            raise ValueError(f'Mask for {i} is requested, but no masks are provided for T2 domain')        
+            return None
         with (_file.parent / _file.name.replace('ceT1', 'Label')).open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return mask.get_fdata().astype(np.uint8)
-            
-    def schwannoma(masks: Output):
-        """ Mask of schwannoma tumour """
-        return (masks == 1).astype(np.uint8)
-    
-    def cochlea(masks: Output):
-        """ Mask of cochlea tumour """
-        return (masks == 2).astype(np.uint8)
 
     def koos_grade(i, train_source_df: Output) -> int:
         """ VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative) """
