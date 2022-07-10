@@ -82,7 +82,7 @@ class LiTS(Source):
         for file in (Path(_root) / 'LITS-Challenge-Test-Data').glob('*'):
             result.add('lits-test-' + file.stem.split('-')[-1])
 
-        return sorted(result)
+        return tuple(sorted(result))
 
     def fold(i, _root: Silent):
         num_id = i.split('-')[-1]
@@ -124,7 +124,6 @@ class LiTS(Source):
         raise KeyError(f'Id "{i}" not found')
 
     def image(_file):
-        # print(_file, flush=True)
         with _file.open('rb') as nii:
             nii = nb.FileHolder(fileobj=nii)
             image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
