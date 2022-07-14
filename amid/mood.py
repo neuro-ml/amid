@@ -111,13 +111,11 @@ class MOOD(Source):
 
     def image(_file):
         with open_nii_gz_file(_file) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
-            return np.int16(nii_image.get_fdata())
+            return np.float16(nii_image.get_fdata())
 
     def affine(_file):
         """ The 4x4 matrix that gives the image's spatial orientation. """
         with open_nii_gz_file(_file) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return nii_image.affine
 
     def voxel_spacing(_file):
