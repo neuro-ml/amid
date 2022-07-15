@@ -134,7 +134,7 @@ class MOOD(Source):
             return None
 
         with (_file.parent.parent / 'toy_label/sample' / f'{_file.name}.txt').open('r') as nii:
-            return nii.read()
+            return int(nii.read())
 
     def pixel_label(_file):
         """
