@@ -121,7 +121,6 @@ class MOOD(Source):
     def voxel_spacing(_file):
         """ Returns voxel spacing along axes (x, y, z). """
         with open_nii_gz_file(_file) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return tuple(nii_image.header['pixdim'][1:4])
 
     def sample_label(_file):
