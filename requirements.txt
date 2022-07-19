@@ -6,3 +6,4 @@ more-itertools
 dicom-csv
 tqdm
 pandas
+pylidc
