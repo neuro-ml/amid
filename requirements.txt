@@ -7,4 +7,4 @@ dicom-csv
 tqdm
 pandas
 pylidc
-dpipe
+deep-pipe
