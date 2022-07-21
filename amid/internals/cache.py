@@ -4,7 +4,7 @@ from typing import Union, Sequence
 
 import numpy as np
 from bev import Repository
-from tarn import Storage
+from tarn import Storage, ReadError
 from tarn.cache import SerializerError, PickleSerializer
 from connectome import CacheToDisk as Disk
 from connectome.interface.blocks import StringsLike
@@ -76,3 +76,11 @@ class NumpySerializer(Serializer):
             raise SerializerError
 
         return self._load_file(storage, loader, path)
+
+
+class CleanInvalid(Serializer):
+    def save(self, value, folder: Path):
+        raise SerializerError
+
+    def load(self, folder: Path, storage: Storage):
+        raise ReadError

@@ -79,6 +79,8 @@ def checksum(path: str, ignore=()):
 
                 save_tree(repository, checksums, to_hash(Path(repository.path / path)))
 
+        # dirty hack for now to preserve the name
+        Checked.__name__ = cls.__name__
         return Checked
 
     return decorator

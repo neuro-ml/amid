@@ -7,10 +7,11 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from amid.internals import checksum
+from amid.internals import checksum, register
 from amid.cc359 import open_nii_gz_file
 
 
+@register()
 @checksum('mood')
 class MOOD(Source):
     """
