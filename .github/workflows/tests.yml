@@ -42,7 +42,7 @@ jobs:
       - name: Create the storage
         run: |
           mkdir -p ~/.config/amid/ && cp tests/assets/.bev.yml ~/.config/amid/.bev.yml
-          amid init
+          sudo amid init
 
       - name: Test with pytest
         run: |
