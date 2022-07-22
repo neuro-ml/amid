@@ -41,7 +41,7 @@ jobs:
 
       - name: Create the storage
         run: |
-          cp tests/assets/.bev.yml ~/.config/amid/.bev.yml
+          mkdir -p ~/.config/amid/ && cp tests/assets/.bev.yml ~/.config/amid/.bev.yml
           amid init
 
       - name: Test with pytest

@@ -1,6 +1,7 @@
-from typing import NamedTuple, Optional, Sequence, Union, Dict, List
+from typing import NamedTuple, Optional, Sequence
 from enum import Enum
-from dpipe.im.box import Box
+
+import numpy as np
 
 
 class Calcification(Enum):
@@ -37,7 +38,7 @@ class Texture(Enum):
 
 class LIDCNodule(NamedTuple):
     center_voxel: Sequence[float]
-    bbox: Box
+    bbox: np.ndarray
     diameter_mm: float
     surface_area_mm2: float
     volume_mm3: float

@@ -7,7 +7,6 @@ dicom-csv
 tqdm
 pandas
 pylidc
-deep-pipe
 pyyaml
 requests
 mdai
