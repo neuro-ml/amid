@@ -5,3 +5,4 @@ nibabel
 more-itertools
 dicom-csv
 tqdm
+mdai
