@@ -55,10 +55,10 @@ class NumpySerializer(Serializer):
         if compression is not None:
             assert isinstance(compression, int)
             with GzipFile(folder / 'value.npy.gz', 'wb', compresslevel=compression, mtime=0) as file:
-                np.save(file, value)
+                np.save(file, value, allow_pickle=False)
 
         else:
-            np.save(folder / 'value.npy', value)
+            np.save(folder / 'value.npy', value, allow_pickle=False)
 
     def load(self, folder: Path, storage: Storage):
         paths = list(folder.iterdir())
