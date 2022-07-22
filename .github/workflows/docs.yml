@@ -23,5 +23,9 @@ jobs:
           mkdir -p ~/.config/amid/ && cp tests/assets/.bev.yml ~/.config/amid/.bev.yml
           amid init
 
+      - name: Generate the missing pages
+        run: |
+          cd docs && python fill_docs.py
+
       - name: Deploy the docs
         run: PYTHONPATH=$PYTHONPATH:./docs mkdocs gh-deploy --force
