@@ -40,12 +40,12 @@ def checksum(path: str, ignore=()):
                 if version is not None:
                     repository = get_repo(strict=False)
                     if repository is not None:
-                        args.extend((
-                            CacheToDisk(AntiSet(('id',)), serializer=serializer),
-                            CacheAndCheck(
-                                set(dir(ds)) - {'id', 'ids'}, repository, path, fetch=True,
-                                serializer=serializer, version=version
-                            ),
+                        if repository.cache.local:
+                            args.append(CacheToDisk(AntiSet(('id',)), serializer=serializer))
+
+                        args.append(CacheAndCheck(
+                            set(dir(ds)) - {'id', 'ids'}, repository, path, fetch=True,
+                            serializer=serializer, version=version
                         ))
 
                 self._version = version

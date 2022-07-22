@@ -1,0 +1,3 @@
+local:
+  storage: '/storage/storage'
+  cache: '/storage/cache'
