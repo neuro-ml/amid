@@ -21,7 +21,7 @@ jobs:
       - name: Create the storage
         run: |
           mkdir -p ~/.config/amid/ && cp tests/assets/.bev.yml ~/.config/amid/.bev.yml
-          sudo amid init
+          amid init
 
       - name: Deploy the docs
         run: PYTHONPATH=$PYTHONPATH:./docs mkdocs gh-deploy --force
