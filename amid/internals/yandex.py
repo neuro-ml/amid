@@ -49,8 +49,11 @@ class YandexDisk(RemoteStorage):
     def _get_config(self, reference):
         try:
             if self.levels is None:
-                response = requests.get(self._api_url, dict(public_key=self.url, path='/config.yml'))
-                url = response.json()['file']
+                response = requests.get(self._api_url, dict(public_key=self.url, path='/config.yml')).json()
+                if 'error' in response:
+                    raise requests.exceptions.ConnectionError(f'Error while downloading: {response["error"]}')
+
+                url = response['file']
                 with io.StringIO(requests.get(url).text) as stream:
                     config = StorageConfig.parse_obj(safe_load(stream))
                 self.hash, self.levels = config.hash, config.levels
@@ -80,7 +83,7 @@ class YandexDisk(RemoteStorage):
                 public_key=self.url, path=str('/' / relative), offset=count
             )).json()
             if 'error' in content:
-                raise requests.exceptions.ConnectionError
+                raise requests.exceptions.ConnectionError(f'Error while downloading: {content["error"]}')
 
             content = content['_embedded']
             total = content['total']
