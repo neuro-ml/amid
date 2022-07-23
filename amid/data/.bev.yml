@@ -1,10 +1,4 @@
-ya-disk:
-  storage:
-    - ya-disk: 'https://disk.yandex.com/d/qLbFDHZgjKtqTQ'
-      optional: true
-
 meta:
   hash: blake2b
-  fallback: local
   include:
     - file: '~/.config/amid/.bev.yml'
