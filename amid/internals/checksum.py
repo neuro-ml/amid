@@ -70,8 +70,7 @@ def checksum(path: str, ignore=()):
                         try:
                             trees = loader(i)
                         except Exception as e:
-                            print('Error for', i, type(e).__name__, e)
-                            continue
+                            raise RuntimeError(f'Error while processing id {i}') from e
 
                         for name, tree in zip_equal(fields, trees):
                             for k, v in tree.items():
