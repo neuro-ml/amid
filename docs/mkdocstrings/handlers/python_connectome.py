@@ -16,7 +16,8 @@ class PythonConnectomeHandler(PythonHandler):
             result = self.patch_class(result)
         return result
 
-    def patch_class(self, x: Class):
+    @staticmethod
+    def patch_class(x: Class):
         members = OrderedDict()
         for k, v in x.members.items():
             if not k.startswith('_'):
