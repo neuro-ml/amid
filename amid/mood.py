@@ -11,7 +11,11 @@ from amid.internals import checksum, register
 from amid.cc359 import open_nii_gz_file
 
 
-@register()
+@register(
+    body_region='Head / abdominal',
+    modality='MRI / CT',
+    task='Out-of-distribution detection',
+)
 @checksum('mood')
 class MOOD(Source):
     """

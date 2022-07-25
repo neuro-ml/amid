@@ -13,7 +13,7 @@ from amid.cc359 import open_nii_gz_file
 @register(
     body_region='Chest',
     modality='CT',
-    licence='free'
+    task='COVID-19 segmentation',
 )
 @checksum('medseg9')
 class Medseg9(Source):

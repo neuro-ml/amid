@@ -12,6 +12,7 @@ from amid.internals import checksum, register
 @register(
     body_region='Head',
     modality='CT',
+    task='Intracranial hemorrhage segmentation',
     licence='PhysioNet Restricted Health Data License 1.5.0'
 )
 @checksum('ct_ich')
