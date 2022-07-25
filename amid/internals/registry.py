@@ -12,7 +12,7 @@ class Description(NamedTuple):
     entries: int
     body_region: str = None
     modality: str = None
-    ttask: str: None
+    task: str: None
     licence: str = None
 
 
