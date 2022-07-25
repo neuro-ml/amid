@@ -15,7 +15,7 @@ from .nodules import get_nodule
 @register(
     body_region='Chest',
     modality='CT',
-    task='lung nodule segmentation'
+    task='lung nodule segmentation',
     licence='TCIA Data Usage Policy and Creative Commons Attribution 3.0 Unported License'
 )
 @checksum('lidc')
