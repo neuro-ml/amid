@@ -2,7 +2,6 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent, Output
 import pylidc as pl
-from pylidc.utils import consensus
 from dicom_csv import (expand_volumetric, drop_duplicated_instances,
                        drop_duplicated_slices, order_series, stack_images,
                        get_slice_locations, get_pixel_spacing, get_tag,
@@ -13,7 +12,12 @@ from amid.cancer_500.dataset import _get_study_date
 from .nodules import get_nodule
 
 
-@register()
+@register(
+    body_region='Chest',
+    modality='CT',
+    number_of_scans='1018',
+    licence='TCIA Data Usage Policy and Creative Commons Attribution 3.0 Unported License'
+)
 @checksum('lidc')
 class LIDC(Source):
     """
@@ -74,9 +78,6 @@ class LIDC(Source):
         series = order_series(series)
         return series
 
-    #     def image(_series):
-    #         return stack_images(_series, -1).astype(np.int16)
-
     def _shape(_series):
         return stack_images(_series, -1).shape
 
@@ -133,7 +134,7 @@ class LIDC(Source):
     def accession_number(_series):
         return get_common_tag(_series, 'AccessionNumber', default=None)
 
-    def nodules(_scan, slice_locations: Output):
+    def nodules(_scan):
         nodules = []
         for anns in _scan.cluster_annotations():
             nodule_annotations = []
@@ -142,7 +143,7 @@ class LIDC(Source):
             nodules.append(nodule_annotations)
         return nodules
 
-    def nodules_masks(_scan, slice_locations: Output):
+    def nodules_masks(_scan):
         nodules = []
         for anns in _scan.cluster_annotations():
             nodule_annotations = []
@@ -157,30 +158,3 @@ class LIDC(Source):
             cancer |= pl.utils.consensus(anns, pad=np.inf)[0]
 
         return cancer
-
-#     def nodules(_scan, slice_locations: Output): 
-#         nodules = []
-#         for anns in _scan.cluster_annotations():
-#             nodule_annotations = []
-#             for ann in anns:
-#                 nodule = flip_nodule(get_nodule(ann), len(slice_locations))
-#                 nodule_annotations.append(nodule)
-#             nodules.append(nodule_annotations)
-#         return nodules
-
-#     def nodules_masks(_scan, slice_locations: Output): 
-#         nodules = []
-#         for anns in _scan.cluster_annotations():
-#             nodule_annotations = []
-#             for ann in anns:
-#                 nodule_mask = np.flip(ann.boolean_mask(), -1).astype(bool)
-#                 nodule_annotations.append(nodule_mask)
-#             nodules.append(nodule_annotations)
-#         return nodules
-
-#     def cancer(_scan, _shape):
-#         cancer = np.zeros(_shape, dtype=bool)
-#         for nodule_index, anns in enumerate(_scan.cluster_annotations()):
-#             cancer |= pl.utils.consensus(anns, pad=np.inf)[0]
-
-#         return np.flip(cancer, -1)

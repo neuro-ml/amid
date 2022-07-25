@@ -9,7 +9,12 @@ from connectome.interface.nodes import Silent
 from amid.internals import checksum, register
 
 
-@register()
+@register(
+    body_region='Head',
+    modality='CT',
+    number_of_scans='75',
+    licence='PhysioNet Restricted Health Data License 1.5.0'
+)
 @checksum('ct_ich')
 class CT_ICH(Source):
     """

@@ -10,7 +10,12 @@ from amid.internals import checksum, register
 from amid.cc359 import open_nii_gz_file
 
 
-@register()
+@register(
+    body_region='Chest',
+    modality='CT',
+    number_of_scans='9',
+    licence='free'
+)
 @checksum('medseg9')
 class Medseg9(Source):
     """
