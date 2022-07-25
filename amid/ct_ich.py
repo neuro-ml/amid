@@ -6,9 +6,10 @@ import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from amid.internals import checksum
+from amid.internals import checksum, register
 
 
+@register
 @checksum('ct_ich')
 class CT_ICH(Source):
     """
