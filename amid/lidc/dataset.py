@@ -13,7 +13,7 @@ from amid.cancer_500.dataset import _get_study_date
 from .nodules import get_nodule
 
 
-@register
+@register()
 @checksum('lidc')
 class LIDC(Source):
     """

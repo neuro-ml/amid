@@ -9,7 +9,7 @@ from connectome.interface.nodes import Silent
 from amid.internals import checksum, register
 
 
-@register
+@register()
 @checksum('ct_ich')
 class CT_ICH(Source):
     """

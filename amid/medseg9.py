@@ -10,7 +10,7 @@ from amid.internals import checksum, register
 from amid.cc359 import open_nii_gz_file
 
 
-@register
+@register()
 @checksum('medseg9')
 class Medseg9(Source):
     """
