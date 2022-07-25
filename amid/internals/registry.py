@@ -10,6 +10,9 @@ _REGISTRY = {}
 class Description(NamedTuple):
     name: str
     entries: int
+    body_region: str = None
+    modality: str = None
+    licence: str = None
 
 
 def register(**kwargs):

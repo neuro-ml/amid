@@ -13,7 +13,6 @@ from amid.cc359 import open_nii_gz_file
 @register(
     body_region='Chest',
     modality='CT',
-    number_of_scans='9',
     licence='free'
 )
 @checksum('medseg9')

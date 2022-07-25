@@ -15,7 +15,6 @@ from .nodules import get_nodule
 @register(
     body_region='Chest',
     modality='CT',
-    number_of_scans='1018',
     licence='TCIA Data Usage Policy and Creative Commons Attribution 3.0 Unported License'
 )
 @checksum('lidc')
