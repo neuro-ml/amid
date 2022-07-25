@@ -8,11 +8,12 @@ from dicom_csv import (expand_volumetric, drop_duplicated_instances,
                        get_slice_locations, get_pixel_spacing, get_tag,
                        get_orientation_matrix, get_common_tag)
 
-from amid.internals import checksum
+from amid.internals import checksum, register
 from amid.cancer_500.dataset import _get_study_date
 from .nodules import get_nodule
 
 
+@register
 @checksum('lidc')
 class LIDC(Source):
     """
