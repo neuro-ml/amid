@@ -10,3 +10,4 @@ pylidc
 pyyaml
 requests
 mdai
+SimpleITK
