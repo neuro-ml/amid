@@ -3,3 +3,4 @@ mkdocs-material
 mkdocstrings[python]
 pandas
 tabulate
+mike

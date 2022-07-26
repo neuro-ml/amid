@@ -4,6 +4,8 @@ repo_url: https://github.com/neuro-ml/amid
 
 plugins:
   - search
+  - mike:
+      canonical_version: latest
   - mkdocstrings:
       default_handler: python_connectome
       handlers:
@@ -48,6 +50,9 @@ markdown_extensions:
   - toc:
       toc_depth: 3
 
+extra:
+  version:
+    provider: mike
 
 extra_javascript:
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js

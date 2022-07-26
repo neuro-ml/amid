@@ -1,15 +1,18 @@
 name: docs
 
-on: [ pull_request ]
-#on:
-#  release:
-#    types: [ released ]
+on:
+  release:
+    types: [ released ]
+  push:
+    branches:
+      - dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: git fetch origin gh-pages --depth=1
       - uses: actions/setup-python@v2
         with:
           python-version: '3.10'
@@ -27,5 +30,19 @@ jobs:
         run: |
           cd docs && python fill_docs.py
 
+      # release
+      - id: get_version
+        if: ${{ github.ref == 'refs/heads/master' }}
+        name: Get the release version
+        uses: battila7/get-version-action@v2
+
       - name: Deploy the docs
-        run: PYTHONPATH=$PYTHONPATH:./docs mkdocs gh-deploy --force
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: |
+          PYTHONPATH=$PYTHONPATH:./docs mike deploy ${{ steps.get_version.outputs.version-without-v }} latest --push --update-aliases
+
+      # dev
+      - name: Deploy the docs
+        if: ${{ github.ref == 'refs/heads/dev' }}
+        run: |
+          PYTHONPATH=$PYTHONPATH:./docs mike deploy dev --push

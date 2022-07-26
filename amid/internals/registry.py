@@ -8,8 +8,6 @@ _REGISTRY = {}
 
 
 class Description(NamedTuple):
-    name: str
-    entries: int
     body_region: str = None
     modality: str = None
     task: str = None
@@ -21,7 +19,7 @@ def register(**kwargs):
         name = cls.__name__
         module = inspect.getmodule(inspect.stack()[1][0]).__name__
         assert name not in _REGISTRY, name
-        _REGISTRY[name] = cls, module, kwargs
+        _REGISTRY[name] = cls, module, Description(**kwargs)
         return cls
 
     return decorator
