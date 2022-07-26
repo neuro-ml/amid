@@ -6,9 +6,14 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum
+from .internals import checksum, register
 
 
+@register(
+    body_region='Thorax',
+    modality='CT',
+    task='COVID-19 Segmentation',
+)
 @checksum('covid_1110')
 class MoscowCovid1110(Source):
     """
