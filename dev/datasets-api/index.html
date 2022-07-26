@@ -316,6 +316,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.vs_seg.VSSEG" class="md-nav__link">
+    VSSEG
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.verse.VerSe" class="md-nav__link">
     VerSe
   </a>
@@ -395,6 +402,13 @@
         <li class="md-nav__item">
   <a href="#amid.medseg9.Medseg9" class="md-nav__link">
     Medseg9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.vs_seg.VSSEG" class="md-nav__link">
+    VSSEG
   </a>
   
 </li>
@@ -1649,6 +1663,643 @@ If not provided, the cache is assumed to be already populated.</p></td>
 
 
 
+<h3 id="amid.vs_seg.VSSEG" class="doc doc-heading">
+        <code>amid.vs_seg.VSSEG</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>Segmentation of vestibular schwannoma from MRI, an open annotated dataset ... (VS-SEG) [1]_.</p>
+<p>The dataset contains 250 pairs of T1c and T2 images of the brain with the
+vestibular schwannoma segmentation task.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.vs_seg.VSSEG--notes">Notes</h5>
+<p>The dataset and corresponding metadata could be downloaded at the TCIA page:
+https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053.</p>
+<p>To download DICOM images using <code>.tcia</code> file, we use public build of TCIA downloader:
+https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
+<p>Then, download the rest of metadata from TCIA page:
+  - <code>DirectoryNamesMappingModality.csv</code>
+  - <code>Vestibular-Schwannoma-SEG_matrices Mar 2021.zip</code>
+  - <code>Vestibular-Schwannoma-SEG contours Mar 2021.zip</code></p>
+<p>and unzip the latter two <code>.zip</code> archives.</p>
+<p>So the root folder to pass to this dataset should contain 3 folders and 1 <code>.csv</code> file:
+    &lt;...&gt;/DirectoryNamesMappingModality.csv
+    &lt;...&gt;/Vestibular-Schwannoma-SEG/
+            ├── VS-SEG-001/...
+            ├── VS-SEG-002/...
+            └── ...
+    &lt;...&gt;/contours/
+    &lt;...&gt;/registration_matrices/</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">VSSEG</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 250</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image_t1</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 120)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">schwannoma_t1</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 120)</span>
+</code></pre></div>
+      <h5 id="amid.vs_seg.VSSEG--references">References</h5>
+<p>.. [1] Shapey, Jonathan, et al. "Segmentation of vestibular schwannoma from MRI,
+       an open annotated dataset and baseline algorithm."
+       Scientific Data 8.1 (2021): 1-6.
+       https://www.nature.com/articles/s41597-021-01064-w</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.registration_matrix_t1_to_t2_params" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">registration_matrix_t1_to_t2_params</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.registration_matrix_t2_to_t1_params" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">registration_matrix_t2_to_t1_params</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.contours_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">contours_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.contours_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">contours_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.normed_contours_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">normed_contours_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.normed_contours_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">normed_contours_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.has_schwannoma" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">has_schwannoma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.has_cochlea" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">has_cochlea</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.has_meningioma" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">has_meningioma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.schwannoma_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">schwannoma_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.schwannoma_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">schwannoma_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.cochlea_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cochlea_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.cochlea_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cochlea_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.meningioma_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">meningioma_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.meningioma_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">meningioma_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.image_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.image_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.study_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.series_uid_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.series_uid_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.pixel_spacing_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.pixel_spacing_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.slice_locations_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.slice_locations_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.voxel_spacing_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.voxel_spacing_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.orientation_matrix_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.orientation_matrix_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.patient_position_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_position_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.patient_position_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_position_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.patient_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.study_date" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_date</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
 <h3 id="amid.verse.VerSe" class="doc doc-heading">
         <code>amid.verse.VerSe</code>
 
@@ -1698,8 +2349,8 @@ If not provided, the cache is assumed to be already populated.</p></td>
   </table>
       <h5 id="amid.verse.VerSe--notes">Notes</h5>
 <p>Download links:
-2019: https://osf.io/jtfa5/
-2020: https://osf.io/4skx2/</p>
+    2019: https://osf.io/jtfa5/
+    2020: https://osf.io/4skx2/</p>
 
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
