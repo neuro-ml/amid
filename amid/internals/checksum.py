@@ -28,7 +28,7 @@ from .cache import default_serializer, CacheToDisk
 # TODO: add possibility to check the entire tree without the need to pull anything from remote
 
 
-def checksum(path: str):
+def checksum(path: str, ignore=()):
     serializer = default_serializer(None)
 
     def decorator(cls):
@@ -40,12 +40,12 @@ def checksum(path: str):
                 if version is not None:
                     repository = get_repo(strict=False)
                     if repository is not None:
-                        args.extend((
-                            CacheToDisk(AntiSet(('id',)), serializer=serializer),
-                            CacheAndCheck(
-                                set(dir(ds)) - {'id', 'ids'}, repository, path, fetch=True,
-                                serializer=serializer, version=version
-                            ),
+                        if repository.cache.local:
+                            args.append(CacheToDisk(AntiSet(('id',)), serializer=serializer))
+
+                        args.append(CacheAndCheck(
+                            set(dir(ds)) - {'id', 'ids'}, repository, path, fetch=True,
+                            serializer=serializer, version=version
                         ))
 
                 self._version = version
@@ -55,7 +55,7 @@ def checksum(path: str):
                 repository = get_repo()
                 ids = self.ids
 
-                fields = sorted(set(dir(self[0])) - {'ids', 'id'})
+                fields = sorted(set(dir(self[0])) - {'ids', 'id', *ignore})
                 ds = self[0] >> CacheToDisk(AntiSet(('id',)), serializer=serializer) >> CacheAndCheck(
                     fields, repository, path, fetch=True,
                     serializer=serializer, version=self._version, return_tree=True,
@@ -70,8 +70,7 @@ def checksum(path: str):
                         try:
                             trees = loader(i)
                         except Exception as e:
-                            print('Error for', i, type(e).__name__, e)
-                            continue
+                            raise RuntimeError(f'Error while processing id {i}') from e
 
                         for name, tree in zip_equal(fields, trees):
                             for k, v in tree.items():
@@ -79,6 +78,8 @@ def checksum(path: str):
 
                 save_tree(repository, checksums, to_hash(Path(repository.path / path)))
 
+        # dirty hack for now to preserve the name
+        Checked.__name__ = cls.__name__
         return Checked
 
     return decorator

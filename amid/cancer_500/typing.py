@@ -11,7 +11,7 @@ class Review(Enum):
 
 
 class Comment(Enum):
-    Fibrosis, Lymphnode, Calcium, Calcified, Bronchiectasis, Vessel = 0, 1, 2, 3, 4, 5
+    Fibrosis, LymphNode, Calcium, Calcified, Bronchiectasis, Vessel = 0, 1, 2, 3, 4, 5
 
 
 class Cancer500Nodule(NamedTuple):

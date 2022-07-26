@@ -4,7 +4,7 @@ from typing import Union, Sequence
 
 import numpy as np
 from bev import Repository
-from tarn import Storage
+from tarn import Storage, ReadError
 from tarn.cache import SerializerError, PickleSerializer
 from connectome import CacheToDisk as Disk
 from connectome.interface.blocks import StringsLike
@@ -55,10 +55,10 @@ class NumpySerializer(Serializer):
         if compression is not None:
             assert isinstance(compression, int)
             with GzipFile(folder / 'value.npy.gz', 'wb', compresslevel=compression, mtime=0) as file:
-                np.save(file, value)
+                np.save(file, value, allow_pickle=False)
 
         else:
-            np.save(folder / 'value.npy', value)
+            np.save(folder / 'value.npy', value, allow_pickle=False)
 
     def load(self, folder: Path, storage: Storage):
         paths = list(folder.iterdir())
@@ -76,3 +76,11 @@ class NumpySerializer(Serializer):
             raise SerializerError
 
         return self._load_file(storage, loader, path)
+
+
+class CleanInvalid(Serializer):
+    def save(self, value, folder: Path):
+        raise SerializerError
+
+    def load(self, folder: Path, storage: Storage):
+        raise ReadError

@@ -113,7 +113,7 @@ def parse_comment(ann: dict):
     elif 'фиброз' in comments:
         return Comment.Fibrosis
     elif 'внутрилегочный л\\у' in comments:
-        return Comment.Lymphnode
+        return Comment.LymphNode
     elif 'очаг с кальцинацией, несовпадение типа (другое)' in comments:
         return Comment.Calcified
     elif 'бронхоэктаз с содержимым, несовпадение типа (другое)' in comments:

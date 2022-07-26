@@ -1,6 +1,6 @@
-name: Python package
+name: Tests
 
-on: [ push, pull_request ]
+on: [ pull_request ]
 
 env:
   MODULE_NAME: amid
@@ -30,7 +30,39 @@ jobs:
       - name: Install
         run: |
           pip install dist/*
+          pip install -r tests/requirements.txt
 
-      - name: Make sure all is importable
+          cd tests
+          export MODULE_PARENT=$(python -c "import $MODULE_NAME, os; print(os.path.dirname($MODULE_NAME.__path__[0]))")
+          export MODULE_PARENT=${MODULE_PARENT%"/"}
+          cd ..
+          echo $MODULE_PARENT
+          echo "MODULE_PARENT=$(echo $MODULE_PARENT)" >> $GITHUB_ENV
+
+      - name: Create the storage
         run: |
-          python -c "import importlib, amid, pathlib; [importlib.import_module(f'amid.{f.stem}') for f in pathlib.Path(amid.__path__[0]).iterdir()]"
+          mkdir -p ~/.config/amid/ && cp tests/assets/.bev.yml ~/.config/amid/.bev.yml
+          amid init
+
+      - name: Test with pytest
+        run: |
+          pytest tests --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
+      - name: Generate coverage report
+        run: |
+          coverage xml -o reports/coverage-${{ matrix.python-version }}.xml
+          sed -i -e "s|$MODULE_PARENT/||g" reports/coverage-${{ matrix.python-version }}.xml
+          sed -i -e "s|$(echo $MODULE_PARENT/ | tr "/" .)||g" reports/coverage-${{ matrix.python-version }}.xml
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: reports-${{ matrix.python-version }}
+          path: reports/*-${{ matrix.python-version }}.xml
+        if: ${{ always() }}
+
+      - name: Upload coverage results
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
+          files: reports/coverage-${{ matrix.python-version }}.xml
+          verbose: true
