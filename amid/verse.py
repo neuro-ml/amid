@@ -13,7 +13,11 @@ from connectome.interface.nodes import Silent
 from .internals import checksum, register
 
 
-@register()
+@register(
+    body_region='Thorax, Abdomen',
+    modality='CT',
+    task='Vertebrae Segmentation',
+)
 @checksum('verse')
 class VerSe(Source):
     """
@@ -32,8 +36,8 @@ class VerSe(Source):
     Notes
     -----
     Download links:
-    2019: https://osf.io/jtfa5/
-    2020: https://osf.io/4skx2/
+        2019: https://osf.io/jtfa5/
+        2020: https://osf.io/4skx2/
 
     Examples
     --------

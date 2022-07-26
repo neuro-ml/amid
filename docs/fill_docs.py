@@ -12,10 +12,14 @@ with open(root / 'datasets-api.md', 'w') as file:
         file.write(f'::: {module}.{name}\n\n')
         entry = {'name': name, 'entries': len(cls().ids)}
         entry.update(description._asdict())
+        link = entry.get('link')
+        if link is not None:
+            entry['link'] = f'<a href="{link}">Source</a>'
+
         records.append(entry)
 
 table = pd.DataFrame.from_records(records)
-table.columns = [x.capitalize() for x in table.columns]
+table.columns = [x.replace('_', ' ').capitalize() for x in table.columns]
 with open(root / 'datasets.md', 'w') as file:
     file.write('# Datasets\n\n')
     file.write(table.to_markdown(index=False))
