@@ -77,7 +77,7 @@ class CrossMoDA(Source):
         for archive in Path(_root).glob('*.zip'):
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
-                    if i == '_'.join(Path(zipinfo.filename).stem.split('_')[:-1]):
+                    if i == '_'.join(Path(zipinfo.filename).stem.split('_')[:-1]) and 'Label' not in zipinfo.filename:
                         return zipfile.Path(archive, zipinfo.filename)
 
         raise ValueError(f'Id "{i}" not found')
@@ -121,11 +121,11 @@ class CrossMoDA(Source):
                 return 'validation'
             
         elif dataset == 'etz':
-            if 1 <= idx < 105:
+            if 0 <= idx < 105:
                 return 'training_source'
             elif 105 <= idx < 210:
                 return 'training_target'
-            elif 211 <= idx < 242:
+            elif 210 <= idx < 242:
                 return 'validation'
             
         raise ValueError(f'Cannot find split for the file: {_file}')
@@ -144,6 +144,8 @@ class CrossMoDA(Source):
                 mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return mask.get_fdata().astype(np.uint8)
 
-    def koos_grade(i, train_source_df: Output) -> int:
+    def koos_grade(i, train_source_df: Output, split: Output) -> int:
         """ VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative) """
+        if split != 'training_source':
+            return None
         return (lambda x: -1 if x == 'post-operative-london' else int(x))(train_source_df.loc[i, 'koos'])
