@@ -20,7 +20,7 @@ from dicom_csv import (expand_volumetric, drop_duplicated_instances,
     body_region='Thorax',
     modality='CT',
     task='COVID-19 Segmentation',
-    license='CC BY-NC 4.0',
+    licence='CC BY-NC 4.0',
 )
 @checksum('midrc')
 class MIDRC(Source):
