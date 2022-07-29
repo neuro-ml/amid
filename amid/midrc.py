@@ -1,4 +1,5 @@
 import os.path
+from typing import List
 import warnings
 from functools import lru_cache
 from skimage.draw import polygon
@@ -10,11 +11,17 @@ import pandas as pd
 import pydicom
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
-from .internals import checksum
+from .internals import checksum, register
 from dicom_csv import (expand_volumetric, drop_duplicated_instances, 
                        drop_duplicated_slices, order_series, stack_images, 
                        get_slice_locations, get_pixel_spacing, get_tag, join_tree)
 
+@register(
+    body_region='Thorax',
+    modality='CT',
+    task='COVID-19 Segmentation',
+    license='CC BY-NC 4.0',
+)
 @checksum('midrc')
 class MIDRC(Source):
     """
@@ -57,7 +64,7 @@ class MIDRC(Source):
     """
 
     _root: str = None
-    _pathologies: [str] = ['Infectious opacity',
+    _pathologies: List[str] = ['Infectious opacity',
                            'Infectious TIB/micronodules',
                            'Atelectasis',
                            'Other noninfectious opacity',
@@ -94,7 +101,7 @@ class MIDRC(Source):
             _original_num_slices = len(series)
             series = drop_duplicated_slices(series)
             if len(series) < _original_num_slices:
-                warnings.warn(f'Dropped duplicated slices for series {_series[0]["StudyInstanceUID"]}.')
+                warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
         series = order_series(series)
         return series
