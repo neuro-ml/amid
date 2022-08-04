@@ -8,9 +8,10 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum
+from .internals import checksum, register
 
 
+@register()
 @checksum('lits')
 class LiTS(Source):
     """
