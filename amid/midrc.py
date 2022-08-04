@@ -150,7 +150,8 @@ class MIDRC(Source):
         sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == "INSTANCE")]
         shape = (_image_meta['Rows'], _image_meta['Columns'], len(_image_meta['SOPInstanceUID']))
         mask = np.zeros((len(_pathologies), *shape), dtype=bool)
-
+        if len(sub) == 0:
+            return None
         for label, row in sub.iterrows():
             pathology_index = _pathologies.index(row['labelName'])
             slice_index = _image_meta['SOPInstanceUID'].index(row['SOPInstanceUID'])
