@@ -1,7 +1,9 @@
+import os
 import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent, Output
 import pylidc as pl
+import pylidc.utils
 from dicom_csv import (expand_volumetric, drop_duplicated_instances,
                        drop_duplicated_slices, order_series, stack_images,
                        get_slice_locations, get_pixel_spacing, get_tag,
@@ -9,13 +11,13 @@ from dicom_csv import (expand_volumetric, drop_duplicated_instances,
 
 from amid.internals import checksum, register
 from amid.cancer_500.dataset import _get_study_date
-from .nodules import get_nodule
+from amid.lidc.nodules import get_nodule
 
 
 @register(
     body_region='Chest',
     modality='CT',
-    task='lung nodule segmentation',
+    task='Lung nodule segmentation',
     licence='TCIA Data Usage Policy and Creative Commons Attribution 3.0 Unported License'
 )
 @checksum('lidc')
@@ -63,13 +65,27 @@ class LIDC(Source):
     """
 
     _root: str = None
-
+    _pylidc_config_start: str = '[dicom]\npath = '
+    
+    def _check_config(_root: Silent, _pylidc_config_start):
+        if _root is not None:
+            if os.path.exists(os.path.expanduser('~/.pylidcrc')):
+                with open(os.path.expanduser('~/.pylidcrc'), 'r') as config_file:
+                    content = config_file.read()
+                if content == f'{_pylidc_config_start}{_root}':
+                    return
+                
+            # save _root path to ~/.pylidcrc file for pylidc
+            with open(os.path.expanduser('~/.pylidcrc'), 'w') as config_file:
+                config_file.write(f'{_pylidc_config_start}{_root}')
+        return
+                    
     @meta
-    def ids(_root: Silent):
-        result = {f'lidc_{scan.series_instance_uid}' for scan in pl.query(pl.Scan).all()}
+    def ids(_root: Silent, _pylidc_config_start, _check_config):
+        result = [scan.series_instance_uid for scan in pl.query(pl.Scan).all()]
         return tuple(sorted(result))
 
-    def _scan(i, _root: Silent):
+    def _scan(i, _root: Silent, _pylidc_config_start, _check_config):
         _id = i.split('_')[-1]
         return pl.query(pl.Scan).filter(pl.Scan.series_instance_uid == _id).first()
 
