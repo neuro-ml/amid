@@ -62,9 +62,9 @@ def parse_nodule_annotation(ann: dict, slice_locations: list):
 
 
 def parse_center_voxel(ann: dict, slice_locations: list):
-    i, j = int(ann['y']), int(ann['x'])
-    assert i == ann['y']
-    assert j == ann['x']
+    i, j = int(ann['x']), int(ann['y'])
+    assert i == ann['x']
+    assert j == ann['y']
 
     assert 'z type' in ann
     assert ann['z type'].strip() == 'mm'
@@ -77,11 +77,11 @@ def parse_center_voxel(ann: dict, slice_locations: list):
     if 'z = 258 = -151,6 ' in comments:
         slc = 258
     elif 'не 134 а 143 по оси Х' in comments:
-        j = 143
+        i = 143
     elif 'неправильная координата х (должно быть 73, а не 734). сосуд, несовпадение типа (другое), неверный размер' in comments:
-        j = 73
+        i = 73
     elif 'ошибка в координате Y - должно быть 296, тогда очаг есть' in comments:
-        i = 296
+        j = 296
     elif 'срез съехал на два ниже' in comments:
         slc -= 2
     elif set(comments) & {'очага нет', 'промахно', 'промахнулись с координатой х',

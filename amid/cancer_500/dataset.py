@@ -80,11 +80,13 @@ class MoscowCancer500(Source):
 
     def _series(i, _mapping, _root: Silent):
         series = [pydicom.dcmread(Path(_root, 'dicom', f)) for f in _mapping[i]]
-        series = order_series(series)
+        series = order_series(series, decreasing=False)
         return series
 
     def image(_series):
-        return stack_images(_series, -1).astype(np.int16)
+        x = stack_images(_series, -1).astype(np.int16)
+        # DICOM specifies that the first 2 axes are (y, x). let's fix that
+        return np.moveaxis(x, 0, 1)
 
     def study_uid(_series):
         return get_common_tag(_series, 'StudyInstanceUID')
