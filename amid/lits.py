@@ -11,7 +11,15 @@ from connectome.interface.nodes import Silent
 from .internals import checksum, register
 
 
-@register()
+@register(
+    body_region='Abdominal',
+    license='CC BY-NC-ND 4.0',
+    link='https://competitions.codalab.org/competitions/17094',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='35G',
+    task='Segmentation',
+)
 @checksum('lits')
 class LiTS(Source):
     """

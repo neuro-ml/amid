@@ -12,7 +12,11 @@ from amid.cc359 import open_nii_gz_file
 
 @register(
     body_region='Chest',
+    license='CC0',
+    link='http://medicalsegmentation.com/covid19/',
     modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='310M',
     task='COVID-19 segmentation',
 )
 @checksum('medseg9')

@@ -15,7 +15,15 @@ from connectome.interface.nodes import Silent, Output
 from .internals import checksum, register
 
 
-@register()
+@register(
+    body_region='Head',
+    license='CC BY-NC-SA 4.0',
+    link='https://zenodo.org/record/6504722#.YsgwnNJByV4',
+    modality=('MRI T1c', 'MRI T2hr'),
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='17G',
+    task=('Segmentation', 'Classification', 'Domain Adaptation'),
+)
 @checksum('crossmoda2022')
 class CrossMoDA(Source):
     """

@@ -1,12 +1,9 @@
 import json
 import os.path
-from typing import List
 import warnings
 from functools import lru_cache
-from skimage.draw import polygon
 from pathlib import Path
 
-import mdai
 import numpy as np
 import pandas as pd
 import pydicom
@@ -19,7 +16,11 @@ from dicom_csv import (expand_volumetric, drop_duplicated_instances,
 
 @register(
     body_region='Thorax',
+    license='CC BY 3.0',
+    link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
     modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='34G',
     task='Tumor Segmentation',
 )
 @checksum('nsclc')
@@ -194,7 +195,8 @@ class NSCLC(Source):
 
         all_masks = {}
         for n, seg in enumerate(segments):
-            mask_subslice = slice(len(slice_locations) * n, len(slice_locations) * (n + 1) if n + 1 != len(segments) else None)
+            mask_subslice = slice(len(slice_locations) * n, len(slice_locations) * (n + 1) if n + 1 != len(segments)
+                                  else None)
             sub_mask = mask[:,:, mask_subslice]
             sub_mask_slice_locations = mask_slice_locations[mask_subslice]
 
@@ -210,7 +212,10 @@ class NSCLC(Source):
 
 
 def get_cancer_orientation_matrix(cancer_dicom):
-    row, col = np.array([float(x) for x in cancer_dicom.SharedFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient]).reshape(2, 3)
+    row, col = np.array([
+        float(x) for x in
+        cancer_dicom.SharedFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient
+    ]).reshape(2, 3)
     return np.stack([row, col, np.cross(row, col)])
 
 

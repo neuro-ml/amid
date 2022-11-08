@@ -20,7 +20,7 @@ from amid.internals import checksum, register
 
 @register(
     body_region='Head',
-    licence='CC BY 4.0',
+    license='CC BY 4.0',
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053',
     modality=('MRI T1c', 'MRI T2'),
     prep_data_size=None,  # TODO: should be measured...
@@ -112,13 +112,11 @@ class VSSEG(Source):
             with open(str(file), 'r') as f:
                 return json.load(f)
 
-    def normed_contours_t1(contours_t1: Output,
-                           voxel_spacing_t1: Output, patient_position_t1: Output, slice_locations_t1: Output):
-        return _norm_contours(contours_t1, voxel_spacing_t1, patient_position_t1, slice_locations_t1)
+    def normed_contours_t1(contours_t1: Output, voxel_spacing_t1: Output, patient_position_t1: Output):
+        return _norm_contours(contours_t1, voxel_spacing_t1, patient_position_t1)
 
-    def normed_contours_t2(contours_t2: Output,
-                           voxel_spacing_t2: Output, patient_position_t2: Output, slice_locations_t2: Output):
-        return _norm_contours(contours_t2, voxel_spacing_t2, patient_position_t2, slice_locations_t2)
+    def normed_contours_t2(contours_t2: Output, voxel_spacing_t2: Output, patient_position_t2: Output):
+        return _norm_contours(contours_t2, voxel_spacing_t2, patient_position_t2)
 
     def has_schwannoma(contours_t1: Output):
         return _get_schwannoma_structure_name(contours_t1) is not None
@@ -156,10 +154,10 @@ class VSSEG(Source):
         return _load_series(i, _root, 'T2 image')
 
     def image_t1(_series_t1):
-        return stack_images(_series_t1, -1).astype(np.int16)
+        return stack_images(_series_t1, -1).astype(np.int16).transpose(1, 0, 2)
 
     def image_t2(_series_t2):
-        return stack_images(_series_t2, -1).astype(np.int16)
+        return stack_images(_series_t2, -1).astype(np.int16).transpose(1, 0, 2)
 
     # ### metadata: ###
 
@@ -185,10 +183,10 @@ class VSSEG(Source):
         return get_slice_locations(_series_t2)
 
     def voxel_spacing_t1(pixel_spacing_t1: Output, slice_locations_t1: Output):
-        return tuple([*pixel_spacing_t1, stats.mode(np.diff(slice_locations_t1[::-1]))[0].item()])
+        return tuple([*pixel_spacing_t1, stats.mode(np.diff(slice_locations_t1))[0].item()])
 
     def voxel_spacing_t2(pixel_spacing_t2: Output, slice_locations_t2: Output):
-        return tuple([*pixel_spacing_t2, stats.mode(np.diff(slice_locations_t2[::-1]))[0].item()])
+        return tuple([*pixel_spacing_t2, stats.mode(np.diff(slice_locations_t2))[0].item()])
 
     def orientation_matrix_t1(_series_t1):
         return get_orientation_matrix(_series_t1)
@@ -197,10 +195,10 @@ class VSSEG(Source):
         return get_orientation_matrix(_series_t2)
 
     def patient_position_t1(_series_t1):
-        return tuple([float(o) for o in get_tag(_series_t1[-1], 'ImagePositionPatient')])
+        return tuple([float(o) for o in get_tag(_series_t1[0], 'ImagePositionPatient')])
 
     def patient_position_t2(_series_t2):
-        return tuple([float(o) for o in get_tag(_series_t2[-1], 'ImagePositionPatient')])
+        return tuple([float(o) for o in get_tag(_series_t2[0], 'ImagePositionPatient')])
 
     def patient_id(_series_t1):
         return get_common_tag(_series_t1, 'PatientID', default=None)
@@ -222,11 +220,11 @@ def _load_series(_id, root, modality):
     tree = tree[tree['NoError']]
 
     series = [pydicom.dcmread(path_to_series / fname) for fname in tree['FileName'].values]
-    series = order_series(series)
+    series = order_series(series, decreasing=False)
     return series
 
 
-def _norm_contours(contours, voxel_spacing, origin, slice_locations):
+def _norm_contours(contours, voxel_spacing, origin):
     voxel_spacing = np.float32(voxel_spacing)
     pixel_spacing, z_spacing = voxel_spacing[:-1], voxel_spacing[-1]
     origin = np.float32(origin)
@@ -238,11 +236,8 @@ def _norm_contours(contours, voxel_spacing, origin, slice_locations):
         cs_normed = []
         for c in cs:
             c = np.float32(c)
-
-            # For some reason `z` should be "flipped" and `xy` should be "transposed"...
-            xy_normed = ((c[:, :-1] - origin[:-1]) / pixel_spacing)[:, ::-1]
-            z_normed = len(slice_locations) - np.round((c[0][-1] - origin[-1]) / z_spacing) - 1
-
+            xy_normed = (c[:, :-1] - origin[:-1]) / pixel_spacing
+            z_normed = np.round((c[0][-1] - origin[-1]) / z_spacing)
             c_normed = np.concatenate((xy_normed, np.repeat([[z_normed]], xy_normed.shape[0], axis=0)), axis=-1)
             cs_normed.append(c_normed.tolist())
         contours_normed.append({**contour, 'LPS_contour_points': cs_normed})
@@ -309,7 +304,7 @@ def _get_schwannoma_structure_name(contours: list):
 
     if len(names) == 1:
         if names[0] == 'vol 2y':
-            # 'VS-SEG-063' -- is a meningioma case + "vol 2y" contour has a bad iterpolation:(
+            # 'VS-SEG-063' -- is a meningioma case + "vol 2y" contour has a bad interpolation:(
             return None
         else:
             return names[0]
@@ -338,7 +333,8 @@ def _get_meningioma_structure_name(contours: list):
 
 
 def _get_mask(contours: list, shape, obj: str):
-    get_structure_name = {'schwannoma': _get_schwannoma_structure_name, 'cochlea': _get_cochlea_structure_name,
+    get_structure_name = {'schwannoma': _get_schwannoma_structure_name,
+                          'cochlea': _get_cochlea_structure_name,
                           'meningioma': _get_meningioma_structure_name}[obj]
     structure_name = get_structure_name(contours)
     if structure_name is not None:
