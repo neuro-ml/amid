@@ -367,6 +367,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.cancer_500.dataset.MoscowCancer500" class="md-nav__link">
+    MoscowCancer500
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.covid_1110.MoscowCovid1110" class="md-nav__link">
     MoscowCovid1110
   </a>
@@ -516,6 +523,13 @@
         <li class="md-nav__item">
   <a href="#amid.medseg9.Medseg9" class="md-nav__link">
     Medseg9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.cancer_500.dataset.MoscowCancer500" class="md-nav__link">
+    MoscowCancer500
   </a>
   
 </li>
@@ -3431,6 +3445,331 @@ If not provided, the cache is assumed to be already populated.</p></td>
   
       <p>int16 mask. 
 0 - normal, 1 - ground-glass opacities (матовое стекло), 2 - consolidation (консолидация).</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.cancer_500.dataset.MoscowCancer500" class="doc doc-heading">
+        <code>amid.cancer_500.dataset.MoscowCancer500</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>The Moscow Radiology Cancer-500 dataset.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded files.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.cancer_500.dataset.MoscowCancer500--notes">Notes</h5>
+<p>Download links:
+https://mosmed.ai/en/datasets/ct_lungcancer_500/</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded files in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MoscowCancer500</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/files/root&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 979</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 67)</span>
+</code></pre></div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.study_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.series_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.sop_uids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sop_uids</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.pixel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.slice_locations" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.orientation_matrix" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.instance_numbers" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">instance_numbers</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.conv_kernel" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">conv_kernel</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.kvp" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">kvp</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.patient_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.study_date" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_date</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.accession_number" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">accession_number</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.nodules" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">nodules</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
 
   </div>
 
