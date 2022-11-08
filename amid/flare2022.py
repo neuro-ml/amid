@@ -16,8 +16,8 @@ from .internals import checksum, register
     licence=None,
     link="https://flare22.grand-challenge.org/",
     modality="CT",
-    prep_data_size=2100,  # excluding 200 hidden cases for testing
-    raw_data_size=2100,  # same
+    prep_data_size=None,
+    raw_data_size=247,
     task="Semi-supervised abdominal organ segmentation",
 )
 @checksum("flare2022")
