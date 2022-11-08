@@ -17,7 +17,7 @@ from .internals import checksum, register
     link="https://flare22.grand-challenge.org/",
     modality="CT",
     prep_data_size=None,
-    raw_data_size=247,
+    raw_data_size="247G",
     task="Semi-supervised abdominal organ segmentation",
 )
 @checksum("flare2022")
