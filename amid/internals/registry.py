@@ -9,7 +9,7 @@ _REGISTRY = {}
 
 class Description(NamedTuple):
     body_region: str = None
-    licence: str = None
+    license: str = None
     link: str = None
     modality: str = None
     prep_data_size: str = None

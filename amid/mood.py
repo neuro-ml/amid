@@ -12,8 +12,12 @@ from amid.cc359 import open_nii_gz_file
 
 
 @register(
-    body_region='Head / abdominal',
-    modality='MRI / CT',
+    body_region=('Head', 'Abdominal'),
+    license=None,  # FIXME: inherit licenses from the original datasets...
+    link='http://medicalood.dkfz.de/web/',
+    modality=('MRI', 'CT'),
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='120G',
     task='Out-of-distribution detection',
 )
 @checksum('mood')

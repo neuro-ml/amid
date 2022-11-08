@@ -17,6 +17,8 @@ from .internals import checksum, register
     body_region='Thorax, Abdomen',
     modality='CT',
     task='Vertebrae Segmentation',
+    link='https://osf.io/4skx2/',
+    raw_data_size='97G',
 )
 @checksum('verse')
 class VerSe(Source):

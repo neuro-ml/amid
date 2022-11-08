@@ -13,7 +13,7 @@ from .internals import checksum, register
 
 @register(
     body_region="Abdomen",
-    licence=None,
+    license=None,
     link="https://flare22.grand-challenge.org/",
     modality="CT",
     prep_data_size=None,

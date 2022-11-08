@@ -11,7 +11,7 @@ with open(root / 'datasets-api.md', 'w') as file:
     for name, (cls, module, description) in tqdm(list(gather_datasets().items())):
         file.write(f'::: {module}.{name}\n\n')
         entry = {'name': name, 'entries': len(cls().ids)}
-        entry.update(description._asdict())
+        entry.update({k: v for k, v in description._asdict().items() if v is not None})
         link = entry.get('link')
         if link is not None:
             entry['link'] = f'<a href="{link}">Source</a>'

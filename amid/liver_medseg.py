@@ -1,10 +1,8 @@
-import gzip
 import re
 import zipfile
 from pathlib import Path
 from zipfile import ZipFile
 
-import nibabel
 import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
@@ -14,8 +12,13 @@ from amid.internals import checksum, register
 
 
 @register(
-    body_region='Chest, Abdomen',
-    modality='CT'
+    body_region=('Chest', 'Abdomen'),
+    license='CC-BY-SA 4.0',
+    link='https://www.medseg.ai/database/liver-segments-50-cases',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='616M',
+    task='Segmentation',
 )
 @checksum('liver_medseg')
 class LiverMedseg(Source):

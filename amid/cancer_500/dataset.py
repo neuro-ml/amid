@@ -15,9 +15,16 @@ from dicom_csv.exceptions import TagMissingError, TagTypeError, ConsistencyError
 from tqdm.auto import tqdm
 
 from .nodules import get_nodules
-from ..internals import checksum
+from ..internals import checksum, register
 
 
+@register(
+    body_region='Thorax',
+    modality='CT',
+    task='Lung Cancer Detection',
+    link='https://mosmed.ai/en/datasets/ct_lungcancer_500/',
+    raw_data_size='187G',
+)
 @checksum('cancer_500')
 class MoscowCancer500(Source):
     """
