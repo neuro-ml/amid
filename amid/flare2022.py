@@ -13,14 +13,14 @@ from .internals import checksum, register
 
 @register(
     body_region="Abdomen",
-    licence=None,  # TODO
+    licence=None,
     link="https://flare22.grand-challenge.org/",
     modality="CT",
     prep_data_size=2100,  # excluding 200 hidden cases for testing
     raw_data_size=2100,  # same
     task="Semi-supervised abdominal organ segmentation",
 )
-@checksum('flare2022')
+@checksum("flare2022")
 class FLARE2022(Source):
     """
     An abdominal organ segmentation dataset for semi-supervised learning [1]_.
