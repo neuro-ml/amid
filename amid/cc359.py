@@ -12,7 +12,15 @@ from connectome.interface.nodes import Silent
 from .internals import checksum, register
 
 
-@register()
+@register(
+    body_region='Head',
+    license='CC BY-ND',
+    link='https://sites.google.com/view/calgary-campinas-dataset/home',
+    modality='MRI T1',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='4,1G',
+    task='Segmentation',
+)
 @checksum('cc359')
 class CC359(Source):
     """

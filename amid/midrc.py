@@ -2,25 +2,30 @@ import os.path
 from typing import List
 import warnings
 from functools import lru_cache
-from skimage.draw import polygon
 from pathlib import Path
 
+
+from skimage.draw import polygon
 import mdai
 import numpy as np
 import pandas as pd
 import pydicom
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
+from dicom_csv import (expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images,
+                       get_slice_locations, get_pixel_spacing, join_tree)
+
 from .internals import checksum, register
-from dicom_csv import (expand_volumetric, drop_duplicated_instances, 
-                       drop_duplicated_slices, order_series, stack_images, 
-                       get_slice_locations, get_pixel_spacing, get_tag, join_tree)
+
 
 @register(
     body_region='Thorax',
+    license='CC BY-NC 4.0',
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
     modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='12G',
     task='COVID-19 Segmentation',
-    licence='CC BY-NC 4.0',
 )
 @checksum('midrc')
 class MIDRC(Source):
@@ -41,7 +46,7 @@ class MIDRC(Source):
     Follow the download instructions at https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742
     Download both Images and Annotations to the same folder
 
-    Then, the folder with downloaded data should contain two pathes with the data
+    Then, the folder with downloaded data should contain two paths with the data
 
     The folder should have this structure:
         <...>/<MIDRC-root>/MIDRC-RICORD-1A
@@ -65,11 +70,11 @@ class MIDRC(Source):
 
     _root: str = None
     _pathologies: List[str] = ['Infectious opacity',
-                           'Infectious TIB/micronodules',
-                           'Atelectasis',
-                           'Other noninfectious opacity',
-                           'Noninfectious nodule/mass',
-                           'Infectious cavity']
+                               'Infectious TIB/micronodules',
+                               'Atelectasis',
+                               'Other noninfectious opacity',
+                               'Noninfectious nodule/mass',
+                               'Infectious cavity']
 
     @meta
     def ids(_joined):
@@ -161,6 +166,3 @@ class MIDRC(Source):
             ys, xs = np.array(row['data']['vertices']).T[::-1]
             mask[(pathology_index, *polygon(ys, xs, shape[:2]), slice_index)] = True
         return mask
-
-
-

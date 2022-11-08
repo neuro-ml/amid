@@ -1,13 +1,11 @@
 import os
+
 import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent, Output
 import pylidc as pl
 import pylidc.utils
-from dicom_csv import (expand_volumetric, drop_duplicated_instances,
-                       drop_duplicated_slices, order_series, stack_images,
-                       get_slice_locations, get_pixel_spacing, get_tag,
-                       get_orientation_matrix, get_common_tag)
+from dicom_csv import expand_volumetric, order_series, stack_images, get_tag, get_orientation_matrix, get_common_tag
 
 from amid.internals import checksum, register
 from amid.cancer_500.dataset import _get_study_date
@@ -16,9 +14,12 @@ from amid.lidc.nodules import get_nodule
 
 @register(
     body_region='Chest',
+    license='CC BY 3.0',
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254',
     modality='CT',
-    task='Lung nodule segmentation',
-    licence='TCIA Data Usage Policy and Creative Commons Attribution 3.0 Unported License'
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='126G',
+    task='Lung nodules segmentation',
 )
 @checksum('lidc')
 class LIDC(Source):
@@ -40,7 +41,7 @@ class LIDC(Source):
 
     Notes
     -----
-    Follow the download instructions at https://wiki.cancerimagingarchive.net/display/Public/LIDC-IDRI.
+    Follow the download instructions at https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254.
 
     Then, the folder with raw downloaded data should contain folder `LIDC-IDRI`, 
     which contains folders `LIDC-IDRI-*`.

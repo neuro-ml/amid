@@ -10,7 +10,15 @@ from connectome.interface.nodes import Silent
 from .internals import checksum, register
 
 
-@register()
+@register(
+    body_region='Head',
+    license='EGD data license',
+    link='https://www.sciencedirect.com/science/article/pii/S2352340921004753',
+    modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2'),
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='40G',
+    task='Segmentation',
+)
 @checksum('egd')
 class EGD(Source):
     """

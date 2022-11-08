@@ -11,9 +11,12 @@ from amid.internals import checksum, register
 
 @register(
     body_region='Head',
+    license='PhysioNet Restricted Health Data License 1.5.0',
+    link='https://physionet.org/content/ct-ich/1.3.1/',
     modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='2,8G',
     task='Intracranial hemorrhage segmentation',
-    licence='PhysioNet Restricted Health Data License 1.5.0'
 )
 @checksum('ct_ich')
 class CT_ICH(Source):
