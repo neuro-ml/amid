@@ -40,7 +40,7 @@ def checksum(path: str, ignore=()):
                 if version is not None:
                     repository = get_repo(strict=False)
                     if repository is not None:
-                        if repository.cache.local:
+                        if repository.cache is not None and repository.cache.local:
                             args.append(CacheToDisk(AntiSet(('id',)), serializer=serializer))
 
                         args.append(CacheAndCheck(
