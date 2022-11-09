@@ -40,7 +40,7 @@ def checksum(path: str, ignore=()):
                 if version is not None:
                     repository = get_repo(strict=False)
                     if repository is not None:
-                        if repository.cache.local:
+                        if repository.cache is not None and repository.cache.local:
                             args.append(CacheToDisk(AntiSet(('id',)), serializer=serializer))
 
                         args.append(CacheAndCheck(
@@ -51,7 +51,7 @@ def checksum(path: str, ignore=()):
                 self._version = version
                 super().__init__(*args)
 
-            def _populate(self):
+            def _populate(self, ignore_errors: bool = False):
                 repository = get_repo()
                 ids = self.ids
 
@@ -63,6 +63,7 @@ def checksum(path: str, ignore=()):
                 loader = ds._compile(fields)
 
                 checksums = {}
+                successes = errors = 0
                 with tqdm(ids, 'Populating the cache') as bar:
                     for i in bar:
                         bar.set_postfix_str(i)
@@ -70,13 +71,19 @@ def checksum(path: str, ignore=()):
                         try:
                             trees = loader(i)
                         except Exception as e:
+                            if ignore_errors:
+                                errors += 1
+                                continue
+
                             raise RuntimeError(f'Error while processing id {i}') from e
 
+                        successes += 1
                         for name, tree in zip_equal(fields, trees):
                             for k, v in tree.items():
                                 checksums['/'.join((name, i, k))] = v
 
                 save_tree(repository, checksums, to_hash(Path(repository.path / path)))
+                return successes, errors
 
         # dirty hack for now to preserve the name
         Checked.__name__ = cls.__name__

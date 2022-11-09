@@ -59,6 +59,6 @@ extra_javascript:
   - https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.number.min.js
   - https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.date.min.js
   - https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.dotsep.min.js
-  - https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.filesize.min.js
   - https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.monthname.min.js
+  - javascript/tablesort.filesize.js
   - javascript/tablesort.js

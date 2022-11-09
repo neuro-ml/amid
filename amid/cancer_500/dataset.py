@@ -15,9 +15,16 @@ from dicom_csv.exceptions import TagMissingError, TagTypeError, ConsistencyError
 from tqdm.auto import tqdm
 
 from .nodules import get_nodules
-from ..internals import checksum
+from ..internals import checksum, register
 
 
+@register(
+    body_region='Thorax',
+    modality='CT',
+    task='Lung Cancer Detection',
+    link='https://mosmed.ai/en/datasets/ct_lungcancer_500/',
+    raw_data_size='187G',
+)
 @checksum('cancer_500')
 class MoscowCancer500(Source):
     """
@@ -80,11 +87,13 @@ class MoscowCancer500(Source):
 
     def _series(i, _mapping, _root: Silent):
         series = [pydicom.dcmread(Path(_root, 'dicom', f)) for f in _mapping[i]]
-        series = order_series(series)
+        series = order_series(series, decreasing=False)
         return series
 
     def image(_series):
-        return stack_images(_series, -1).astype(np.int16)
+        x = stack_images(_series, -1).astype(np.int16)
+        # DICOM specifies that the first 2 axes are (y, x). let's fix that
+        return np.moveaxis(x, 0, 1)
 
     def study_uid(_series):
         return get_common_tag(_series, 'StudyInstanceUID')

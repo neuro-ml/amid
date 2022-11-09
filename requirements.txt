@@ -1,5 +1,5 @@
-connectome>=0.1.1,<0.2.0
-bev>=0.3.3,<0.4.0
+connectome>=0.1.1,<1.0.0
+bev>=0.4.0,<1.0.0
 numpy
 nibabel
 more-itertools
@@ -10,3 +10,4 @@ pylidc
 pyyaml
 requests
 mdai
+SimpleITK
