@@ -9,21 +9,24 @@ import pandas as pd
 import pydicom
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
-from .internals import checksum, register
-from dicom_csv import (expand_volumetric, drop_duplicated_instances, 
-                       drop_duplicated_slices, order_series, stack_images, 
-                       get_slice_locations, get_pixel_spacing, get_orientation_matrix, join_tree)
-
-@register(
-    body_region='Thorax',
-    license='CC BY 3.0',
-    link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
-    modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
-    raw_data_size='34G',
-    task='Tumor Segmentation',
+from dicom_csv import (
+    expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images,
+    get_slice_locations, get_pixel_spacing, get_orientation_matrix, join_tree
 )
-@checksum('nsclc')
+
+from .internals import checksum, register
+
+
+# @register(
+#     body_region='Thorax',
+#     license='CC BY 3.0',
+#     link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
+#     modality='CT',
+#     prep_data_size=None,  # TODO: should be measured...
+#     raw_data_size='34G',
+#     task='Tumor Segmentation',
+# )
+# @checksum('nsclc')
 class NSCLC(Source):
     """
 
@@ -68,17 +71,16 @@ class NSCLC(Source):
         'LUNG1-128', 'LUNG1-412',
         # image.shape != cancer.shape
         'LUNG1-194', 'LUNG1-095', 'LUNG1-085', 'LUNG1-014', 'LUNG1-021'
-        ]
-
+    ]
 
     @meta
     def ids(_joined):
         uid = _joined.groupby('SeriesInstanceUID').apply(len)
         return tuple(uid[uid > 1].keys())
-    
+
     def j(_joined):
         return _joined
-    
+
     @lru_cache(None)
     def _joined(_root: Silent):
         if os.path.exists(Path(_root) / "joined.csv"):
@@ -91,13 +93,13 @@ class NSCLC(Source):
     def _series(i, _root: Silent, _joined):
         sub = _joined[_joined.SeriesInstanceUID == i]
         series_files = sub['PathToFolder'] + os.path.sep + sub['FileName']
-        series_files = [Path(_root)  / 'NSCLC-Radiomics' / x for x in series_files]
+        series_files = [Path(_root) / 'NSCLC-Radiomics' / x for x in series_files]
         series = list(map(pydicom.dcmread, series_files))
-        #series = sorted(series, key=lambda x: x.InstanceNumber)
+        # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
 
-        if True: # drop_dupl_slices
+        if True:  # drop_dupl_slices
             _original_num_slices = len(series)
             series = drop_duplicated_slices(series)
             if len(series) < _original_num_slices:
@@ -143,7 +145,7 @@ class NSCLC(Source):
 
     def mask(_extract_segment_masks):
         return _extract_segment_masks.get('GTV-1', None)
-    
+
     def lung_left(_extract_segment_masks):
         return _extract_segment_masks.get('Lung-Left', None)
 
@@ -196,8 +198,8 @@ class NSCLC(Source):
         all_masks = {}
         for n, seg in enumerate(segments):
             mask_subslice = slice(len(slice_locations) * n, len(slice_locations) * (n + 1) if n + 1 != len(segments)
-                                  else None)
-            sub_mask = mask[:,:, mask_subslice]
+            else None)
+            sub_mask = mask[:, :, mask_subslice]
             sub_mask_slice_locations = mask_slice_locations[mask_subslice]
 
             assert sub_mask.shape == image.shape, i
