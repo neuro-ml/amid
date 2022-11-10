@@ -15,7 +15,7 @@ from .internals import checksum, register
 
 @register(
     body_region='Chest',
-    licence='',
+    license='',
     link=['https://github.com/BIMCV-CSUSP/BIMCV-COVID-19', 
           'https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0'],
     modality='CT',
