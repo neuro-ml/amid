@@ -19,16 +19,16 @@ from dicom_csv import (
 from .internals import checksum, register
 
 
-# @register(
-#     body_region='Thorax',
-#     license='CC BY-NC 4.0',
-#     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
-#     modality='CT',
-#     prep_data_size=None,  # TODO: should be measured...
-#     raw_data_size='12G',
-#     task='COVID-19 Segmentation',
-# )
-# @checksum('midrc')
+@register(
+    body_region='Thorax',
+    license='CC BY-NC 4.0',
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='12G',
+    task='COVID-19 Segmentation',
+)
+@checksum('midrc')
 class MIDRC(Source):
     """
 

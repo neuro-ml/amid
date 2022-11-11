@@ -17,16 +17,16 @@ from dicom_csv import (
 from .internals import checksum, register
 
 
-# @register(
-#     body_region='Thorax',
-#     license='CC BY 3.0',
-#     link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
-#     modality='CT',
-#     prep_data_size=None,  # TODO: should be measured...
-#     raw_data_size='34G',
-#     task='Tumor Segmentation',
-# )
-# @checksum('nsclc')
+@register(
+    body_region='Thorax',
+    license='CC BY 3.0',
+    link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='34G',
+    task='Tumor Segmentation',
+)
+@checksum('nsclc')
 class NSCLC(Source):
     """
 
@@ -44,7 +44,7 @@ class NSCLC(Source):
     -----
     Follow the download instructions at https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics
 
-    The folder with downloaded data should contain two pathes
+    The folder with downloaded data should contain two paths
 
     The folder should have this structure:
         <...>/<NSCLC-root>/NSCLC-Radiomics/LUNG1-XXX
@@ -66,6 +66,8 @@ class NSCLC(Source):
     """
 
     _root: str = None
+
+    # TODO: maybe move to filtering via `ignore_errors=True`?
     _INVALID_PATIENT_IDS = [
         # no dicom with cancer segmentation
         'LUNG1-128', 'LUNG1-412',
