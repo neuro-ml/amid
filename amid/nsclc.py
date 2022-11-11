@@ -107,11 +107,11 @@ class NSCLC(Source):
             if len(series) < _original_num_slices:
                 warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
-        series = order_series(series)
+        series = order_series(series, decreasing=False)
         return series
 
     def image(_series):
-        image = stack_images(_series, -1).astype(np.int16)
+        image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
     def _image_meta(_series):
@@ -142,7 +142,7 @@ class NSCLC(Source):
         pixel_spacing = get_pixel_spacing(_series).tolist()
         slice_locations = get_slice_locations(_series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
-        spacing = np.float32([pixel_spacing[0], pixel_spacing[1], -diffs[np.argsort(counts)[-1]]])
+        spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return spacing
 
     def mask(_extract_segment_masks):
@@ -190,10 +190,10 @@ class NSCLC(Source):
         assert len(dicom_pathes) == 1, annotation_path
         cancer_dicom = pydicom.dcmread(dicom_pathes[0])
         assert np.allclose(get_orientation_matrix(_series), get_cancer_orientation_matrix(cancer_dicom)), i
-        mask = np.moveaxis(cancer_dicom.pixel_array, 0, -1).astype(bool)
+        mask = np.moveaxis(cancer_dicom.pixel_array, 0, -1).astype(bool).transpose(1, 0, 2)
         mask_slice_locations = get_mask_slice_locations(cancer_dicom)
         slice_locations = get_slice_locations(_series)
-        image = stack_images(_series, -1)
+        image = stack_images(_series, -1).transpose(1, 0, 2)
         segments = [x.SegmentDescription for x in cancer_dicom.SegmentSequence]
         assert len(mask_slice_locations) == len(slice_locations) * len(segments), i
 
