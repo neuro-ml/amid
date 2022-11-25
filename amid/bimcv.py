@@ -58,7 +58,7 @@ def parse_dicom_tags(tags: tp.Dict[str, tp.Any]) -> tp.Optional[tp.Union[dict, l
     raw_data_size='859G',
     task='Segmentation',
 )
-@checksum('bimcv-covid19')
+@checksum('bimcv_covid19')
 class BIMCVCovid19(Source):
     _root: str
     """
@@ -178,7 +178,7 @@ class BIMCVCovid19(Source):
 #         return ids
     @meta
     def ids(_pos_root, _neg_root):
-        pos_ids = load(_pos_root / 'pos_good_ids.json')
+        pos_ids = load(_pos_root / 'pos_good_50_ids.json')
         neg_ids = load(_neg_root / 'neg_good_ids.json')
         return sorted(pos_ids + neg_ids)
     
