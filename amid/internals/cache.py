@@ -30,6 +30,7 @@ def default_serializer(serializers):
             DictSerializer(serializer=arrays),
             arrays,
             PickleSerializer(),
+            # CleanInvalid()
         )
     return serializers
 
