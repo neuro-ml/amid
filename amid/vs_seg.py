@@ -154,10 +154,10 @@ class VSSEG(Source):
         return _load_series(i, _root, 'T2 image')
 
     def image_t1(_series_t1):
-        return stack_images(_series_t1, -1).astype(np.int16).transpose(1, 0, 2)
+        return stack_images(_series_t1, -1).transpose(1, 0, 2)
 
     def image_t2(_series_t2):
-        return stack_images(_series_t2, -1).astype(np.int16).transpose(1, 0, 2)
+        return stack_images(_series_t2, -1).transpose(1, 0, 2)
 
     # ### metadata: ###
 

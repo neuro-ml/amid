@@ -87,19 +87,19 @@ class EGD(Source):
 
     def flair(_image_file):
         # intensities are not integer-valued in this dataset...
-        return np.float32(_image_file.get_fdata())
+        return np.asarray(_image_file.dataobj)
 
     def t1(i, _root: Silent):
         # intensities are not integer-valued in this dataset...
-        return np.float32(nb.load(Path(_root) / 'SUBJECTS' / i / 'T1.nii.gz').get_fdata())
+        return np.asarray(nb.load(Path(_root) / 'SUBJECTS' / i / 'T1.nii.gz').dataobj)
 
     def t1gd(i, _root: Silent):
         # intensities are not integer-valued in this dataset...
-        return np.float32(nb.load(Path(_root) / 'SUBJECTS' / i / 'T1GD.nii.gz').get_fdata())
+        return np.asarray(nb.load(Path(_root) / 'SUBJECTS' / i / 'T1GD.nii.gz').dataobj)
 
     def t2(i, _root: Silent):
         # intensities are not integer-valued in this dataset...
-        return np.float32(nb.load(Path(_root) / 'SUBJECTS' / i / 'T2.nii.gz').get_fdata())
+        return np.asarray(nb.load(Path(_root) / 'SUBJECTS' / i / 'T2.nii.gz').dataobj)
 
     def _metadata(i, _root: Silent):
         with open(Path(_root) / 'SUBJECTS' / i / 'metadata.json', 'r') as f:
