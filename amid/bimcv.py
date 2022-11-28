@@ -1,5 +1,6 @@
 import os
 import typing as tp
+from tqdm import tqdm
 import gzip
 import tarfile
 import json
@@ -48,17 +49,17 @@ def parse_dicom_tags(tags: tp.Dict[str, tp.Any]) -> tp.Optional[tp.Union[dict, l
     return result_
 
 
-@register(
-    body_region='Chest',
-    license='',
-    link=['https://github.com/BIMCV-CSUSP/BIMCV-COVID-19', 
-          'https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0'],
-    modality='CT',
-    prep_data_size='859G',
-    raw_data_size='859G',
-    task='Segmentation',
-)
-@checksum('bimcv_covid19')
+# @register(
+#     body_region='Chest',
+#     license='',
+#     link=['https://github.com/BIMCV-CSUSP/BIMCV-COVID-19', 
+#           'https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0'],
+#     modality='CT',
+#     prep_data_size='859G',
+#     raw_data_size='859G',
+#     task='Segmentation',
+# )
+# @checksum('bimcv_covid19_full')
 class BIMCVCovid19(Source):
     _root: str
     """
@@ -152,35 +153,35 @@ class BIMCVCovid19(Source):
     def _neg_sessions_tarfile_name(_neg_root):
         return _neg_root / "covid19_neg_sessions_tsv.tar.gz"
     
-#     @meta
-#     def ids(_pos_root, _neg_root):
-#         ids = []
-
-#         part_filenames = sorted(list(_pos_root.glob("*part*.tar.gz")) +\
-#                                 list(_neg_root.glob("*part*.tar.gz")))
-
-#         for part_filename in part_filenames:
-#             with tarfile.open(part_filename) as part_file:
-#                 members = part_file.getmembers()
-                
-#                 for member in members:
-#                     if not member.isfile():
-#                         continue
-
-#                     member_path = member.name
-
-#                     #only chest ct images ('.json' and '.nii.gz' files) 'don't remove png but it should not be in cases'
-#                     if not member_path.endswith(".nii.gz") or 'chest_ct' not in member_path:
-#                         continue
-
-#                     ids.append(Path(member_path).name[: -len(".nii.gz")])
-                    
-#         return ids
     @meta
     def ids(_pos_root, _neg_root):
-        pos_ids = load(_pos_root / 'pos_good_50_ids.json')
-        neg_ids = load(_neg_root / 'neg_good_ids.json')
-        return sorted(pos_ids + neg_ids)
+        ids = []
+
+        part_filenames = sorted(list(_pos_root.glob("*part*.tar.gz")) +\
+                                list(_neg_root.glob("*part*.tar.gz")))
+
+        for part_filename in part_filenames:
+            with tarfile.open(part_filename) as part_file:
+                members = part_file.getmembers()
+                
+                for member in members:
+                    if not member.isfile():
+                        continue
+
+                    member_path = member.name
+
+                    #only chest ct images ('.json' and '.nii.gz' files) 'don't remove png but it should not be in cases'
+                    if not member_path.endswith(".nii.gz") or 'chest_ct' not in member_path:
+                        continue
+
+                    ids.append(Path(member_path).name[: -len(".nii.gz")])
+                    
+        return ids
+    # @meta
+    # def ids(_pos_root, _neg_root):
+    #     pos_ids = load(_pos_root / 'pos_good_50_ids.json')
+    #     neg_ids = load(_neg_root / 'neg_good_ids.json')
+    #     return sorted(pos_ids + neg_ids)
     
     def session_id(key, _series2metainfo):
         return _series2metainfo[key]['session_id']
@@ -203,7 +204,7 @@ class BIMCVCovid19(Source):
         for is_positive, iter_root in zip([True, False],
                                     [_pos_root, _neg_root]):
             iter_part_filenames = list(iter_root.glob("*part*.tar.gz"))
-            for part_filename in iter_part_filenames:
+            for part_filename in tqdm(iter_part_filenames):
                 with tarfile.open(part_filename) as part_file:
                     members = part_file.getmembers()
 
