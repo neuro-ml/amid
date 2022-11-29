@@ -15,42 +15,6 @@ from deli import load
 from .internals import checksum, register
 
 
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nb.affines.voxel_sizes(affine)
-
-
-def parse_dicom_tags(tags: tp.Dict[str, tp.Any]) -> tp.Optional[tp.Union[dict, list]]:
-    if not isinstance(tags, dict):
-        return tags
-    if len(tags) == 1:
-        if "vr" in tags:
-            return None
-        return parse_dicom_tags(list(tags.values())[0])
-
-    if set(tags.keys()) == {"Value", "vr"}:
-        value = tags["Value"]
-        # vr = tags["vr"]
-        assert isinstance(value, list)
-        result = [parse_dicom_tags(v) for v in value]
-        if not result:
-            return None
-        if len(result) == 1:
-            return result[0]
-        return result
-    result_: tp.Dict[str, tp.Optional[tp.Union[dict, list]]] = {}
-    for tag, value in tags.items():
-        try:
-            keyword = pydicom.datadict.keyword_for_tag(tag)
-        except ValueError:
-            keyword = str(tag)
-        assert isinstance(result_, dict)
-        result_[keyword] = parse_dicom_tags(value)
-    return result_
-
-
 # @register(
 #     body_region='Chest',
 #     license='',
@@ -114,12 +78,15 @@ class BIMCVCovid19(Source):
     def _base(_root):
         return Path(_root)
 
+    # TODO: use glob and cache the result
     def _pos_root(_base):
         return _base / 'bimcv-covid19-positive' / 'original'
 
+    # TODO: use glob and cache the result
     def _neg_root(_base):
         return _base / 'bimcv-covid19-negative' / 'original'
 
+    # TODO: replace private fields that are used in only one place
     def _pos_subjects_tarfile_name(_pos_root):
         return _pos_root / "covid19_posi_subjects.tar.gz"
 
@@ -158,7 +125,7 @@ class BIMCVCovid19(Source):
 
     @meta
     def ids(_series2metainfo):
-        return sorted(_series2metainfo.keys())
+        return tuple(sorted(_series2metainfo))
 
     # @meta
     # def ids(_pos_root, _neg_root):
@@ -184,18 +151,14 @@ class BIMCVCovid19(Source):
         """
         series2metainfo = {}
 
-        for is_positive, iter_root in zip([True, False],
-                                          [_pos_root, _neg_root]):
-
-            iter_part_filenames = list(iter_root.glob("*part*.tar.gz"))
-            for part_filename in iter_part_filenames:
-
+        for is_positive, iter_root in zip([True, False], [_pos_root, _neg_root]):
+            for part_filename in iter_root.glob("*part*.tar.gz"):
                 text_descr_splits = load(str(part_filename) + '.tar-tvf.txt').split()
 
                 for el_desrc in text_descr_splits:
-
-                    # only chest ct images ('.json' and '.nii.gz' files) 'don't remove png but it should not be in cases'
-                    if 'chest_ct' not in el_desrc or not (el_desrc.endswith(".nii.gz") or el_desrc.endswith(".json")):
+                    # only chest ct images ('.json' and '.nii.gz' files)
+                    # 'don't remove png but it should not be in cases'
+                    if 'chest_ct' not in el_desrc or not el_desrc.endswith((".nii.gz", ".json")):
                         continue
 
                     image_path = None
@@ -203,19 +166,19 @@ class BIMCVCovid19(Source):
                     if el_desrc.endswith(".nii.gz"):
                         ext = ".nii.gz"
                         image_path = el_desrc
-                    elif el_desrc.endswith(".json"):
+                    # elif el_desrc.endswith(".json"):
+                    else:
+                        assert el_desrc.endswith(".json")
                         ext = ".json"
                         meta_path = el_desrc
-                    else:
-                        raise Exception("not expected suffix: not nii.gz or json")
 
                     # obtaining series id
                     series_id = str(Path(el_desrc).name)[: -len(ext)]
 
                     # if no such series yet
                     if series_id not in series2metainfo:
-
                         # obtain subject_id, session_id
+                        # TODO: make sure subject_id and session_id are defined here
                         for el in series_id.split('_'):
                             if 'sub' in el:
                                 subject_id = el
@@ -236,6 +199,7 @@ class BIMCVCovid19(Source):
 
                     if meta_path is not None:
                         series2metainfo[series_id]['meta_path'] = meta_path
+
         return series2metainfo
 
     def is_positive(key, _series2metainfo):
@@ -257,7 +221,7 @@ class BIMCVCovid19(Source):
     def affine(_nii_data):
         return _nii_data[1]
 
-    def tags(key, _series2metainfo):
+    def tags(key, _series2metainfo) -> dict:
         """
         dicom tags
         """
@@ -268,7 +232,9 @@ class BIMCVCovid19(Source):
 
                 return parse_dicom_tags(tags_dict)
 
+        # TODO: catch a more specific exception
         except Exception:
+            # TODO: return an empty dict
             return None
 
     @lru_cache(None)
@@ -285,6 +251,7 @@ class BIMCVCovid19(Source):
 
         return pd.concat([pos_dataframe, neg_dataframe], ignore_index=False)
 
+    # TODO: maybe return an empty dict in such cases
     def label_info(key, _series2metainfo, _labels_dataframe):
         """
         labelCUIS, Report, LocalizationsCUIS etc.
@@ -338,11 +305,10 @@ class BIMCVCovid19(Source):
             step_sessions_tarfile_name = _neg_sessions_tarfile_name
 
         with tarfile.open(step_sessions_tarfile_name) as all_sessions_file:
+            # TODO: potentially you may want to load this from the associated txt file
             ses_members = all_sessions_file.getmembers()
 
-            for ses_file in ses_members:
-                if subject_id in ses_file.name:
-                    break
+            ses_file, = filter(lambda x: subject_id in x.name, ses_members)
             sesions_dataframe = pd.read_csv(all_sessions_file.extractfile(ses_file), sep="\t", index_col='session_id')
 
         if session_id in sesions_dataframe.index:
@@ -350,8 +316,39 @@ class BIMCVCovid19(Source):
         else:
             return None
 
-    def cancer_mask(key):
-        return None
 
-    def covid_mask(key):
-        return None
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nb.affines.voxel_sizes(affine)
+
+
+def parse_dicom_tags(tags: tp.Dict[str, tp.Any]) -> tp.Optional[tp.Union[dict, list]]:
+    if not isinstance(tags, dict):
+        return tags
+    if len(tags) == 1:
+        if "vr" in tags:
+            return None
+        return parse_dicom_tags(list(tags.values())[0])
+
+    if set(tags.keys()) == {"Value", "vr"}:
+        value = tags["Value"]
+        # vr = tags["vr"]
+        assert isinstance(value, list)
+        result = [parse_dicom_tags(v) for v in value]
+        if not result:
+            return None
+        if len(result) == 1:
+            return result[0]
+        return result
+
+    result_: tp.Dict[str, tp.Optional[tp.Union[dict, list]]] = {}
+    for tag, value in tags.items():
+        try:
+            keyword = pydicom.datadict.keyword_for_tag(tag)
+        except ValueError:
+            keyword = str(tag)
+        assert isinstance(result_, dict)
+        result_[keyword] = parse_dicom_tags(value)
+    return result_
