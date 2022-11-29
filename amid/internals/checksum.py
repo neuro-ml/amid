@@ -17,6 +17,7 @@ from connectome.utils import node_to_dict, AntiSet
 from more_itertools import zip_equal
 from tarn import ReadError
 from tqdm.auto import tqdm
+from joblib import Parallel, delayed
 
 from .base import get_repo
 from .cache import default_serializer, CacheToDisk
@@ -51,34 +52,50 @@ def checksum(path: str, ignore=()):
                 self._version = version
                 super().__init__(*args)
 
-            def _populate(self, ignore_errors: bool = False, cache: bool = True):
+            def _populate(self, ignore_errors: bool = False, cache: bool = True, n_jobs: int = 1):
                 repository = get_repo()
-                ids = self.ids
-
-                fields = sorted(set(dir(self[0])) - {'ids', 'id', *ignore})
                 ds = self[0]
+                fields = sorted(set(dir(ds)) - {'ids', 'id', *ignore})
+
                 if cache:
-                    ds = ds >> CacheToDisk(AntiSet(('id',)), serializer=serializer)
+                    ds = ds >> CacheToDisk(AntiSet(('id', *ignore)), serializer=serializer)
+                ids = ds.ids
+
                 ds = ds >> CacheAndCheck(
                     fields, repository, path, fetch=True,
                     serializer=serializer, version=self._version, return_tree=True,
                 )
-                loader = ds._compile(fields)
+                _loader = ds._compile(fields)
+
+                def loader(i):
+                    try:
+                        return i, _loader(i)
+                    except Exception as e:
+                        if not ignore_errors:
+                            raise RuntimeError(f'Error while processing id {i}') from e
+
+                        return i, None
+
+                tqdm_kwargs = dict(desc='Populating the cache', total=len(ids))
+                if n_jobs == 1:
+                    bar = tqdm(map(loader, ids), **tqdm_kwargs)
+                else:
+                    bar = ProgressParallel(
+                        n_jobs=n_jobs, backend='threading', tqdm_kwargs=tqdm_kwargs
+                    )(map(delayed(loader), ids))
 
                 checksums = {}
                 successes = errors = 0
-                with tqdm(ids, 'Populating the cache') as bar:
-                    for i in bar:
-                        bar.set_postfix_str(i)
+                with bar:
+                    for i, trees in bar:
+                        postfix = i
+                        if len(postfix) > 30:
+                            postfix = postfix[:27] + '...'
+                        bar.set_postfix_str(postfix)
 
-                        try:
-                            trees = loader(i)
-                        except Exception as e:
-                            if ignore_errors:
-                                errors += 1
-                                continue
-
-                            raise RuntimeError(f'Error while processing id {i}') from e
+                        if trees is None:
+                            errors += 1
+                            continue
 
                         successes += 1
                         for name, tree in zip_equal(fields, trees):
@@ -229,3 +246,20 @@ class CheckSumEdge(StaticGraph, StaticHash):
                 tree[str(file.relative_to(base))] = self._storage.write(file)
 
             return tree
+
+
+# source: https://stackoverflow.com/a/61027781
+class ProgressParallel(Parallel):
+    def __init__(self, *args, tqdm_kwargs=None, **kwargs):
+        self._tqdm_kwargs = tqdm_kwargs or {}
+        super().__init__(*args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        with tqdm(**self._tqdm_kwargs) as self._pbar:
+            return super().__call__(*args, **kwargs)
+
+    def print_progress(self):
+        if 'total' not in self._tqdm_kwargs:
+            self._pbar.total = self.n_dispatched_tasks
+        self._pbar.n = self.n_completed_tasks
+        self._pbar.refresh()

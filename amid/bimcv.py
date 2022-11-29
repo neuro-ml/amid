@@ -1,22 +1,18 @@
-import os
-import typing as tp
-from tqdm import tqdm
 import gzip
-import tarfile
 import json
+import tarfile
+import typing as tp
 from functools import lru_cache
-
 from pathlib import Path
-import pydicom
-import nibabel as nb
 
+import nibabel as nb
 import numpy as np
 import pandas as pd
+import pydicom
 from connectome import Source, meta, Transform
+from deli import load
 
-from dpipe.io import load
-
-from amid.internals import checksum, register
+from .internals import checksum, register
 
 
 class SpacingFromAffine(Transform):
@@ -65,7 +61,7 @@ def parse_dicom_tags(tags: tp.Dict[str, tp.Any]) -> tp.Optional[tp.Union[dict, l
 #     raw_data_size='859G',
 #     task='Segmentation',
 # )
-# @checksum('bimcv_covid19_full')
+@checksum('bimcv_covid19')
 class BIMCVCovid19(Source):
     _root: str
     """
@@ -114,66 +110,68 @@ class BIMCVCovid19(Source):
             Jose María Salinas, 2021. BIMCV COVID-19-: a large annotated dataset of RX and CT images from COVID-19 patients.
             Available at: https://dx.doi.org/10.21227/m4j2-ap59.
     """
+
     def _base(_root):
         return Path(_root)
-    
+
     def _pos_root(_base):
         return _base / 'bimcv-covid19-positive' / 'original'
-    
+
     def _neg_root(_base):
         return _base / 'bimcv-covid19-negative' / 'original'
-    
+
     def _pos_subjects_tarfile_name(_pos_root):
         return _pos_root / "covid19_posi_subjects.tar.gz"
 
     def _pos_subjects_tarfile_subpath():
         return "covid19_posi/participants.tsv"
-    
+
     def _pos_sessions_tarfile_name(_pos_root):
         return _pos_root / "covid19_posi_sessions_tsv.tar.gz"
-    
+
     def _pos_tests_tarfile_name(_pos_root):
         return _pos_root / "covid19_posi_head.tar.gz"
 
     def _tests_tarfile_subpath():
         return "covid19_posi/derivatives/EHR/sil_reg_covid_posi.tsv"
-    
+
     def _pos_labels_tarfile_name(_pos_root):
         return _pos_root / "covid19_posi_head.tar.gz"
-    
+
     def _pos_labels_tarfile_subpath():
         return "covid19_posi/derivatives/labels/labels_covid_posi.tsv"
-    
+
     def _neg_labels_tarfile_name(_neg_root):
         return _neg_root / "covid19_neg_derivative.tar.gz"
-    
+
     def _neg_labels_tarfile_subpath():
         return "covid19_neg/derivatives/labels/Labels_covid_NEG_JAN21.tsv"
-    
+
     def _neg_subjects_tarfile_name(_neg_root):
         return _neg_root / "covid19_neg_metadata.tar.gz"
-        
+
     def _neg_subjects_tarfile_subpath():
         return "covid19_neg/participants.tsv"
-    
+
     def _neg_sessions_tarfile_name(_neg_root):
         return _neg_root / "covid19_neg_sessions_tsv.tar.gz"
-    
+
     @meta
     def ids(_series2metainfo):
         return sorted(_series2metainfo.keys())
+
     # @meta
     # def ids(_pos_root, _neg_root):
     #     pos_ids = load(_pos_root / 'pos_good_50_ids.json')
     #     neg_ids = load(_neg_root / 'neg_good_ids.json')
     #     return sorted(pos_ids + neg_ids)
-    
+
     def session_id(key, _series2metainfo):
         return _series2metainfo[key]['session_id']
-    
+
     def subject_id(key, _series2metainfo):
         return _series2metainfo[key]['subject_id']
-    
+
     @lru_cache(None)
     def _series2metainfo(_pos_root, _neg_root):
         """
@@ -187,19 +185,19 @@ class BIMCVCovid19(Source):
         series2metainfo = {}
 
         for is_positive, iter_root in zip([True, False],
-                                        [_pos_root, _neg_root]):
-                                
+                                          [_pos_root, _neg_root]):
+
             iter_part_filenames = list(iter_root.glob("*part*.tar.gz"))
             for part_filename in iter_part_filenames:
-                
+
                 text_descr_splits = load(str(part_filename) + '.tar-tvf.txt').split()
-                
+
                 for el_desrc in text_descr_splits:
-                        
-                    #only chest ct images ('.json' and '.nii.gz' files) 'don't remove png but it should not be in cases'
+
+                    # only chest ct images ('.json' and '.nii.gz' files) 'don't remove png but it should not be in cases'
                     if 'chest_ct' not in el_desrc or not (el_desrc.endswith(".nii.gz") or el_desrc.endswith(".json")):
                         continue
-                    
+
                     image_path = None
                     meta_path = None
                     if el_desrc.endswith(".nii.gz"):
@@ -211,13 +209,13 @@ class BIMCVCovid19(Source):
                     else:
                         raise Exception("not expected suffix: not nii.gz or json")
 
-                    #obtaining series id
+                    # obtaining series id
                     series_id = str(Path(el_desrc).name)[: -len(ext)]
 
                     # if no such series yet
                     if series_id not in series2metainfo:
 
-                        #obtain subject_id, session_id
+                        # obtain subject_id, session_id
                         for el in series_id.split('_'):
                             if 'sub' in el:
                                 subject_id = el
@@ -239,29 +237,26 @@ class BIMCVCovid19(Source):
                     if meta_path is not None:
                         series2metainfo[series_id]['meta_path'] = meta_path
         return series2metainfo
-    
+
     def is_positive(key, _series2metainfo):
 
         return _series2metainfo[key]['is_positive']
-    
-    def image(key, _series2metainfo):
+
+    # `extractfile` is the most expensive part here, so we better call it only once
+    def _nii_data(key, _series2metainfo):
         with tarfile.open(_series2metainfo[key]['archive_path']) as part_file:
             data = part_file.extractfile(_series2metainfo[key]['image_path'])
             with gzip.GzipFile(fileobj=data) as nii:
                 nii = nb.FileHolder(fileobj=nii)
                 image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+                return np.asarray(image.dataobj), image.affine
 
-                return np.asarray(image.dataobj)
-    
-    def affine(key, _series2metainfo):
-        with tarfile.open(_series2metainfo[key]['archive_path']) as part_file:
-            data = part_file.extractfile(_series2metainfo[key]['image_path'])
-            with gzip.GzipFile(fileobj=data) as nii:
-                nii = nb.FileHolder(fileobj=nii)
-                image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+    def image(_nii_data):
+        return _nii_data[0]
 
-                return image.affine
-    
+    def affine(_nii_data):
+        return _nii_data[1]
+
     def tags(key, _series2metainfo):
         """
         dicom tags
@@ -275,18 +270,17 @@ class BIMCVCovid19(Source):
 
         except Exception:
             return None
-        
-        
+
     @lru_cache(None)
     def _labels_dataframe(_pos_labels_tarfile_name, _pos_labels_tarfile_subpath,
                           _neg_labels_tarfile_name, _neg_labels_tarfile_subpath):
-    
+
         with tarfile.open(_pos_labels_tarfile_name) as file:
-            pos_dataframe = pd.read_csv(file.extractfile(_pos_labels_tarfile_subpath), 
+            pos_dataframe = pd.read_csv(file.extractfile(_pos_labels_tarfile_subpath),
                                         sep='\t', index_col='ReportID').iloc[:, 1:]
 
         with tarfile.open(_neg_labels_tarfile_name) as file:
-            neg_dataframe = pd.read_csv(file.extractfile(_neg_labels_tarfile_subpath), 
+            neg_dataframe = pd.read_csv(file.extractfile(_neg_labels_tarfile_subpath),
                                         sep='\t', index_col='ReportID').iloc[:, 1:]
 
         return pd.concat([pos_dataframe, neg_dataframe], ignore_index=False)
@@ -296,17 +290,17 @@ class BIMCVCovid19(Source):
         labelCUIS, Report, LocalizationsCUIS etc.
         """
         session_id = _series2metainfo[key]['session_id']
-        
+
         if session_id in _labels_dataframe.index:
             return dict(_labels_dataframe.loc[session_id])
         else:
             return None
-    
+
     @lru_cache(None)
     def _subject_df(_pos_subjects_tarfile_name, _pos_subjects_tarfile_subpath,
                     _neg_subjects_tarfile_name, _neg_subjects_tarfile_subpath):
         with tarfile.open(_pos_subjects_tarfile_name) as file:
-            pos_data = pd.read_csv(file.extractfile(_pos_subjects_tarfile_subpath), 
+            pos_data = pd.read_csv(file.extractfile(_pos_subjects_tarfile_subpath),
                                    sep='\t', index_col='participant')
             pos_data = pos_data[pos_data.index != 'derivatives']
 
@@ -328,10 +322,10 @@ class BIMCVCovid19(Source):
             return dict(_subject_df.loc[subject_id])
         else:
             return None
-    
-    def session_info(key, _series2metainfo, 
-                       _pos_sessions_tarfile_name,
-                      _neg_sessions_tarfile_name):
+
+    def session_info(key, _series2metainfo,
+                     _pos_sessions_tarfile_name,
+                     _neg_sessions_tarfile_name):
         """
         study_date,	medical_evaluation
         """
@@ -358,6 +352,6 @@ class BIMCVCovid19(Source):
 
     def cancer_mask(key):
         return None
-    
+
     def covid_mask(key):
         return None
