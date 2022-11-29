@@ -12,12 +12,18 @@ import nibabel as nb
 
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
+from connectome import Source, meta, Transform
 
 from dpipe.io import load
 
 from amid.internals import checksum, register
 
+
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nb.affines.voxel_sizes(affine)
 
 
 def parse_dicom_tags(tags: tp.Dict[str, tp.Any]) -> tp.Optional[tp.Union[dict, list]]:
@@ -154,29 +160,8 @@ class BIMCVCovid19(Source):
         return _neg_root / "covid19_neg_sessions_tsv.tar.gz"
     
     @meta
-    def ids(_pos_root, _neg_root):
-        ids = []
-
-        part_filenames = sorted(list(_pos_root.glob("*part*.tar.gz")) +\
-                                list(_neg_root.glob("*part*.tar.gz")))
-
-        for part_filename in part_filenames:
-            with tarfile.open(part_filename) as part_file:
-                members = part_file.getmembers()
-                
-                for member in members:
-                    if not member.isfile():
-                        continue
-
-                    member_path = member.name
-
-                    #only chest ct images ('.json' and '.nii.gz' files) 'don't remove png but it should not be in cases'
-                    if not member_path.endswith(".nii.gz") or 'chest_ct' not in member_path:
-                        continue
-
-                    ids.append(Path(member_path).name[: -len(".nii.gz")])
-                    
-        return ids
+    def ids(_series2metainfo):
+        return sorted(_series2metainfo.keys())
     # @meta
     # def ids(_pos_root, _neg_root):
     #     pos_ids = load(_pos_root / 'pos_good_50_ids.json')
@@ -202,59 +187,57 @@ class BIMCVCovid19(Source):
         series2metainfo = {}
 
         for is_positive, iter_root in zip([True, False],
-                                    [_pos_root, _neg_root]):
+                                        [_pos_root, _neg_root]):
+                                
             iter_part_filenames = list(iter_root.glob("*part*.tar.gz"))
-            for part_filename in tqdm(iter_part_filenames):
-                with tarfile.open(part_filename) as part_file:
-                    members = part_file.getmembers()
-
-                    for member in members:
-                        if not member.isfile():
-                            continue
-
-                        member_path = member.name
-
-                        if 'chest_ct' not in member_path or not (member_path.endswith(".nii.gz") or member_path.endswith(".json")):
-                            continue
-
-                        image_path = None
-                        meta_path = None
-                        if member_path.endswith(".nii.gz"):
-                            ext = ".nii.gz"
-                            image_path = member_path
-                        elif member_path.endswith(".json"):
-                            ext = ".json"
-                            meta_path = member_path
-                        else:
-                            raise Exception("not expected suffix: not nii.gz or json")
+            for part_filename in iter_part_filenames:
+                
+                text_descr_splits = load(str(part_filename) + '.tar-tvf.txt').split()
+                
+                for el_desrc in text_descr_splits:
                         
-                        #obtaining series id
-                        series_id = str(Path(member_path).name)[: -len(ext)]
-                        
-                        # if no such series yet
-                        if series_id not in series2metainfo:
+                    #only chest ct images ('.json' and '.nii.gz' files) 'don't remove png but it should not be in cases'
+                    if 'chest_ct' not in el_desrc or not (el_desrc.endswith(".nii.gz") or el_desrc.endswith(".json")):
+                        continue
+                    
+                    image_path = None
+                    meta_path = None
+                    if el_desrc.endswith(".nii.gz"):
+                        ext = ".nii.gz"
+                        image_path = el_desrc
+                    elif el_desrc.endswith(".json"):
+                        ext = ".json"
+                        meta_path = el_desrc
+                    else:
+                        raise Exception("not expected suffix: not nii.gz or json")
 
-                            #obtain subject_id, session_id
-                            for el in series_id.split('_'):
-                                if 'sub' in el:
-                                    subject_id = el
-                                elif 'ses' in el:
-                                    session_id = el
+                    #obtaining series id
+                    series_id = str(Path(el_desrc).name)[: -len(ext)]
 
-                            series2metainfo[series_id] = {
-                                'session_id': session_id,
-                                'subject_id': subject_id,
-                                'archive_path': part_filename,
-                                'is_positive': is_positive,
-                                'image_path': None,
-                                'meta_path': None,
-                            }
+                    # if no such series yet
+                    if series_id not in series2metainfo:
 
-                        if image_path is not None:
-                            series2metainfo[series_id]['image_path'] = image_path
+                        #obtain subject_id, session_id
+                        for el in series_id.split('_'):
+                            if 'sub' in el:
+                                subject_id = el
+                            elif 'ses' in el:
+                                session_id = el
 
-                        if meta_path is not None:
-                            series2metainfo[series_id]['meta_path'] = meta_path
+                        series2metainfo[series_id] = {
+                            'session_id': session_id,
+                            'subject_id': subject_id,
+                            'archive_path': part_filename,
+                            'is_positive': is_positive,
+                            'image_path': None,
+                            'meta_path': None,
+                        }
+
+                    if image_path is not None:
+                        series2metainfo[series_id]['image_path'] = image_path
+
+                    if meta_path is not None:
+                        series2metainfo[series_id]['meta_path'] = meta_path
         return series2metainfo
     
     def is_positive(key, _series2metainfo):
@@ -268,7 +251,7 @@ class BIMCVCovid19(Source):
                 nii = nb.FileHolder(fileobj=nii)
                 image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
 
-                return np.int16(image.get_fdata())
+                return np.asarray(image.dataobj)
     
     def affine(key, _series2metainfo):
         with tarfile.open(_series2metainfo[key]['archive_path']) as part_file:
@@ -278,15 +261,6 @@ class BIMCVCovid19(Source):
                 image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
 
                 return image.affine
-            
-    def spacing(key, _series2metainfo):
-        with tarfile.open(_series2metainfo[key]['archive_path']) as part_file:
-            data = part_file.extractfile(_series2metainfo[key]['image_path'])
-            with gzip.GzipFile(fileobj=data) as nii:
-                nii = nb.FileHolder(fileobj=nii)
-                image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-
-                return image.header.get_zooms()
     
     def tags(key, _series2metainfo):
         """
