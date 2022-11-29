@@ -25,7 +25,7 @@ from .internals import checksum, register
 #     raw_data_size='859G',
 #     task='Segmentation',
 # )
-@checksum('bimcv_covid19')
+# @checksum('bimcv_covid19')
 class BIMCVCovid19(Source):
     _root: str
     """
@@ -78,51 +78,6 @@ class BIMCVCovid19(Source):
     def _base(_root):
         return Path(_root)
 
-    # TODO: use glob and cache the result
-    def _pos_root(_base):
-        return _base / 'bimcv-covid19-positive' / 'original'
-
-    # TODO: use glob and cache the result
-    def _neg_root(_base):
-        return _base / 'bimcv-covid19-negative' / 'original'
-
-    # TODO: replace private fields that are used in only one place
-    def _pos_subjects_tarfile_name(_pos_root):
-        return _pos_root / "covid19_posi_subjects.tar.gz"
-
-    def _pos_subjects_tarfile_subpath():
-        return "covid19_posi/participants.tsv"
-
-    def _pos_sessions_tarfile_name(_pos_root):
-        return _pos_root / "covid19_posi_sessions_tsv.tar.gz"
-
-    def _pos_tests_tarfile_name(_pos_root):
-        return _pos_root / "covid19_posi_head.tar.gz"
-
-    def _tests_tarfile_subpath():
-        return "covid19_posi/derivatives/EHR/sil_reg_covid_posi.tsv"
-
-    def _pos_labels_tarfile_name(_pos_root):
-        return _pos_root / "covid19_posi_head.tar.gz"
-
-    def _pos_labels_tarfile_subpath():
-        return "covid19_posi/derivatives/labels/labels_covid_posi.tsv"
-
-    def _neg_labels_tarfile_name(_neg_root):
-        return _neg_root / "covid19_neg_derivative.tar.gz"
-
-    def _neg_labels_tarfile_subpath():
-        return "covid19_neg/derivatives/labels/Labels_covid_NEG_JAN21.tsv"
-
-    def _neg_subjects_tarfile_name(_neg_root):
-        return _neg_root / "covid19_neg_metadata.tar.gz"
-
-    def _neg_subjects_tarfile_subpath():
-        return "covid19_neg/participants.tsv"
-
-    def _neg_sessions_tarfile_name(_neg_root):
-        return _neg_root / "covid19_neg_sessions_tsv.tar.gz"
-
     @meta
     def ids(_series2metainfo):
         return tuple(sorted(_series2metainfo))
@@ -140,7 +95,7 @@ class BIMCVCovid19(Source):
         return _series2metainfo[key]['subject_id']
 
     @lru_cache(None)
-    def _series2metainfo(_pos_root, _neg_root):
+    def _series2metainfo(_base):
         """
         dict with series_id : {'session_id': ...
                                 'subject_id': ...,
@@ -150,55 +105,60 @@ class BIMCVCovid19(Source):
                                 'meta_path': ...}
         """
         series2metainfo = {}
+        for part_filename in _base.glob('**/*part*.tar.gz'):
+            if 'pos' in str(part_filename):
+                is_positive = True  
+            else:
+                assert 'neg' in str(part_filename)
+                is_positive = False
 
-        for is_positive, iter_root in zip([True, False], [_pos_root, _neg_root]):
-            for part_filename in iter_root.glob("*part*.tar.gz"):
-                text_descr_splits = load(str(part_filename) + '.tar-tvf.txt').split()
 
-                for el_desrc in text_descr_splits:
-                    # only chest ct images ('.json' and '.nii.gz' files)
-                    # 'don't remove png but it should not be in cases'
-                    if 'chest_ct' not in el_desrc or not el_desrc.endswith((".nii.gz", ".json")):
-                        continue
+            text_descr_splits = load(str(part_filename) + '.tar-tvf.txt').split()
 
-                    image_path = None
-                    meta_path = None
-                    if el_desrc.endswith(".nii.gz"):
-                        ext = ".nii.gz"
-                        image_path = el_desrc
-                    # elif el_desrc.endswith(".json"):
-                    else:
-                        assert el_desrc.endswith(".json")
-                        ext = ".json"
-                        meta_path = el_desrc
+            for el_desrc in text_descr_splits:
+                # only chest ct images ('.json' and '.nii.gz' files)
+                # 'don't remove png but it should not be in cases'
+                if 'chest_ct' not in el_desrc or not el_desrc.endswith(('.nii.gz', '.json')):
+                    continue
 
-                    # obtaining series id
-                    series_id = str(Path(el_desrc).name)[: -len(ext)]
+                image_path = None
+                meta_path = None
+                if el_desrc.endswith('.nii.gz'):
+                    ext = '.nii.gz'
+                    image_path = el_desrc
+                # elif el_desrc.endswith(".json"):
+                else:
+                    assert el_desrc.endswith('.json')
+                    ext = '.json'
+                    meta_path = el_desrc
 
-                    # if no such series yet
-                    if series_id not in series2metainfo:
-                        # obtain subject_id, session_id
-                        # TODO: make sure subject_id and session_id are defined here
-                        for el in series_id.split('_'):
-                            if 'sub' in el:
-                                subject_id = el
-                            elif 'ses' in el:
-                                session_id = el
+                # obtaining series id
+                series_id = str(Path(el_desrc).name)[: -len(ext)]
 
-                        series2metainfo[series_id] = {
-                            'session_id': session_id,
-                            'subject_id': subject_id,
-                            'archive_path': part_filename,
-                            'is_positive': is_positive,
-                            'image_path': None,
-                            'meta_path': None,
-                        }
+                # if no such series yet
+                if series_id not in series2metainfo:
+                    # obtain subject_id, session_id
+                    # TODO: make sure subject_id and session_id are defined here
+                    for el in series_id.split('_'):
+                        if 'sub' in el:
+                            subject_id = el
+                        elif 'ses' in el:
+                            session_id = el
 
-                    if image_path is not None:
-                        series2metainfo[series_id]['image_path'] = image_path
+                    series2metainfo[series_id] = {
+                        'session_id': session_id,
+                        'subject_id': subject_id,
+                        'archive_path': part_filename,
+                        'is_positive': is_positive,
+                        'image_path': None,
+                        'meta_path': None,
+                    }
 
-                    if meta_path is not None:
-                        series2metainfo[series_id]['meta_path'] = meta_path
+                if image_path is not None:
+                    series2metainfo[series_id]['image_path'] = image_path
+
+                if meta_path is not None:
+                    series2metainfo[series_id]['meta_path'] = meta_path
 
         return series2metainfo
 
@@ -232,27 +192,27 @@ class BIMCVCovid19(Source):
 
                 return parse_dicom_tags(tags_dict)
 
-        # TODO: catch a more specific exception
-        except Exception:
-            # TODO: return an empty dict
-            return None
+        except ValueError:
+            return {}
 
     @lru_cache(None)
-    def _labels_dataframe(_pos_labels_tarfile_name, _pos_labels_tarfile_subpath,
-                          _neg_labels_tarfile_name, _neg_labels_tarfile_subpath):
+    def _labels_dataframe(_root):
 
-        with tarfile.open(_pos_labels_tarfile_name) as file:
-            pos_dataframe = pd.read_csv(file.extractfile(_pos_labels_tarfile_subpath),
+        pos_labels_tarfile_name,  = _root.glob('**/covid19_posi_head.tar.gz')
+        pos_labels_tarfile_subpath = 'covid19_posi/derivatives/labels/labels_covid_posi.tsv'
+        with tarfile.open(pos_labels_tarfile_name) as file:
+            pos_dataframe = pd.read_csv(file.extractfile(pos_labels_tarfile_subpath),
                                         sep='\t', index_col='ReportID').iloc[:, 1:]
 
-        with tarfile.open(_neg_labels_tarfile_name) as file:
-            neg_dataframe = pd.read_csv(file.extractfile(_neg_labels_tarfile_subpath),
+        neg_labels_tarfile_name,  = _root.glob('**/covid19_neg_derivative.tar.gz')
+        neg_labels_tarfile_subpath = 'covid19_neg/derivatives/labels/Labels_covid_NEG_JAN21.tsv'
+        with tarfile.open(neg_labels_tarfile_name) as file:
+            neg_dataframe = pd.read_csv(file.extractfile(neg_labels_tarfile_subpath),
                                         sep='\t', index_col='ReportID').iloc[:, 1:]
 
         return pd.concat([pos_dataframe, neg_dataframe], ignore_index=False)
 
-    # TODO: maybe return an empty dict in such cases
-    def label_info(key, _series2metainfo, _labels_dataframe):
+    def label_info(key, _series2metainfo, _labels_dataframe) -> dict:
         """
         labelCUIS, Report, LocalizationsCUIS etc.
         """
@@ -261,18 +221,22 @@ class BIMCVCovid19(Source):
         if session_id in _labels_dataframe.index:
             return dict(_labels_dataframe.loc[session_id])
         else:
-            return None
+            return {}
 
     @lru_cache(None)
-    def _subject_df(_pos_subjects_tarfile_name, _pos_subjects_tarfile_subpath,
-                    _neg_subjects_tarfile_name, _neg_subjects_tarfile_subpath):
-        with tarfile.open(_pos_subjects_tarfile_name) as file:
-            pos_data = pd.read_csv(file.extractfile(_pos_subjects_tarfile_subpath),
+    def _subject_df(_root):
+
+        pos_subjects_tarfile_name,  = _root.glob('**/covid19_posi_subjects.tar.gz')
+        pos_subjects_tarfile_subpath = 'covid19_posi/participants.tsv'
+        with tarfile.open(pos_subjects_tarfile_name) as file:
+            pos_data = pd.read_csv(file.extractfile(pos_subjects_tarfile_subpath),
                                    sep='\t', index_col='participant')
             pos_data = pos_data[pos_data.index != 'derivatives']
 
-        with tarfile.open(_neg_subjects_tarfile_name) as file:
-            neg_data = pd.read_csv(file.extractfile(_neg_subjects_tarfile_subpath),
+        neg_subjects_tarfile_name, = _root.glob('**/covid19_neg_metadata.tar.gz')
+        neg_subjects_tarfile_subpath = 'covid19_neg/participants.tsv'
+        with tarfile.open(neg_subjects_tarfile_name) as file:
+            neg_data = pd.read_csv(file.extractfile(neg_subjects_tarfile_subpath),
                                    sep='\t', index_col='participant')
             neg_data = neg_data[neg_data.index != 'derivatives']
 
@@ -280,7 +244,7 @@ class BIMCVCovid19(Source):
 
         return data
 
-    def subject_info(key, _series2metainfo, _subject_df):
+    def subject_info(key, _series2metainfo, _subject_df) -> dict:
         """
         modality_dicom (=[CT]), body_parts(=[chest]), age, gender
         """
@@ -288,33 +252,36 @@ class BIMCVCovid19(Source):
         if subject_id in _subject_df.index:
             return dict(_subject_df.loc[subject_id])
         else:
-            return None
+            return {}
 
-    def session_info(key, _series2metainfo,
-                     _pos_sessions_tarfile_name,
-                     _neg_sessions_tarfile_name):
+    def session_info(key, _root, _series2metainfo) -> dict:
         """
         study_date,	medical_evaluation
         """
+        
         session_id = _series2metainfo[key]['session_id']
         subject_id = _series2metainfo[key]['subject_id']
 
+        pos_sessions_tarfile_name, = _root.glob('**/covid19_posi_sessions_tsv.tar.gz')
+        neg_sessions_tarfile_name, = _root.glob('**/covid19_neg_sessions_tsv.tar.gz')
+
         if _series2metainfo[key]['is_positive']:
-            step_sessions_tarfile_name = _pos_sessions_tarfile_name
+            step_sessions_tarfile_name = pos_sessions_tarfile_name
         else:
-            step_sessions_tarfile_name = _neg_sessions_tarfile_name
+            step_sessions_tarfile_name = neg_sessions_tarfile_name
 
         with tarfile.open(step_sessions_tarfile_name) as all_sessions_file:
             # TODO: potentially you may want to load this from the associated txt file
-            ses_members = all_sessions_file.getmembers()
 
-            ses_file, = filter(lambda x: subject_id in x.name, ses_members)
+            txt_splits = load(str(step_sessions_tarfile_name) + '.tar-tvf.txt').split()
+
+            ses_file, = filter(lambda x: subject_id in x, txt_splits)
             sesions_dataframe = pd.read_csv(all_sessions_file.extractfile(ses_file), sep="\t", index_col='session_id')
 
         if session_id in sesions_dataframe.index:
             return dict(sesions_dataframe.loc[session_id])
         else:
-            return None
+            return {}
 
 
 class SpacingFromAffine(Transform):
@@ -328,12 +295,12 @@ def parse_dicom_tags(tags: tp.Dict[str, tp.Any]) -> tp.Optional[tp.Union[dict, l
     if not isinstance(tags, dict):
         return tags
     if len(tags) == 1:
-        if "vr" in tags:
+        if 'vr' in tags:
             return None
         return parse_dicom_tags(list(tags.values())[0])
 
-    if set(tags.keys()) == {"Value", "vr"}:
-        value = tags["Value"]
+    if set(tags.keys()) == {'Value', 'vr'}:
+        value = tags['Value']
         # vr = tags["vr"]
         assert isinstance(value, list)
         result = [parse_dicom_tags(v) for v in value]
