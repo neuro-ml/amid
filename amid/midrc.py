@@ -19,16 +19,16 @@ from dicom_csv import (
 from .internals import checksum, register
 
 
-# @register(
-#     body_region='Thorax',
-#     license='CC BY-NC 4.0',
-#     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
-#     modality='CT',
-#     prep_data_size=None,  # TODO: should be measured...
-#     raw_data_size='12G',
-#     task='COVID-19 Segmentation',
-# )
-# @checksum('midrc')
+@register(
+    body_region='Thorax',
+    license='CC BY-NC 4.0',
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='12G',
+    task='COVID-19 Segmentation',
+)
+@checksum('midrc')
 class MIDRC(Source):
     """
 
@@ -109,11 +109,11 @@ class MIDRC(Source):
             if len(series) < _original_num_slices:
                 warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
-        series = order_series(series)
+        series = order_series(series, decreasing=False)
         return series
 
     def image(_series):
-        image = stack_images(_series, -1).astype(np.int16)
+        image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
     def _image_meta(_series):
@@ -144,7 +144,7 @@ class MIDRC(Source):
         pixel_spacing = get_pixel_spacing(_series).tolist()
         slice_locations = get_slice_locations(_series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
-        spacing = np.float32([pixel_spacing[0], pixel_spacing[1], -diffs[np.argsort(counts)[-1]]])
+        spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return spacing
 
     def labels(_study_id, _annotation):
@@ -164,6 +164,6 @@ class MIDRC(Source):
             if row['data'] is None:
                 warnings.warn(f'{label} annotations for series {i} contains None for slice {slice_index}.')
                 continue
-            ys, xs = np.array(row['data']['vertices']).T[::-1]
+            ys, xs = np.array(row['data']['vertices']).T
             mask[(pathology_index, *polygon(ys, xs, shape[:2]), slice_index)] = True
         return mask

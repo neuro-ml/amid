@@ -120,7 +120,7 @@ class MOOD(Source):
 
     def image(_file):
         with open_nii_gz_file(_file) as nii_image:
-            return np.float16(nii_image.get_fdata())
+            return np.asarray(nii_image.dataobj)
 
     def affine(_file):
         """ The 4x4 matrix that gives the image's spatial orientation. """
