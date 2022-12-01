@@ -68,32 +68,22 @@ def checksum(path: str, ignore=()):
                 )
                 _loader = ds._compile(fields)
 
-                def loader(i):
+                def loader(key):
                     try:
-                        return i, _loader(i)
+                        return key, _loader(key)
                     except Exception as e:
                         if not ignore_errors:
-                            raise RuntimeError(f'Error while processing id {i}') from e
+                            raise RuntimeError(f'Error while processing id {key}') from e
 
-                        return i, None
-
-                tqdm_kwargs = dict(desc='Populating the cache', total=len(ids))
-                if n_jobs == 1:
-                    bar = tqdm(map(loader, ids), **tqdm_kwargs)
-                else:
-                    bar = ProgressParallel(
-                        n_jobs=n_jobs, backend='threading', tqdm_kwargs=tqdm_kwargs
-                    )(map(delayed(loader), ids))
+                        return key, None
 
                 checksums = {}
                 successes = errors = 0
-                with bar:
-                    for i, trees in bar:
-                        postfix = i
-                        if len(postfix) > 30:
-                            postfix = postfix[:27] + '...'
-                        bar.set_postfix_str(postfix)
-
+                with ProgressParallel(
+                        n_jobs=n_jobs, backend='threading',
+                        tqdm_kwargs=dict(desc='Populating the cache', total=len(ids))
+                ) as bar:
+                    for i, trees in bar(map(delayed(loader), ids)):
                         if trees is None:
                             errors += 1
                             continue
@@ -264,3 +254,6 @@ class ProgressParallel(Parallel):
             self._pbar.total = self.n_dispatched_tasks
         self._pbar.n = self.n_completed_tasks
         self._pbar.refresh()
+
+    def __getattr__(self, name):
+        return getattr(self._pbar, name)
