@@ -52,17 +52,18 @@ def checksum(path: str, ignore=()):
                 self._version = version
                 super().__init__(*args)
 
-            def _populate(self, ignore_errors: bool = False, cache: bool = True, n_jobs: int = 1):
+            def _populate(self, *, ignore_errors: bool = False, cache: bool = True, fetch: bool = True,
+                          n_jobs: int = 1):
                 repository = get_repo()
                 ds = self[0]
                 fields = sorted(set(dir(ds)) - {'ids', 'id', *ignore})
 
                 if cache:
-                    ds = ds >> CacheToDisk(AntiSet(('id', *ignore)), serializer=serializer)
+                    ds = ds >> CacheToDisk(AntiSet(('id', *ignore)), serializer=serializer, fetch=fetch)
                 ids = ds.ids
 
                 ds = ds >> CacheAndCheck(
-                    fields, repository, path, fetch=True,
+                    fields, repository, path, fetch=fetch,
                     serializer=serializer, version=self._version, return_tree=True,
                 )
                 _loader = ds._compile(fields)
