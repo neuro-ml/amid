@@ -42,6 +42,13 @@ jobs:
           echo $MODULE_PARENT
           echo "MODULE_PARENT=$(echo $MODULE_PARENT)" >> $GITHUB_ENV
 
+      - name: Check code style
+        run: |
+          pip install -r requirements-linters.txt
+          flake8 .
+          isort --check .
+          black --check .
+
       - name: Create the storage
         run: |
           mkdir -p ~/.config/amid/ && cp tests/assets/.bev.yml ~/.config/amid/.bev.yml

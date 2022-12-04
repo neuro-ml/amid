@@ -1,0 +1,10 @@
+[flake8]
+# W503: line break before binary operator is actually considered best-practice
+# E203: spaces around complex variables in slices are pep-right
+# F401: unused imports in __init__.py-s
+# I251: allow absolute imports in upper files
+ignore = W503,E203
+per-file-ignores =
+    __init__.py:F401
+#    tests/*:I251
+max-line-length = 120
