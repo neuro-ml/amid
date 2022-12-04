@@ -12,3 +12,5 @@ pyyaml
 requests
 mdai
 SimpleITK
+joblib
+deli

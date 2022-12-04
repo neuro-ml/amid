@@ -24,12 +24,13 @@ class CacheToDisk(Disk):
 
 def default_serializer(serializers):
     if serializers is None:
-        arrays = NumpySerializer({np.bool_: 1, np.int_: 1})
+        arrays = NumpySerializer({np.bool_: 1, np.integer: 1})
         serializers = ChainSerializer(
             JsonSerializer(),
             DictSerializer(serializer=arrays),
             arrays,
             PickleSerializer(),
+            # CleanInvalid()
         )
     return serializers
 
