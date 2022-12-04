@@ -2,7 +2,6 @@ import contextlib
 import gzip
 import tarfile
 import typing as tp
-from contextlib import suppress
 from functools import lru_cache
 from pathlib import Path
 
@@ -14,20 +13,20 @@ from connectome import Source, meta, Transform
 from connectome.interface.nodes import Silent
 from deli import load
 
-from .internals import checksum
+from .internals import checksum, register
 
 
-# @register(
-#     body_region='Chest',
-#     license='',
-#     link=['https://github.com/BIMCV-CSUSP/BIMCV-COVID-19', 
-#           'https://ieee-dataport.org/open-access/bimcv-covid-19'
-#           '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0'],
-#     modality='CT',
-#     prep_data_size='859G',
-#     raw_data_size='859G',
-#     task='Segmentation',
-# )
+@register(
+    body_region='Chest',
+    license='',
+    link=['https://github.com/BIMCV-CSUSP/BIMCV-COVID-19',
+          'https://ieee-dataport.org/open-access/bimcv-covid-19'
+          '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0'],
+    modality='CT',
+    prep_data_size='859G',
+    raw_data_size='859G',
+    task='Segmentation',
+)
 @checksum('bimcv_covid19')
 class BIMCVCovid19(Source):
     """
@@ -110,12 +109,21 @@ class BIMCVCovid19(Source):
     def image(_meta, _current_root):
         with unpack(_current_root, _meta['archive_path'], _meta['image_path']) as (file, unpacked):
             if unpacked:
-                return np.asarray(nb.load(file).dataobj)
+                array = np.asarray(nb.load(file).dataobj)
+            else:
+                with gzip.GzipFile(fileobj=file) as nii:
+                    nii = nb.FileHolder(fileobj=nii)
+                    image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+                    array = np.asarray(image.dataobj)
 
-            with gzip.GzipFile(fileobj=file) as nii:
-                nii = nb.FileHolder(fileobj=nii)
-                image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                return np.asarray(image.dataobj)
+            integer = np.int16(array)
+            if (array == integer).all():
+                return integer
+
+            # there are about 30 images that will visit this branch, so it's ok
+            integer = np.int32(array)
+            assert (array == integer).all(), np.abs(array - integer.astype(float)).max()
+            return integer
 
     def affine(_meta, _current_root):
         with unpack(_current_root, _meta['archive_path'], _meta['image_path']) as (file, unpacked):
@@ -307,17 +315,18 @@ def unpack(root: Path, archive: str, relative: str):
 
 
 def find_subroot(path: Path, name: str):
-    folders = []
-    for child in path.iterdir():
-        if child.name.startswith(name) and child.name.endswith('.tar-tvf.txt'):
-            return path
+    """ Finds a subfolder but in a bfs manner instead of dfs """
+    folders = [path]
 
-        if child.is_dir():
-            folders.append(child)
+    while folders:
+        current = folders.pop(0)
 
-    for folder in folders:
-        with suppress(FileNotFoundError):
-            return find_subroot(folder, name)
+        for child in current.iterdir():
+            if child.name.startswith(name) and child.name.endswith('.tar-tvf.txt'):
+                return current
+
+            if child.is_dir():
+                folders.append(child)
 
     raise FileNotFoundError(
         'No "*.tar-tvf.txt" files have been found. They are needed to gather the datasets structure.'

@@ -83,7 +83,7 @@ def checksum(path: str, ignore=()):
                         n_jobs=n_jobs, backend='threading',
                         tqdm_kwargs=dict(desc='Populating the cache', total=len(ids))
                 ) as bar:
-                    for i, trees in bar(map(delayed(loader), ids)):
+                    for i, trees in tqdm(bar(map(delayed(loader), ids)), 'Saving the checksums'):
                         if trees is None:
                             errors += 1
                             continue
