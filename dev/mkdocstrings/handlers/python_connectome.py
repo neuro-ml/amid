@@ -1,12 +1,12 @@
 from collections import OrderedDict
 
-from griffe.dataclasses import Alias, Class, Function, Parameters, Parameter, ParameterKind
+from griffe.dataclasses import Alias, Class, Function, Parameter, ParameterKind, Parameters
 from mkdocstrings_handlers.python.handler import PythonHandler
 
 
 class PythonConnectomeHandler(PythonHandler):
     def get_templates_dir(self, handler: str):
-        return super().get_templates_dir("python")
+        return super().get_templates_dir('python')
 
     def collect(self, identifier: str, config: dict):
         result = super().collect(identifier, config)
@@ -25,9 +25,9 @@ class PythonConnectomeHandler(PythonHandler):
                 if k == 'ids':
                     v.parameters = Parameters()
                 else:
-                    v.parameters = Parameters(Parameter(
-                        'id', annotation='str', kind=ParameterKind.positional_or_keyword
-                    ))
+                    v.parameters = Parameters(
+                        Parameter('id', annotation='str', kind=ParameterKind.positional_or_keyword)
+                    )
 
                 members[k] = v
 
@@ -37,7 +37,7 @@ class PythonConnectomeHandler(PythonHandler):
 
 def get_handler(theme: str, custom_templates=None, config_file_path=None, paths=None, **config):
     return PythonConnectomeHandler(
-        handler="python_connectome",
+        handler='python_connectome',
         theme=theme,
         custom_templates=custom_templates,
         config_file_path=config_file_path,

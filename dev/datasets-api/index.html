@@ -640,62 +640,12 @@ and negative partion
               <em>required</em>
           </td>
         </tr>
-        <tr>
-          <td><code>Notes</code></td>
-          <td>
-          </td>
-          <td></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>Dataset</code></td>
-          <td>
-          </td>
-          <td></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>Each</code></td>
-          <td>
-          </td>
-          <td></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>subject</code></td>
-          <td>
-          </td>
-          <td></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>sessions</code></td>
-          <td>
-          </td>
-          <td></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>and</code></td>
-          <td>
-          </td>
-          <td></td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
     </tbody>
   </table>
+      <h5 id="amid.bimcv.BIMCVCovid19--notes">Notes</h5>
+<p>Dataset has 2 partitions: bimcv-covid19-positive and bimcv-covid19-positive
+Each partition is spread over the 81 different tgz archives. The archives includes metadata about
+subject, sessions, and labels. Also there are some tgz archives for nifty images in nii.gz format</p>
 
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
@@ -717,7 +667,7 @@ and negative partion
         Bustos, Miguel Cazorla, Joaquin Galant, Xavier Barber, Domingo Orozco-Beltrán, Francisco
         Garcia, Marisa Caparrós, Germán González, and Jose María Salinas. BIMCV COVID-19+: a
         large annotated dataset of RX and CT images from COVID-19 patients. arXiv:2006.01174, 2020.
-.. [2] Maria de la Iglesia Vayá, Jose Manuel Saborit-Torres, Joaquim Angel Montell Serrano, 
+.. [2] Maria de la Iglesia Vayá, Jose Manuel Saborit-Torres, Joaquim Angel Montell Serrano,
         Elena Oliver-Garcia, Antonio Pertusa, Aurelia Bustos, Miguel Cazorla, Joaquin Galant,
         Xavier Barber, Domingo Orozco-Beltrán, Francisco García-García, Marisa Caparrós, Germán González,
         Jose María Salinas, 2021. BIMCV COVID-19-: a large annotated dataset of RX and CT images from COVID-19
@@ -2400,8 +2350,8 @@ Medical Image Analysis 82 (2022): 102616.</p>
   <div class="doc doc-contents first">
 
   
-      <p>The (L)ung (I)mage (D)atabase (C)onsortium image collection (LIDC-IDRI) [1]_ 
-consists of diagnostic and lung cancer screening thoracic computed tomography (CT) scans 
+      <p>The (L)ung (I)mage (D)atabase (C)onsortium image collection (LIDC-IDRI) [1]_
+consists of diagnostic and lung cancer screening thoracic computed tomography (CT) scans
 with marked-up annotated lesions and lung nodules segmentation task.
 Scans contains multiple expert annotations.</p>
 <p>Number of CT scans: 1018.</p>
@@ -2442,7 +2392,7 @@ If not provided, the cache is assumed to be already populated.</p></td>
   </table>
       <h5 id="amid.lidc.dataset.LIDC--notes">Notes</h5>
 <p>Follow the download instructions at https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254.</p>
-<p>Then, the folder with raw downloaded data should contain folder <code>LIDC-IDRI</code>, 
+<p>Then, the folder with raw downloaded data should contain folder <code>LIDC-IDRI</code>,
 which contains folders <code>LIDC-IDRI-*</code>.</p>
 
 <p><strong>Examples:</strong></p>
@@ -2456,8 +2406,8 @@ which contains folders <code>LIDC-IDRI-*</code>.</p>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 194)</span>
 </code></pre></div>
       <h5 id="amid.lidc.dataset.LIDC--references">References</h5>
-<p>.. [1] Armato III, McLennan, et al. "The lung image database consortium (lidc) and image database 
-resource initiative (idri): a completed reference database of lung nodules on ct scans." 
+<p>.. [1] Armato III, McLennan, et al. "The lung image database consortium (lidc) and image database
+resource initiative (idri): a completed reference database of lung nodules on ct scans."
 Medical physics 38(2) (2011): 915–931.
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
 
@@ -2651,7 +2601,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
 
   <div class="doc doc-contents ">
   
-      <p>Indicates whether or not this PatientID was tagged as 
+      <p>Indicates whether or not this PatientID was tagged as
 part of the initial 399 release.</p>
 
   </div>
@@ -3009,9 +2959,7 @@ and a folder with the test data
   <div class="doc doc-contents first">
 
   
-      <div class="highlight"><pre><span></span><code>
-</code></pre></div>
-<p>LiverMedseg is a public CT segmentation dataset with 50 annotated images.
+      <p>LiverMedseg is a public CT segmentation dataset with 50 annotated images.
 Case collection of 50 livers with their segments.
 Images obtained from Decathlon Medical Segmentation competition</p>
 
@@ -3772,7 +3720,7 @@ If not provided, the cache is assumed to be already populated.</p></td>
 
   <div class="doc doc-contents ">
   
-      <p>int16 mask. 
+      <p>int16 mask.
 0 - normal, 1 - ground-glass opacities (матовое стекло), 2 - consolidation (консолидация).</p>
 
   </div>
