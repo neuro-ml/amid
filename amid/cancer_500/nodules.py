@@ -40,7 +40,7 @@ def get_nodule_annotations(nodule: dict, series_number: int, slice_locations: li
             continue
 
         if 'series_no' in ann and str(series_number) not in ann['series_no']:
-            warnings.warn("Cannot check that annotation belongs to this particular series.")
+            warnings.warn('Cannot check that annotation belongs to this particular series.')
             continue
 
         try:
@@ -110,7 +110,7 @@ def parse_review(ann: dict):
     elif 'rejected' in decisions:
         return Review.Rejected
     else:
-        assert False, decisions
+        raise ValueError(decisions)
 
 
 def parse_comment(ann: dict):

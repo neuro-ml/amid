@@ -3,8 +3,9 @@
 # E203: spaces around complex variables in slices are pep-right
 # F401: unused imports in __init__.py-s
 # I251: allow absolute imports in upper files
-ignore = W503,E203
+# B019: @lru_cache for static methods is fine
+# C408: for identifier-like fields dict(x=y) is just more concise
+ignore = W503,E203,B019,C408
 per-file-ignores =
     __init__.py:F401
-#    tests/*:I251
 max-line-length = 120

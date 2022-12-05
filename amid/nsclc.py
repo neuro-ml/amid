@@ -97,11 +97,11 @@ class NSCLC(Source):
 
     @lru_cache(None)
     def _joined(_root: Silent):
-        if os.path.exists(Path(_root) / "joined.csv"):
-            return pd.read_csv(Path(_root) / "joined.csv")
+        if os.path.exists(Path(_root) / 'joined.csv'):
+            return pd.read_csv(Path(_root) / 'joined.csv')
         joined = join_tree(Path(_root) / 'NSCLC-Radiomics', verbose=1)
         joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
-        joined.to_csv(Path(_root) / "joined.csv")
+        joined.to_csv(Path(_root) / 'joined.csv')
         return joined
 
     def _series(i, _root: Silent, _joined):
@@ -129,8 +129,8 @@ class NSCLC(Source):
     def _image_meta(_series):
         metas = [list(dict(s).values()) for s in _series]
         result = {}
-        for meta in metas:
-            for element in meta:
+        for meta_ in metas:
+            for element in meta_:
                 if element.keyword in ['PixelData']:
                     continue
                 if element.keyword not in result:
@@ -223,7 +223,7 @@ class NSCLC(Source):
             elif np.allclose(sub_mask_slice_locations, slice_locations[::-1], atol=0.01):
                 sub_mask = sub_mask[..., ::-1]
             else:
-                assert False, i
+                raise AssertionError(i)
             all_masks[seg] = sub_mask
         return all_masks
 

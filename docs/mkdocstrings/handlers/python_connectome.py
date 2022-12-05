@@ -6,7 +6,7 @@ from mkdocstrings_handlers.python.handler import PythonHandler
 
 class PythonConnectomeHandler(PythonHandler):
     def get_templates_dir(self, handler: str):
-        return super().get_templates_dir("python")
+        return super().get_templates_dir('python')
 
     def collect(self, identifier: str, config: dict):
         result = super().collect(identifier, config)
@@ -37,7 +37,7 @@ class PythonConnectomeHandler(PythonHandler):
 
 def get_handler(theme: str, custom_templates=None, config_file_path=None, paths=None, **config):
     return PythonConnectomeHandler(
-        handler="python_connectome",
+        handler='python_connectome',
         theme=theme,
         custom_templates=custom_templates,
         config_file_path=config_file_path,

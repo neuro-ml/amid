@@ -192,10 +192,10 @@ class VSSEG(Source):
         return get_slice_locations(_series_t2)
 
     def voxel_spacing_t1(pixel_spacing_t1: Output, slice_locations_t1: Output):
-        return tuple([*pixel_spacing_t1, stats.mode(np.diff(slice_locations_t1))[0].item()])
+        return *pixel_spacing_t1, stats.mode(np.diff(slice_locations_t1))[0].item()
 
     def voxel_spacing_t2(pixel_spacing_t2: Output, slice_locations_t2: Output):
-        return tuple([*pixel_spacing_t2, stats.mode(np.diff(slice_locations_t2))[0].item()])
+        return *pixel_spacing_t2, stats.mode(np.diff(slice_locations_t2))[0].item()
 
     def orientation_matrix_t1(_series_t1):
         return get_orientation_matrix(_series_t1)

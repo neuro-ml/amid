@@ -91,15 +91,15 @@ class MIDRC(Source):
 
     @lru_cache(None)
     def _joined(_root: Silent):
-        if os.path.exists(Path(_root) / "joined.csv"):
-            return pd.read_csv(Path(_root) / "joined.csv")
+        if os.path.exists(Path(_root) / 'joined.csv'):
+            return pd.read_csv(Path(_root) / 'joined.csv')
         joined = join_tree(Path(_root) / 'MIDRC-RICORD-1A', verbose=1)
         joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
-        joined.to_csv(Path(_root) / "joined.csv")
+        joined.to_csv(Path(_root) / 'joined.csv')
         return joined
 
     def _annotation(_root: Silent):
-        json_path = "MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json"
+        json_path = 'MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json'
         return mdai.common_utils.json_to_dataframe(Path(_root) / json_path)['annotations']
 
     def _series(i, _root: Silent, _joined):
@@ -127,8 +127,8 @@ class MIDRC(Source):
     def _image_meta(_series):
         metas = [list(dict(s).values()) for s in _series]
         result = {}
-        for meta in metas:
-            for element in meta:
+        for meta_ in metas:
+            for element in meta_:
                 if element.keyword in ['PixelData']:
                     continue
                 if element.keyword not in result:
@@ -156,11 +156,11 @@ class MIDRC(Source):
         return spacing
 
     def labels(_study_id, _annotation):
-        sub = _annotation[(_annotation.scope == "STUDY") & (_annotation.StudyInstanceUID == _study_id)]
+        sub = _annotation[(_annotation.scope == 'STUDY') & (_annotation.StudyInstanceUID == _study_id)]
         return tuple(sub['labelName'].unique())
 
     def mask(i, _image_meta, _annotation, _pathologies):
-        sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == "INSTANCE")]
+        sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == 'INSTANCE')]
         shape = (_image_meta['Rows'], _image_meta['Columns'], len(_image_meta['SOPInstanceUID']))
         mask = np.zeros((len(_pathologies), *shape), dtype=bool)
         if len(sub) == 0:

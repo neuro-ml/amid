@@ -214,7 +214,7 @@ class BIMCVCovid19(Source):
         (ses_file,) = filter(lambda x: subject_id in x, txt_splits)
 
         with unpack(_current_root, step_sessions_tarfile_name, ses_file) as (file, _):
-            sesions_dataframe = pd.read_csv(file, sep="\t", index_col='session_id')
+            sesions_dataframe = pd.read_csv(file, sep='\t', index_col='session_id')
 
         if session_id in sesions_dataframe.index:
             return dict(sesions_dataframe.loc[session_id])

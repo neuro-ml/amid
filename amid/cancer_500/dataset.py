@@ -125,7 +125,7 @@ class MoscowCancer500(Source):
         try:
             instance_numbers = [int(get_tag(i, 'InstanceNumber')) for i in _series]
             if not _is_monotonic(instance_numbers):
-                warnings.warn(f'Ordered series has non-monotonic instance numbers.')
+                warnings.warn('Ordered series has non-monotonic instance numbers.')
 
             return instance_numbers
         except TagMissingError:

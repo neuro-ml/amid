@@ -4,12 +4,14 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 
-classifiers = '''Development Status :: 3 - Alpha
-Programming Language :: Python :: 3.6
-Programming Language :: Python :: 3.7
-Programming Language :: Python :: 3.8
-Programming Language :: Python :: 3.9
-Programming Language :: Python :: 3.10'''
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+]
 
 name = 'amid'
 root = Path(__file__).resolve().parent
@@ -34,7 +36,7 @@ setup(
         'bev_plugin': ['amid = amid.internals.hooks'],
         'console_scripts': ['amid = amid.internals.cli:main'],
     },
-    classifiers=classifiers.splitlines(),
+    classifiers=classifiers,
     install_requires=requirements,
     python_requires='>=3.6',
 )
