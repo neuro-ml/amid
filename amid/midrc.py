@@ -1,10 +1,9 @@
 import os.path
-from typing import List
 import warnings
 from functools import lru_cache
 from pathlib import Path
+from typing import List
 
-from skimage.draw import polygon
 import mdai
 import numpy as np
 import pandas as pd
@@ -12,9 +11,16 @@ import pydicom
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
-    expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images,
-    get_slice_locations, get_pixel_spacing, join_tree
+    drop_duplicated_instances,
+    drop_duplicated_slices,
+    expand_volumetric,
+    get_pixel_spacing,
+    get_slice_locations,
+    join_tree,
+    order_series,
+    stack_images,
 )
+from skimage.draw import polygon
 
 from .internals import checksum, register
 
@@ -70,12 +76,14 @@ class MIDRC(Source):
     """
 
     _root: str = None
-    _pathologies: List[str] = ['Infectious opacity',
-                               'Infectious TIB/micronodules',
-                               'Atelectasis',
-                               'Other noninfectious opacity',
-                               'Noninfectious nodule/mass',
-                               'Infectious cavity']
+    _pathologies: List[str] = [
+        'Infectious opacity',
+        'Infectious TIB/micronodules',
+        'Atelectasis',
+        'Other noninfectious opacity',
+        'Noninfectious nodule/mass',
+        'Infectious cavity',
+    ]
 
     @meta
     def ids(_joined):
@@ -148,8 +156,7 @@ class MIDRC(Source):
         return spacing
 
     def labels(_study_id, _annotation):
-        sub = _annotation[(_annotation.scope == "STUDY")
-                          & (_annotation.StudyInstanceUID == _study_id)]
+        sub = _annotation[(_annotation.scope == "STUDY") & (_annotation.StudyInstanceUID == _study_id)]
         return tuple(sub['labelName'].unique())
 
     def mask(i, _image_meta, _annotation, _pathologies):

@@ -9,7 +9,7 @@ import nibabel as nb
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, meta, Transform
+from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
@@ -19,9 +19,11 @@ from .internals import checksum, register
 @register(
     body_region='Chest',
     license='',
-    link=['https://github.com/BIMCV-CSUSP/BIMCV-COVID-19',
-          'https://ieee-dataport.org/open-access/bimcv-covid-19'
-          '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0'],
+    link=[
+        'https://github.com/BIMCV-CSUSP/BIMCV-COVID-19',
+        'https://ieee-dataport.org/open-access/bimcv-covid-19'
+        '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
+    ],
     modality='CT',
     prep_data_size='859G',
     raw_data_size='859G',
@@ -36,18 +38,18 @@ class BIMCVCovid19(Source):
     (https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0)
 
     PCR tests are not used
-    
+
     Parameters
     ----------
     root : str, Path
         path to the folder containing the downloaded and parsed data.
-        
+
     Notes
     -----
     Dataset has 2 partitions: bimcv-covid19-positive and bimcv-covid19-positive
     Each partition is spread over the 81 different tgz archives. The archives includes metadata about
     subject, sessions, and labels. Also there are some tgz archives for nifty images in nii.gz format
-    
+
     Examples
     --------
     >>> # Place the downloaded archives in any folder and pass the path to the constructor:
@@ -70,13 +72,14 @@ class BIMCVCovid19(Source):
             Bustos, Miguel Cazorla, Joaquin Galant, Xavier Barber, Domingo Orozco-Beltrán, Francisco
             Garcia, Marisa Caparrós, Germán González, and Jose María Salinas. BIMCV COVID-19+: a
             large annotated dataset of RX and CT images from COVID-19 patients. arXiv:2006.01174, 2020.
-    .. [2] Maria de la Iglesia Vayá, Jose Manuel Saborit-Torres, Joaquim Angel Montell Serrano, 
+    .. [2] Maria de la Iglesia Vayá, Jose Manuel Saborit-Torres, Joaquim Angel Montell Serrano,
             Elena Oliver-Garcia, Antonio Pertusa, Aurelia Bustos, Miguel Cazorla, Joaquin Galant,
             Xavier Barber, Domingo Orozco-Beltrán, Francisco García-García, Marisa Caparrós, Germán González,
             Jose María Salinas, 2021. BIMCV COVID-19-: a large annotated dataset of RX and CT images from COVID-19
             patients.
             Available at: https://dx.doi.org/10.21227/m4j2-ap59.
     """
+
     _root: str
 
     def _base(_root: Silent):
@@ -151,14 +154,12 @@ class BIMCVCovid19(Source):
     @lru_cache(None)
     def _labels_dataframe(_positive_root, _negative_root):
         with unpack(
-                _positive_root, 'covid19_posi_head.tar.gz',
-                'covid19_posi/derivatives/labels/labels_covid_posi.tsv'
+            _positive_root, 'covid19_posi_head.tar.gz', 'covid19_posi/derivatives/labels/labels_covid_posi.tsv'
         ) as (file, _):
             pos_dataframe = pd.read_csv(file, sep='\t', index_col='ReportID').iloc[:, 1:]
 
         with unpack(
-                _negative_root, 'covid19_neg_derivative.tar.gz',
-                'covid19_neg/derivatives/labels/Labels_covid_NEG_JAN21.tsv'
+            _negative_root, 'covid19_neg_derivative.tar.gz', 'covid19_neg/derivatives/labels/Labels_covid_NEG_JAN21.tsv'
         ) as (file, _):
             neg_dataframe = pd.read_csv(file, sep='\t', index_col='ReportID').iloc[:, 1:]
 
@@ -177,17 +178,11 @@ class BIMCVCovid19(Source):
 
     @lru_cache(None)
     def _subject_df(_positive_root, _negative_root):
-        with unpack(
-                _positive_root, 'covid19_posi_subjects.tar.gz',
-                'covid19_posi/participants.tsv'
-        ) as (file, _):
+        with unpack(_positive_root, 'covid19_posi_subjects.tar.gz', 'covid19_posi/participants.tsv') as (file, _):
             pos_data = pd.read_csv(file, sep='\t', index_col='participant')
             pos_data = pos_data[pos_data.index != 'derivatives']
 
-        with unpack(
-                _negative_root, 'covid19_neg_metadata.tar.gz',
-                'covid19_neg/participants.tsv'
-        ) as (file, _):
+        with unpack(_negative_root, 'covid19_neg_metadata.tar.gz', 'covid19_neg/participants.tsv') as (file, _):
             neg_data = pd.read_csv(file, sep='\t', index_col='participant')
             neg_data = neg_data[neg_data.index != 'derivatives']
 
@@ -216,7 +211,7 @@ class BIMCVCovid19(Source):
             step_sessions_tarfile_name = 'covid19_neg_sessions_tsv.tar.gz'
 
         txt_splits = load(_current_root / (step_sessions_tarfile_name + '.tar-tvf.txt')).split()
-        ses_file, = filter(lambda x: subject_id in x, txt_splits)
+        (ses_file,) = filter(lambda x: subject_id in x, txt_splits)
 
         with unpack(_current_root, step_sessions_tarfile_name, ses_file) as (file, _):
             sesions_dataframe = pd.read_csv(file, sep="\t", index_col='session_id')
@@ -242,7 +237,7 @@ class BIMCVCovid19(Source):
         series2metainfo = {}
         for part in _positive_root, _negative_root:
             for structure in part.glob('*part*.tar.gz.tar-tvf.txt'):
-                part_filename = structure.name[:-len('.tar-tvf.txt')]
+                part_filename = structure.name[: -len('.tar-tvf.txt')]
                 if 'pos' in part_filename:
                     is_positive = True
                 else:
@@ -273,8 +268,8 @@ class BIMCVCovid19(Source):
                     # if no such series yet
                     if series_id not in series2metainfo:
                         # obtain subject_id, session_id
-                        subject_id, = filter(lambda x: 'sub' in x, series_id.split('_'))
-                        session_id, = filter(lambda x: 'ses' in x, series_id.split('_'))
+                        (subject_id,) = filter(lambda x: 'sub' in x, series_id.split('_'))
+                        (session_id,) = filter(lambda x: 'ses' in x, series_id.split('_'))
 
                         series2metainfo[series_id] = {
                             'session_id': session_id,
@@ -315,7 +310,7 @@ def unpack(root: Path, archive: str, relative: str):
 
 
 def find_subroot(path: Path, name: str):
-    """ Finds a subfolder but in a bfs manner instead of dfs """
+    """Finds a subfolder but in a bfs manner instead of dfs"""
     folders = [path]
 
     while folders:

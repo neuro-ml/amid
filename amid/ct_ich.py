@@ -72,11 +72,11 @@ class CT_ICH(Source):
         return np.bool_(ct_scan_nifti.get_fdata()[...])
 
     def affine(_image_file):
-        """ The 4x4 matrix that gives the image's spatial orientation. """
+        """The 4x4 matrix that gives the image's spatial orientation."""
         return _image_file.affine
 
     def voxel_spacing(_image_file):
-        """ Returns voxel spacing along axes (x, y, z). """
+        """Returns voxel spacing along axes (x, y, z)."""
         return tuple(_image_file.header['pixdim'][1:4])
 
     def _patient_metadata(_root: Silent):
@@ -94,37 +94,37 @@ class CT_ICH(Source):
         _patient_metadata['Gender'].loc[num_id]
 
     def intraventricular_hemorrhage(i, _patient_metadata):
-        """ Returns True if hemorrhage exists and its type is intraventricular. """
+        """Returns True if hemorrhage exists and its type is intraventricular."""
         num_id = int(i.split('_')[-1])
         return str(_patient_metadata['Hemorrhage type based on the radiologists diagnosis '].loc[num_id]) != 'nan'
 
     def intraparenchymal_hemorrhage(i, _patient_metadata):
-        """ Returns True if hemorrhage was diagnosed and its type is intraparenchymal. """
+        """Returns True if hemorrhage was diagnosed and its type is intraparenchymal."""
         num_id = int(i.split('_')[-1])
         return str(_patient_metadata['Unnamed: 4'].loc[num_id]) != 'nan'
 
     def subarachnoid_hemorrhage(i, _patient_metadata):
-        """ Returns True if hemorrhage was diagnosed and its type is subarachnoid. """
+        """Returns True if hemorrhage was diagnosed and its type is subarachnoid."""
         num_id = int(i.split('_')[-1])
         return str(_patient_metadata['Unnamed: 5'].loc[num_id]) != 'nan'
 
     def epidural_hemorrhage(i, _patient_metadata):
-        """ Returns True if hemorrhage was diagnosed and its type is epidural. """
+        """Returns True if hemorrhage was diagnosed and its type is epidural."""
         num_id = int(i.split('_')[-1])
         return str(_patient_metadata['Unnamed: 6'].loc[num_id]) != 'nan'
 
     def subdural_hemorrhage(i, _patient_metadata):
-        """ Returns True if hemorrhage was diagnosed and its type is subdural. """
+        """Returns True if hemorrhage was diagnosed and its type is subdural."""
         num_id = int(i.split('_')[-1])
         return str(_patient_metadata['Unnamed: 7'].loc[num_id]) != 'nan'
 
     def fracture(i, _patient_metadata):
-        """ Returns True if skull fracture was diagnosed. """
+        """Returns True if skull fracture was diagnosed."""
         num_id = int(i.split('_')[-1])
         return str(_patient_metadata['Fracture (yes 1/no 0)'].loc[num_id]) != 'nan'
 
     def notes(i, _patient_metadata):
-        """ Returns special notes if they exist. """
+        """Returns special notes if they exist."""
         num_id = int(i.split('_')[-1])
         result = str(_patient_metadata['Note1'].loc[num_id])
         return result if result != 'nan' else None

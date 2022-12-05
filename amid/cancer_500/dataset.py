@@ -8,14 +8,21 @@ from pathlib import Path
 import numpy as np
 import pydicom
 from connectome import Source, meta
-from connectome.interface.nodes import Silent, Output
-from dicom_csv import get_common_tag, order_series, get_tag, stack_images, get_pixel_spacing, get_slice_locations, \
-    get_orientation_matrix
-from dicom_csv.exceptions import TagMissingError, TagTypeError, ConsistencyError
+from connectome.interface.nodes import Output, Silent
+from dicom_csv import (
+    get_common_tag,
+    get_orientation_matrix,
+    get_pixel_spacing,
+    get_slice_locations,
+    get_tag,
+    order_series,
+    stack_images,
+)
+from dicom_csv.exceptions import ConsistencyError, TagMissingError, TagTypeError
 from tqdm.auto import tqdm
 
-from .nodules import get_nodules
 from ..internals import checksum, register
+from .nodules import get_nodules
 
 
 @register(
@@ -64,8 +71,9 @@ class MoscowCancer500(Source):
         path = _root / 'series-to-files.json'
         if not path.exists():
             mapping = {}
-            for file in tqdm(_root.rglob('*'), total=sum(1 for _ in _root.rglob('*')),
-                             desc='Analyzing folder structure'):
+            for file in tqdm(
+                _root.rglob('*'), total=sum(1 for _ in _root.rglob('*')), desc='Analyzing folder structure'
+            ):
                 if file.is_dir():
                     continue
 
@@ -144,7 +152,7 @@ class MoscowCancer500(Source):
             # can't determine protocol filename
             return
 
-        filename, = folders
+        (filename,) = folders
         protocol = json.load(codecs.open(str(Path(_root) / 'protocols' / f'{filename}.json'), 'r', 'utf-8-sig'))
 
         series_number = get_common_tag(_series, 'SeriesNumber')

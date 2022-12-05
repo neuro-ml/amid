@@ -23,11 +23,10 @@ from amid.internals import checksum, register
 @checksum('liver_medseg')
 class LiverMedseg(Source):
     """
-        
     LiverMedseg is a public CT segmentation dataset with 50 annotated images.
     Case collection of 50 livers with their segments.
     Images obtained from Decathlon Medical Segmentation competition
-    
+
     Parameters
     ----------
     root : str, Path, optional
@@ -53,7 +52,7 @@ class LiverMedseg(Source):
     References
     ----------
     """
-    
+
     _root: str = None
 
     @meta
@@ -79,7 +78,7 @@ class LiverMedseg(Source):
             return np.asarray(nii_file.dataobj)
 
     def affine(_file) -> np.ndarray:
-        """ The 4x4 matrix that gives the image's spatial orientation. """
+        """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(_file) as nii_file:
             return nii_file.affine
 

@@ -7,8 +7,8 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from amid.internals import checksum, register
 from amid.cc359 import open_nii_gz_file
+from amid.internals import checksum, register
 
 
 @register(
@@ -99,14 +99,14 @@ class MOOD(Source):
         return tuple(sorted(result))
 
     def fold(i, _root: Silent):
-        """ Returns fold: train or toy (test). """
+        """Returns fold: train or toy (test)."""
         if 'train' in i:
             return 'train'
         # if 'toy' in i
         return 'toy'
 
     def task(i, _root: Silent):
-        """ Returns task: brain (MRI) or abdominal (CT). """
+        """Returns task: brain (MRI) or abdominal (CT)."""
         if 'brain' in i:
             return 'brain'
         # if 'abdom' in i
@@ -123,12 +123,12 @@ class MOOD(Source):
             return np.asarray(nii_image.dataobj)
 
     def affine(_file):
-        """ The 4x4 matrix that gives the image's spatial orientation. """
+        """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(_file) as nii_image:
             return nii_image.affine
 
     def voxel_spacing(_file):
-        """ Returns voxel spacing along axes (x, y, z). """
+        """Returns voxel spacing along axes (x, y, z)."""
         with open_nii_gz_file(_file) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 

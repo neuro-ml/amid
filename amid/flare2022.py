@@ -139,7 +139,5 @@ class FLARE2022(Source):
                     with zipfile.Path(archive, file).open("rb") as opened:
                         with gzip.GzipFile(fileobj=opened) as nii:
                             nii = nibabel.FileHolder(fileobj=nii)
-                            mask = nibabel.Nifti1Image.from_file_map(
-                                {"header": nii, "image": nii}
-                            )
+                            mask = nibabel.Nifti1Image.from_file_map({"header": nii, "image": nii})
                             return np.asarray(mask.dataobj)

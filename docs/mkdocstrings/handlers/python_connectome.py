@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from griffe.dataclasses import Alias, Class, Function, Parameters, Parameter, ParameterKind
+from griffe.dataclasses import Alias, Class, Function, Parameter, ParameterKind, Parameters
 from mkdocstrings_handlers.python.handler import PythonHandler
 
 
@@ -25,9 +25,9 @@ class PythonConnectomeHandler(PythonHandler):
                 if k == 'ids':
                     v.parameters = Parameters()
                 else:
-                    v.parameters = Parameters(Parameter(
-                        'id', annotation='str', kind=ParameterKind.positional_or_keyword
-                    ))
+                    v.parameters = Parameters(
+                        Parameter('id', annotation='str', kind=ParameterKind.positional_or_keyword)
+                    )
 
                 members[k] = v
 

@@ -120,12 +120,12 @@ class CC359(Source):
             return np.asarray(nii_image.dataobj)
 
     def affine(_image_file):
-        """ The 4x4 matrix that gives the image's spatial orientation. """
+        """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(_image_file) as nii_image:
             return nii_image.affine
 
     def voxel_spacing(_image_file):
-        """ Returns voxel spacing along axes (x, y, z). """
+        """Returns voxel spacing along axes (x, y, z)."""
         with open_nii_gz_file(_image_file) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 

@@ -10,8 +10,15 @@ import pydicom
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
-    expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images,
-    get_slice_locations, get_pixel_spacing, get_orientation_matrix, join_tree
+    drop_duplicated_instances,
+    drop_duplicated_slices,
+    expand_volumetric,
+    get_orientation_matrix,
+    get_pixel_spacing,
+    get_slice_locations,
+    join_tree,
+    order_series,
+    stack_images,
 )
 
 from .internals import checksum, register
@@ -70,9 +77,14 @@ class NSCLC(Source):
     # TODO: maybe move to filtering via `ignore_errors=True`?
     _INVALID_PATIENT_IDS = [
         # no dicom with cancer segmentation
-        'LUNG1-128', 'LUNG1-412',
+        'LUNG1-128',
+        'LUNG1-412',
         # image.shape != cancer.shape
-        'LUNG1-194', 'LUNG1-095', 'LUNG1-085', 'LUNG1-014', 'LUNG1-021'
+        'LUNG1-194',
+        'LUNG1-095',
+        'LUNG1-085',
+        'LUNG1-014',
+        'LUNG1-021',
     ]
 
     @meta
@@ -199,8 +211,9 @@ class NSCLC(Source):
 
         all_masks = {}
         for n, seg in enumerate(segments):
-            mask_subslice = slice(len(slice_locations) * n, len(slice_locations) * (n + 1) if n + 1 != len(segments)
-            else None)
+            mask_subslice = slice(
+                len(slice_locations) * n, len(slice_locations) * (n + 1) if n + 1 != len(segments) else None
+            )
             sub_mask = mask[:, :, mask_subslice]
             sub_mask_slice_locations = mask_slice_locations[mask_subslice]
 
@@ -216,15 +229,21 @@ class NSCLC(Source):
 
 
 def get_cancer_orientation_matrix(cancer_dicom):
-    row, col = np.array([
-        float(x) for x in
-        cancer_dicom.SharedFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient
-    ]).reshape(2, 3)
+    row, col = np.array(
+        [
+            float(x)
+            for x in cancer_dicom.SharedFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient
+        ]
+    ).reshape(2, 3)
     return np.stack([row, col, np.cross(row, col)])
 
 
 def get_mask_slice_locations(cancer_dicom):
     om = get_cancer_orientation_matrix(cancer_dicom)
-    image_position_patient = np.stack([list(map(float, frame.PlanePositionSequence[0].ImagePositionPatient))
-                                       for frame in cancer_dicom.PerFrameFunctionalGroupsSequence])
+    image_position_patient = np.stack(
+        [
+            list(map(float, frame.PlanePositionSequence[0].ImagePositionPatient))
+            for frame in cancer_dicom.PerFrameFunctionalGroupsSequence
+        ]
+    )
     return list(image_position_patient @ om[-1])

@@ -5,15 +5,23 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pydicom
+import SimpleITK as sitk
+from connectome import Source, meta
+from connectome.interface.nodes import Output, Silent
+from dicom_csv import (
+    get_common_tag,
+    get_orientation_matrix,
+    get_pixel_spacing,
+    get_slice_locations,
+    get_tag,
+    join_tree,
+    order_series,
+    stack_images,
+)
+from dicom_csv.exceptions import ConsistencyError, TagTypeError
 from scipy import stats
 from skimage.draw import polygon
-import pydicom
-from connectome import Source, meta
-from connectome.interface.nodes import Silent, Output
-from dicom_csv import (join_tree, get_common_tag, order_series, get_tag, stack_images, get_pixel_spacing,
-                       get_slice_locations, get_orientation_matrix)
-from dicom_csv.exceptions import TagTypeError, ConsistencyError
-import SimpleITK as sitk
 
 from amid.internals import checksum, register
 
@@ -86,6 +94,7 @@ class VSSEG(Source):
            https://www.nature.com/articles/s41597-021-01064-w
 
     """
+
     _root: str = None
 
     @meta
@@ -292,8 +301,12 @@ def _get_schwannoma_structure_name(contours: list):
 
     # filter 1:
     filter_names = (
-        'Brainstem', 'Modiolus',  # CS (other)
-        'Cochlea', 'Cochlea_c', 'Cochlea_d', 'cochlea',  # CS (Cochlea)
+        'Brainstem',
+        'Modiolus',  # CS (other)
+        'Cochlea',
+        'Cochlea_c',
+        'Cochlea_d',
+        'cochlea',  # CS (Cochlea)
         'Test',  # a duplicate of 'TV' with Dice Score = 0.92 (seems to be a worse contour)
         'Men',  # is a meningioma case
     )
@@ -311,7 +324,11 @@ def _get_schwannoma_structure_name(contours: list):
 
     # filter 2:
     # no 'TV' simultaneously with 'AN'
-    higher_priority_names = ('TV', 'tv', 'AN',)
+    higher_priority_names = (
+        'TV',
+        'tv',
+        'AN',
+    )
     is_high_priority = [name in higher_priority_names for name in names]
     if np.sum(is_high_priority) == 1:
         return np.array(names)[np.array(is_high_priority)][0]
@@ -333,9 +350,11 @@ def _get_meningioma_structure_name(contours: list):
 
 
 def _get_mask(contours: list, shape, obj: str):
-    get_structure_name = {'schwannoma': _get_schwannoma_structure_name,
-                          'cochlea': _get_cochlea_structure_name,
-                          'meningioma': _get_meningioma_structure_name}[obj]
+    get_structure_name = {
+        'schwannoma': _get_schwannoma_structure_name,
+        'cochlea': _get_cochlea_structure_name,
+        'meningioma': _get_meningioma_structure_name,
+    }[obj]
     structure_name = get_structure_name(contours)
     if structure_name is not None:
         contour = _select_contour_by_structure_name(contours, structure_name)

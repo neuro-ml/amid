@@ -140,14 +140,14 @@ class LiTS(Source):
             return np.int16(image.get_fdata())
 
     def affine(_file):
-        """ The 4x4 matrix that gives the image's spatial orientation. """
+        """The 4x4 matrix that gives the image's spatial orientation."""
         with _file.open('rb') as nii:
             nii = nb.FileHolder(fileobj=nii)
             image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
             return image.affine
 
     def voxel_spacing(_file):
-        """ Returns voxel spacing along axes (x, y, z). """
+        """Returns voxel spacing along axes (x, y, z)."""
         with _file.open('rb') as nii:
             nii = nb.FileHolder(fileobj=nii)
             image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})

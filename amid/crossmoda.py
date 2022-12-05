@@ -1,6 +1,4 @@
-import os
 import gzip
-import json
 import zipfile
 from pathlib import Path
 from typing import Union
@@ -10,7 +8,7 @@ import nibabel
 import numpy as np
 import pandas as pd
 from connectome import Source, meta
-from connectome.interface.nodes import Silent, Output
+from connectome.interface.nodes import Output, Silent
 
 from .internals import checksum, register
 
@@ -101,7 +99,7 @@ class CrossMoDA(Source):
                 return np.asarray(image.dataobj)
 
     def pixel_spacing(_file):
-        """ Returns pixel spacing along axes (x, y, z) """
+        """Returns pixel spacing along axes (x, y, z)"""
         with _file.open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
@@ -109,7 +107,7 @@ class CrossMoDA(Source):
                 return tuple(image.header['pixdim'][1:4])
 
     def affine(_file):
-        """ The 4x4 matrix that gives the image's spatial orientation """
+        """The 4x4 matrix that gives the image's spatial orientation"""
         with _file.open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
@@ -117,7 +115,7 @@ class CrossMoDA(Source):
                 return image.affine
 
     def split(_file) -> str:
-        """ The split in which this entry is contained: training_source, training_target, validation """
+        """The split in which this entry is contained: training_source, training_target, validation"""
         idx = int(_file.name.split('_')[2])
         dataset = _file.name.split('_')[1]
 
@@ -140,11 +138,11 @@ class CrossMoDA(Source):
         raise ValueError(f'Cannot find split for the file: {_file}')
 
     def year(_file) -> int:
-        """ The year in which this entry was published: 2021 or 2022 """
+        """The year in which this entry was published: 2021 or 2022"""
         return int(_file.name[9:13])
 
     def masks(i, _file) -> Union[np.ndarray, None]:
-        """ Combined mask of schwannoma and cochlea (1 and 2 respectively) """
+        """Combined mask of schwannoma and cochlea (1 and 2 respectively)"""
         if 'T2' in _file.name:
             return None
         with (_file.parent / _file.name.replace('ceT1', 'Label')).open('rb') as opened:
@@ -154,7 +152,7 @@ class CrossMoDA(Source):
                 return mask.get_fdata().astype(np.uint8)
 
     def koos_grade(i, train_source_df: Output, split: Output) -> int:
-        """ VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative) """
+        """VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative)"""
         if split != 'training_source':
             return None
         return (lambda x: -1 if x == 'post-operative-london' else int(x))(train_source_df.loc[i, 'koos'])
