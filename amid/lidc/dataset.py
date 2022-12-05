@@ -171,7 +171,8 @@ class LIDC(Source):
 
     def cancer(_scan, _shape):
         cancer = np.zeros(_shape, dtype=bool)
-        for nodule_index, anns in enumerate(_scan.cluster_annotations()):
+        # FIXME: is this a typo or a bug?
+        for nodule_index, anns in enumerate(_scan.cluster_annotations()):  # noqa: B007
             cancer |= pl.utils.consensus(anns, pad=np.inf)[0]
 
         return cancer
