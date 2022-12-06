@@ -192,10 +192,10 @@ class VSSEG(Source):
         return get_slice_locations(_series_t2)
 
     def voxel_spacing_t1(pixel_spacing_t1: Output, slice_locations_t1: Output):
-        return *pixel_spacing_t1, stats.mode(np.diff(slice_locations_t1))[0].item()
+        return (*pixel_spacing_t1, stats.mode(np.diff(slice_locations_t1))[0].item())
 
     def voxel_spacing_t2(pixel_spacing_t2: Output, slice_locations_t2: Output):
-        return *pixel_spacing_t2, stats.mode(np.diff(slice_locations_t2))[0].item()
+        return (*pixel_spacing_t2, stats.mode(np.diff(slice_locations_t2))[0].item())
 
     def orientation_matrix_t1(_series_t1):
         return get_orientation_matrix(_series_t1)
@@ -204,10 +204,10 @@ class VSSEG(Source):
         return get_orientation_matrix(_series_t2)
 
     def patient_position_t1(_series_t1):
-        return tuple([float(o) for o in get_tag(_series_t1[0], 'ImagePositionPatient')])
+        return tuple(map(float, get_tag(_series_t1[0], 'ImagePositionPatient')))
 
     def patient_position_t2(_series_t2):
-        return tuple([float(o) for o in get_tag(_series_t2[0], 'ImagePositionPatient')])
+        return tuple(map(float, get_tag(_series_t2[0], 'ImagePositionPatient')))
 
     def patient_id(_series_t1):
         return get_common_tag(_series_t1, 'PatientID', default=None)
