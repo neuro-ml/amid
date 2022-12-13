@@ -1,0 +1,5472 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://neuro-ml.github.io/amid/latest/datasets-api/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>Datasets API - AMID: Awesome Medical Imaging Datasets</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#datasets-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AMID: Awesome Medical Imaging Datasets" class="md-header__button md-logo" aria-label="AMID: Awesome Medical Imaging Datasets" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AMID: Awesome Medical Imaging Datasets
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Datasets API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+            </label>
+          
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/neuro-ml/amid" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AMID: Awesome Medical Imaging Datasets" class="md-nav__button md-logo" aria-label="AMID: Awesome Medical Imaging Datasets" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AMID: Awesome Medical Imaging Datasets
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/neuro-ml/amid" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Datasets API
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Datasets API
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#amid.bimcv.BIMCVCovid19" class="md-nav__link">
+    BIMCVCovid19
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.cc359.CC359" class="md-nav__link">
+    CC359
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.ct_ich.CT_ICH" class="md-nav__link">
+    CT_ICH
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.crossmoda.CrossMoDA" class="md-nav__link">
+    CrossMoDA
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.egd.EGD" class="md-nav__link">
+    EGD
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.flare2022.FLARE2022" class="md-nav__link">
+    FLARE2022
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.lidc.dataset.LIDC" class="md-nav__link">
+    LIDC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.lits.LiTS" class="md-nav__link">
+    LiTS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.liver_medseg.LiverMedseg" class="md-nav__link">
+    LiverMedseg
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.midrc.MIDRC" class="md-nav__link">
+    MIDRC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.mood.MOOD" class="md-nav__link">
+    MOOD
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.medseg9.Medseg9" class="md-nav__link">
+    Medseg9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.cancer_500.dataset.MoscowCancer500" class="md-nav__link">
+    MoscowCancer500
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.covid_1110.MoscowCovid1110" class="md-nav__link">
+    MoscowCovid1110
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.nsclc.NSCLC" class="md-nav__link">
+    NSCLC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.vs_seg.VSSEG" class="md-nav__link">
+    VSSEG
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.verse.VerSe" class="md-nav__link">
+    VerSe
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datasets/" class="md-nav__link">
+        Datasets
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#amid.bimcv.BIMCVCovid19" class="md-nav__link">
+    BIMCVCovid19
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.cc359.CC359" class="md-nav__link">
+    CC359
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.ct_ich.CT_ICH" class="md-nav__link">
+    CT_ICH
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.crossmoda.CrossMoDA" class="md-nav__link">
+    CrossMoDA
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.egd.EGD" class="md-nav__link">
+    EGD
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.flare2022.FLARE2022" class="md-nav__link">
+    FLARE2022
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.lidc.dataset.LIDC" class="md-nav__link">
+    LIDC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.lits.LiTS" class="md-nav__link">
+    LiTS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.liver_medseg.LiverMedseg" class="md-nav__link">
+    LiverMedseg
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.midrc.MIDRC" class="md-nav__link">
+    MIDRC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.mood.MOOD" class="md-nav__link">
+    MOOD
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.medseg9.Medseg9" class="md-nav__link">
+    Medseg9
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.cancer_500.dataset.MoscowCancer500" class="md-nav__link">
+    MoscowCancer500
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.covid_1110.MoscowCovid1110" class="md-nav__link">
+    MoscowCovid1110
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.nsclc.NSCLC" class="md-nav__link">
+    NSCLC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.vs_seg.VSSEG" class="md-nav__link">
+    VSSEG
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.verse.VerSe" class="md-nav__link">
+    VerSe
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/neuro-ml/amid/edit/master/docs/datasets-api.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="datasets-api">Datasets API</h1>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.bimcv.BIMCVCovid19" class="doc doc-heading">
+        <code>amid.bimcv.BIMCVCovid19</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>BIMCV COVID-19 Dataset, CT-images only
+It includes BIMCV COVID-19 positive partition (https://arxiv.org/pdf/2006.01174.pdf)
+and negative partion
+(https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0)</p>
+<p>PCR tests are not used</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span></code>
+          </td>
+          <td><p>path to the folder containing the downloaded and parsed data.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.bimcv.BIMCVCovid19--notes">Notes</h5>
+<p>Dataset has 2 partitions: bimcv-covid19-positive and bimcv-covid19-positive
+Each partition is spread over the 81 different tgz archives. The archives includes metadata about
+subject, sessions, and labels. Also there are some tgz archives for nifty images in nii.gz format</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">BIMCVCovid19</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 201</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 163)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">is_positive</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># True</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">subject_info</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go"># {&#39;modality_dicom&#39;: &quot;[&#39;CT&#39;]&quot;,</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">#  &#39;body_parts&#39;: &quot;[[&#39;chest&#39;]]&quot;,</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="go">#  &#39;age&#39;: &#39;[80]&#39;,</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="go">#  &#39;gender&#39;: &#39;M&#39;}</span>
+</code></pre></div>
+      <h5 id="amid.bimcv.BIMCVCovid19--references">References</h5>
+<p>.. [1] Maria De La Iglesia Vayá, Jose Manuel Saborit, Joaquim Angel Montell, Antonio Pertusa, Aurelia
+        Bustos, Miguel Cazorla, Joaquin Galant, Xavier Barber, Domingo Orozco-Beltrán, Francisco
+        Garcia, Marisa Caparrós, Germán González, and Jose María Salinas. BIMCV COVID-19+: a
+        large annotated dataset of RX and CT images from COVID-19 patients. arXiv:2006.01174, 2020.
+.. [2] Maria de la Iglesia Vayá, Jose Manuel Saborit-Torres, Joaquim Angel Montell Serrano,
+        Elena Oliver-Garcia, Antonio Pertusa, Aurelia Bustos, Miguel Cazorla, Joaquin Galant,
+        Xavier Barber, Domingo Orozco-Beltrán, Francisco García-García, Marisa Caparrós, Germán González,
+        Jose María Salinas, 2021. BIMCV COVID-19-: a large annotated dataset of RX and CT images from COVID-19
+        patients.
+        Available at: https://dx.doi.org/10.21227/m4j2-ap59.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.session_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">session_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.subject_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">subject_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.is_positive" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_positive</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.tags" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">tags</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>dicom tags</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.label_info" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">label_info</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>labelCUIS, Report, LocalizationsCUIS etc.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.subject_info" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">subject_info</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>modality_dicom (=[CT]), body_parts(=[chest]), age, gender</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.session_info" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">session_info</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>study_date,     medical_evaluation</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.cc359.CC359" class="doc doc-heading">
+        <code>amid.cc359.CC359</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>A (C)algary-(C)ampinas public brain MR dataset with (359) volumetric images [1]_.</p>
+<p>There are three segmentation tasks on this dataset: (i) brain, (ii) hippocampus, and
+(iii) White-Matter (WM), Gray-Matter (WM), and Cerebrospinal Fluid (CSF) segmentation.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.cc359.CC359--notes">Notes</h5>
+<p>homepage (upd): https://sites.google.com/view/calgary-campinas-dataset/home
+homepage (old): https://miclab.fee.unicamp.br/calgary-campinas-359-updated-05092017</p>
+<p>To obtain MR images and brain and hippocampus segmentation masks, please, follow the instructions
+at the download platform: https://portal.conp.ca/dataset?id=projects/calgary-campinas.</p>
+<p>Via <code>datalad</code> lib you need to download three zip archives:
+    - <code>Original.zip</code> (the original MR images)
+    - <code>hippocampus_staple.zip</code> (Silver-standard hippocampus masks generated using STAPLE)
+    - <code>Silver-standard-machine-learning.zip</code> (Silver-standard brain masks generated using a machine learning method)</p>
+<p>To the current date, WM, GM, and CSF mask could be downloaded only from the google drive:
+https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resourcekey=0-2sXMr8q-n2Nn6iY3PbBAdA.</p>
+<p>Here you need to manually download a folder (from the google drive root above)
+<code>CC359/Reconstructed/CC359/WM-GM-CSF/</code></p>
+<p>So the root folder to pass to this dataset class should contain four objects:
+    - three zip archives (<code>Original.zip</code>, <code>hippocampus_staple.zip</code>, and <code>Silver-standard-machine-learning.zip</code>)
+    - one folder <code>WM-GM-CSF</code> with the original structure:
+        &lt;...&gt;/WM-GM-CSF/CC0319_ge_3_45_M.nii.gz
+        &lt;...&gt;/WM-GM-CSF/CC0324_ge_3_56_M.nii.gz
+        ...</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cc359</span> <span class="o">=</span> <span class="n">CC359</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cc359</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 359</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cc359</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">cc359</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (171, 256, 256)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cc359</span><span class="o">.</span><span class="n">wm_gm_csf</span><span class="p">(</span><span class="n">cc359</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (180, 240, 240)</span>
+</code></pre></div>
+      <h5 id="amid.cc359.CC359--references">References</h5>
+<p>.. [1] Souza, Roberto, et al. "An open, multi-vendor, multi-field-strength brain MR dataset
+       and analysis of publicly available skull stripping methods agreement."
+       NeuroImage 170 (2018): 482-494.
+       https://www.sciencedirect.com/science/article/pii/S1053811917306687</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.vendor" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">vendor</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.field" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">field</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.age" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.gender" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">gender</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns voxel spacing along axes (x, y, z).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.brain" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">brain</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.hippocampus" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">hippocampus</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cc359.CC359.wm_gm_csf" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">wm_gm_csf</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.ct_ich.CT_ICH" class="doc doc-heading">
+        <code>amid.ct_ich.CT_ICH</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>(C)omputed (T)omography Images for (I)ntracranial (H)emorrhage Detection and (S)egmentation.</p>
+<p>This dataset contains 75 head CT scans including 36 scans for patients diagnosed with
+intracranial hemorrhage with the following types:
+Intraventricular, Intraparenchymal, Subarachnoid, Epidural and Subdural.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>Notes</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>Data</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>Then</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>the</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>Examples</code></td>
+          <td>
+          </td>
+          <td></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns voxel spacing along axes (x, y, z).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.age" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.gender" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">gender</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.intraventricular_hemorrhage" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">intraventricular_hemorrhage</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns True if hemorrhage exists and its type is intraventricular.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.intraparenchymal_hemorrhage" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">intraparenchymal_hemorrhage</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns True if hemorrhage was diagnosed and its type is intraparenchymal.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.subarachnoid_hemorrhage" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">subarachnoid_hemorrhage</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns True if hemorrhage was diagnosed and its type is subarachnoid.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.epidural_hemorrhage" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">epidural_hemorrhage</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns True if hemorrhage was diagnosed and its type is epidural.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.subdural_hemorrhage" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">subdural_hemorrhage</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns True if hemorrhage was diagnosed and its type is subdural.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.fracture" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fracture</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns True if skull fracture was diagnosed.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.notes" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">notes</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns special notes if they exist.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.ct_ich.CT_ICH.hemorrhage_diagnosis_raw_metadata" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">hemorrhage_diagnosis_raw_metadata</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.crossmoda.CrossMoDA" class="doc doc-heading">
+        <code>amid.crossmoda.CrossMoDA</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.crossmoda.CrossMoDA--notes">Notes</h5>
+<p>Download links:
+2021 &amp; 2022: https://zenodo.org/record/6504722#.YsgwnNJByV4</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">CrossMoDA</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 484</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 214)</span>
+</code></pre></div>
+      <h5 id="amid.crossmoda.CrossMoDA--references">References</h5>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.train_source_df" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">train_source_df</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.pixel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns pixel spacing along axes (x, y, z)</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.split" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">split</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The split in which this entry is contained: training_source, training_target, validation</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.year" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">year</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The year in which this entry was published: 2021 or 2022</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.masks" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">masks</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Combined mask of schwannoma and cochlea (1 and 2 respectively)</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.crossmoda.CrossMoDA.koos_grade" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">koos_grade</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative)</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.egd.EGD" class="doc doc-heading">
+        <code>amid.egd.EGD</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>The Erasmus Glioma Database (EGD): Structural MRI scans, WHO 2016 subtypes,
+and segmentations of 774 patients with glioma [1]_.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.egd.EGD--notes">Notes</h5>
+<p>The access to the dataset could be requested at XNAT portal [https://xnat.bmia.nl/data/archive/projects/egd].</p>
+<p>To download the data in the compatible structure we recommend to use
+egd-downloader script [https://zenodo.org/record/4761089#.YtZpLtJBxhF].
+Please, refer to its README for further information.</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">egd</span> <span class="o">=</span> <span class="n">EGD</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">egd</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 774</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">egd</span><span class="o">.</span><span class="n">t1gd</span><span class="p">(</span><span class="n">egd</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">215</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (197, 233, 189)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">egd</span><span class="o">.</span><span class="n">manufacturer</span><span class="p">(</span><span class="n">egd</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">444</span><span class="p">]))</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># Philips Medical Systems</span>
+</code></pre></div>
+      <h5 id="amid.egd.EGD--references">References</h5>
+<p>.. [1] van der Voort, Sebastian R., et al. "The Erasmus Glioma Database (EGD): Structural MRI scans,
+       WHO 2016 subtypes, and segmentations of 774 patients with glioma."
+       Data in brief 37 (2021): 107191.
+       https://www.sciencedirect.com/science/article/pii/S2352340921004753</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.brain_mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">brain_mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.deface_mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">deface_mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.flair" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">flair</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.t1gd" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">t1gd</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.genetic_and_histological_label_idh" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">genetic_and_histological_label_idh</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.genetic_and_histological_label_1p19q" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">genetic_and_histological_label_1p19q</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.genetic_and_histological_label_grade" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">genetic_and_histological_label_grade</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.age" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.sex" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sex</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.observer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">observer</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.original_scan" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">original_scan</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.manufacturer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">manufacturer</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.system" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">system</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.field" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">field</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.flare2022.FLARE2022" class="doc doc-heading">
+        <code>amid.flare2022.FLARE2022</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>An abdominal organ segmentation dataset for semi-supervised learning [1]_.</p>
+<p>The dataset was used at the MICCAI FLARE 2022 challenge.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.flare2022.FLARE2022--notes">Notes</h5>
+<p>Download link: https://flare22.grand-challenge.org/Dataset/</p>
+<p>The <code>root</code> folder should contain the two downloaded folders, namely: "Training" and "Validation".</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded folders in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">FLARE2022</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 2100</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 110)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">25</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 104)</span>
+</code></pre></div>
+      <h5 id="amid.flare2022.FLARE2022--references">References</h5>
+<p>.. [1] Ma, Jun, et al. "Fast and Low-GPU-memory abdomen CT organ segmentation: The FLARE challenge."
+Medical Image Analysis 82 (2022): 102616.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.flare2022.FLARE2022.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.flare2022.FLARE2022.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.flare2022.FLARE2022.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.flare2022.FLARE2022.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.lidc.dataset.LIDC" class="doc doc-heading">
+        <code>amid.lidc.dataset.LIDC</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>The (L)ung (I)mage (D)atabase (C)onsortium image collection (LIDC-IDRI) [1]_
+consists of diagnostic and lung cancer screening thoracic computed tomography (CT) scans
+with marked-up annotated lesions and lung nodules segmentation task.
+Scans contains multiple expert annotations.</p>
+<p>Number of CT scans: 1018.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, Path, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.lidc.dataset.LIDC--notes">Notes</h5>
+<p>Follow the download instructions at https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254.</p>
+<p>Then, the folder with raw downloaded data should contain folder <code>LIDC-IDRI</code>,
+which contains folders <code>LIDC-IDRI-*</code>.</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">LIDC</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 1018</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 194)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">cancer</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 194)</span>
+</code></pre></div>
+      <h5 id="amid.lidc.dataset.LIDC--references">References</h5>
+<p>.. [1] Armato III, McLennan, et al. "The lung image database consortium (lidc) and image database
+resource initiative (idri): a completed reference database of lung nodules on ct scans."
+Medical physics 38(2) (2011): 915–931.
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.study_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.series_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.patient_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.sop_uids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sop_uids</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.pixel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.slice_locations" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns voxel spacing along axes (x, y, z).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.contrast_used" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">contrast_used</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>If the DICOM file for the scan had any Contrast tag, this is marked as <code>True</code>.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.is_from_initial" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">is_from_initial</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Indicates whether or not this PatientID was tagged as
+part of the initial 399 release.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.orientation_matrix" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.conv_kernel" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">conv_kernel</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.kvp" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">kvp</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.study_date" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_date</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.accession_number" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">accession_number</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.nodules" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">nodules</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.nodules_masks" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">nodules_masks</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lidc.dataset.LIDC.cancer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cancer</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.lits.LiTS" class="doc doc-heading">
+        <code>amid.lits.LiTS</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>A (Li)ver (T)umor (S)egmentation dataset [1]<em> from Medical Segmentation Decathlon [2]</em></p>
+<p>There are two segmentation tasks on this dataset: liver and liver tumor segmentation.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.lits.LiTS--notes">Notes</h5>
+<p>Follow the download instructions at https://competitions.codalab.org/competitions/17094.</p>
+<p>Then, the folder with raw downloaded data should contain two zip archives with the train data
+(<code>Training_Batch1.zip</code> and <code>Training_Batch2.zip</code>)
+and a folder with the test data
+(<code>LITS-Challenge-Test-Data</code>).</p>
+<p>The folder with test data should have original structure:
+    &lt;...&gt;/LITS-Challenge-Test-Data/test-volume-0.nii
+    &lt;...&gt;/LITS-Challenge-Test-Data/test-volume-1.nii
+    ...</p>
+<p>P.S. Organs boxes are also provided from a separate source https://github.com/superxuang/caffe_3d_faster_rcnn.</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">LiTS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 201</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 163)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">tumor_mask</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 771)</span>
+</code></pre></div>
+      <h5 id="amid.lits.LiTS--references">References</h5>
+<p>.. [1] Bilic, Patrick, et al. "The liver tumor segmentation benchmark (lits)."
+       arXiv preprint arXiv:1901.04056 (2019).
+.. [2] Antonelli, Michela, et al. "The medical segmentation decathlon."
+       arXiv preprint arXiv:2106.05735 (2021).</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lits.LiTS.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lits.LiTS.fold" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fold</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lits.LiTS.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lits.LiTS.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lits.LiTS.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns voxel spacing along axes (x, y, z).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.lits.LiTS.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.liver_medseg.LiverMedseg" class="doc doc-heading">
+        <code>amid.liver_medseg.LiverMedseg</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>LiverMedseg is a public CT segmentation dataset with 50 annotated images.
+Case collection of 50 livers with their segments.
+Images obtained from Decathlon Medical Segmentation competition</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.liver_medseg.LiverMedseg--notes">Notes</h5>
+<p>Download links:
+https://www.medseg.ai/database/liver-segments-50-cases</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">LiverMedseg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 50</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 38)</span>
+</code></pre></div>
+      <h5 id="amid.liver_medseg.LiverMedseg--references">References</h5>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.liver_medseg.LiverMedseg.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.liver_medseg.LiverMedseg.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.liver_medseg.LiverMedseg.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.liver_medseg.LiverMedseg.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.liver_medseg.LiverMedseg.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.midrc.MIDRC" class="doc doc-heading">
+        <code>amid.midrc.MIDRC</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <div class="highlight"><pre><span></span><code>MIDRC-RICORD dataset 1a is a public COVID-19 CT segmentation dataset with 120 scans.
+</code></pre></div>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.midrc.MIDRC--notes">Notes</h5>
+<p>Follow the download instructions at https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742
+Download both Images and Annotations to the same folder</p>
+<p>Then, the folder with downloaded data should contain two paths with the data</p>
+<p>The folder should have this structure:
+    &lt;...&gt;/<MIDRC-root>/MIDRC-RICORD-1A
+    &lt;...&gt;/<MIDRC-root>/MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MIDRC</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"> 155</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"> (512, 512, 112)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"> (6, 512, 512, 450)</span>
+</code></pre></div>
+      <h5 id="amid.midrc.MIDRC--references">References</h5>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.midrc.MIDRC.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.midrc.MIDRC.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.midrc.MIDRC.image_meta" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image_meta</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.midrc.MIDRC.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.midrc.MIDRC.labels" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">labels</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.midrc.MIDRC.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.mood.MOOD" class="doc doc-heading">
+        <code>amid.mood.MOOD</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>A (M)edival (O)ut-(O)f-(D)istribution analysis challenge [1]_</p>
+<p>This dataset contains raw brain MRI and abdomainal CT images.</p>
+<p>Number of training samples:
+- Brain: 800 scans ( 256 x 256 x 256 )
+- Abdominal: 550 scans ( 512 x 512 x 512 )</p>
+<p>For each setup there are 4 toy test samples with OOD cases.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.mood.MOOD--notes">Notes</h5>
+<p>Follow the download instructions at https://www.synapse.org/#!Synapse:syn21343101/wiki/599515.</p>
+<p>Then, the folder with raw downloaded data should contain four zip archives with data
+(<code>abdom_toy.zip</code>, <code>abdom_train.zip</code>, <code>brain_toy.zip</code> and <code>brain_train.zip</code>).</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MOOD</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 1358</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 512)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">pixel_label</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 512)</span>
+</code></pre></div>
+      <h5 id="amid.mood.MOOD--references">References</h5>
+<p>.. [1] Zimmerer, Petersen, et al. "Medical Out-of-Distribution Analysis Challenge 2022."
+       doi: 10.5281/zenodo.6362313 (2022).</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.fold" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">fold</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns fold: train or toy (test).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.task" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">task</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns task: brain (MRI) or abdominal (CT).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns voxel spacing along axes (x, y, z).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.sample_label" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sample_label</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns sample-level OOD score for toy examples and None otherwise.
+0 indicates no abnormality and 1 indicates abnormal input.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.mood.MOOD.pixel_label" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_label</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns voxel-level OOD scores for toy examples and None otherwise.
+0 indicates no abnormality and 1 indicates abnormal input.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.medseg9.Medseg9" class="doc doc-heading">
+        <code>amid.medseg9.Medseg9</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>Medseg9 is a public COVID-19 CT segmentation dataset with 9 annotated images.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.medseg9.Medseg9--notes">Notes</h5>
+<p>Data can be downloaded here: http://medicalsegmentation.com/covid19/.</p>
+<p>Then, the folder with raw downloaded data should contain three zip archives with data and masks
+(<code>rp_im.zip</code>, <code>rp_lung_msk.zip</code>, <code>rp_msk.zip</code>).</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">Medseg9</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 9</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (630, 630, 45)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">covid</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (630, 630, 45)</span>
+</code></pre></div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.medseg9.Medseg9.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.medseg9.Medseg9.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.medseg9.Medseg9.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.medseg9.Medseg9.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns voxel spacing along axes (x, y, z).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.medseg9.Medseg9.lungs" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">lungs</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Boolean mask. Lungs are not separated.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.medseg9.Medseg9.covid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">covid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>int16 mask.
+0 - normal, 1 - ground-glass opacities (матовое стекло), 2 - consolidation (консолидация).</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.cancer_500.dataset.MoscowCancer500" class="doc doc-heading">
+        <code>amid.cancer_500.dataset.MoscowCancer500</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>The Moscow Radiology Cancer-500 dataset.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded files.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.cancer_500.dataset.MoscowCancer500--notes">Notes</h5>
+<p>Download links:
+https://mosmed.ai/en/datasets/ct_lungcancer_500/</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded files in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MoscowCancer500</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/files/root&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 979</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 67)</span>
+</code></pre></div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.study_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.series_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.sop_uids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sop_uids</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.pixel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.slice_locations" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.orientation_matrix" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.instance_numbers" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">instance_numbers</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.conv_kernel" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">conv_kernel</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.kvp" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">kvp</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.patient_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.study_date" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_date</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.accession_number" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">accession_number</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cancer_500.dataset.MoscowCancer500.nodules" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">nodules</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.covid_1110.MoscowCovid1110" class="doc doc-heading">
+        <code>amid.covid_1110.MoscowCovid1110</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>The Moscow Radiology COVID-19 dataset.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded files.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.covid_1110.MoscowCovid1110--notes">Notes</h5>
+<p>Download links:
+https://mosmed.ai/en/datasets/covid191110/</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded files in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MoscowCovid1110</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/files/root&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 1110</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 43)</span>
+</code></pre></div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.covid_1110.MoscowCovid1110.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.covid_1110.MoscowCovid1110.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.covid_1110.MoscowCovid1110.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.covid_1110.MoscowCovid1110.label" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">label</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.covid_1110.MoscowCovid1110.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.nsclc.NSCLC" class="doc doc-heading">
+        <code>amid.nsclc.NSCLC</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <div class="highlight"><pre><span></span><code>NSCLC-Radiomics is a public cell lung cancer segmentation dataset with 422 patients.
+</code></pre></div>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.nsclc.NSCLC--notes">Notes</h5>
+<p>Follow the download instructions at https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics</p>
+<p>The folder with downloaded data should contain two paths</p>
+<p>The folder should have this structure:
+    &lt;...&gt;/<NSCLC-root>/NSCLC-Radiomics/LUNG1-XXX</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">NSCLC</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"> 422</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"> (512, 512, 134)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"> (512, 512, 108)</span>
+</code></pre></div>
+      <h5 id="amid.nsclc.NSCLC--references">References</h5>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.j" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">j</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.image_meta" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image_meta</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.voxel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.lung_left" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">lung_left</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.lung_right" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">lung_right</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.lungs_total" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">lungs_total</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.heart" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">heart</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.esophagus" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">esophagus</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.spinal_cord" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">spinal_cord</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.vs_seg.VSSEG" class="doc doc-heading">
+        <code>amid.vs_seg.VSSEG</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>Segmentation of vestibular schwannoma from MRI, an open annotated dataset ... (VS-SEG) [1]_.</p>
+<p>The dataset contains 250 pairs of T1c and T2 images of the brain with the
+vestibular schwannoma segmentation task.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.vs_seg.VSSEG--notes">Notes</h5>
+<p>The dataset and corresponding metadata could be downloaded at the TCIA page:
+https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053.</p>
+<p>To download DICOM images using <code>.tcia</code> file, we use public build of TCIA downloader:
+https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
+<p>Then, download the rest of metadata from TCIA page:
+  - <code>DirectoryNamesMappingModality.csv</code>
+  - <code>Vestibular-Schwannoma-SEG_matrices Mar 2021.zip</code>
+  - <code>Vestibular-Schwannoma-SEG contours Mar 2021.zip</code></p>
+<p>and unzip the latter two <code>.zip</code> archives.</p>
+<p>So the root folder to pass to this dataset should contain 3 folders and 1 <code>.csv</code> file:
+    &lt;...&gt;/DirectoryNamesMappingModality.csv
+    &lt;...&gt;/Vestibular-Schwannoma-SEG/
+            ├── VS-SEG-001/...
+            ├── VS-SEG-002/...
+            └── ...
+    &lt;...&gt;/contours/
+    &lt;...&gt;/registration_matrices/</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">VSSEG</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 250</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image_t1</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 120)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">schwannoma_t1</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 120)</span>
+</code></pre></div>
+      <h5 id="amid.vs_seg.VSSEG--references">References</h5>
+<p>.. [1] Shapey, Jonathan, et al. "Segmentation of vestibular schwannoma from MRI,
+       an open annotated dataset and baseline algorithm."
+       Scientific Data 8.1 (2021): 1-6.
+       https://www.nature.com/articles/s41597-021-01064-w</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.registration_matrix_t1_to_t2_params" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">registration_matrix_t1_to_t2_params</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.registration_matrix_t2_to_t1_params" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">registration_matrix_t2_to_t1_params</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.contours_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">contours_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.contours_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">contours_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.normed_contours_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">normed_contours_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.normed_contours_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">normed_contours_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.has_schwannoma" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">has_schwannoma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.has_cochlea" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">has_cochlea</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.has_meningioma" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">has_meningioma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.schwannoma_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">schwannoma_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.schwannoma_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">schwannoma_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.cochlea_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cochlea_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.cochlea_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cochlea_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.meningioma_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">meningioma_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.meningioma_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">meningioma_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.image_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.image_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.study_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.series_uid_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.series_uid_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.pixel_spacing_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.pixel_spacing_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.slice_locations_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.slice_locations_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.voxel_spacing_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.voxel_spacing_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">voxel_spacing_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.orientation_matrix_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.orientation_matrix_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.patient_position_t1" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_position_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.patient_position_t2" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_position_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.patient_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.VSSEG.study_date" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_date</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.verse.VerSe" class="doc doc-heading">
+        <code>amid.verse.VerSe</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>A Vertebral Segmentation Dataset with Fracture Grading [1]_</p>
+<p>The dataset was used in the MICCAI-2019 and MICCAI-2020 Vertebrae Segmentation Challenges.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.verse.VerSe--notes">Notes</h5>
+<p>Download links:
+    2019: https://osf.io/jtfa5/
+    2020: https://osf.io/4skx2/</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">VerSe</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 374</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 214)</span>
+</code></pre></div>
+      <h5 id="amid.verse.VerSe--references">References</h5>
+<p>.. [1] Löffler MT, Sekuboyina A, Jacob A, et al. A Vertebral Segmentation Dataset with Fracture Grading.
+   Radiol Artif Intell. 2020;2(4):e190138. Published 2020 Jul 29. doi:10.1148/ryai.2020190138</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.split" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">split</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The split in which this entry is contained: training, validate, test</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.patient" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The unique patient id</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.year" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">year</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The year in which this entry was published: 2019, 2020</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.centers" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">centers</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Vertebrae centers in format {label: [x, y, z]}</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.verse.VerSe.masks" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">masks</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Vertebrae masks</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Home
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../datasets/" class="md-footer__link md-footer__link--next" aria-label="Next: Datasets" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Datasets
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.number.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.date.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.dotsep.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.monthname.min.js"></script>
+      
+        <script src="../javascript/tablesort.filesize.js"></script>
+      
+        <script src="../javascript/tablesort.js"></script>
+      
+    
+    
+  </body>
+</html>
