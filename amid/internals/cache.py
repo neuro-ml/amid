@@ -1,35 +1,45 @@
 from gzip import GzipFile
 from pathlib import Path
-from typing import Union, Sequence
+from typing import Sequence, Union
 
 import numpy as np
 from bev import Repository
-from tarn import Storage, ReadError
-from tarn.cache import SerializerError, PickleSerializer
 from connectome import CacheToDisk as Disk
 from connectome.interface.blocks import StringsLike
-from connectome.serializers import Serializer, JsonSerializer, DictSerializer, ChainSerializer
+from connectome.serializers import ChainSerializer, DictSerializer, JsonSerializer, Serializer
+from tarn import ReadError, Storage
+from tarn.cache import PickleSerializer, SerializerError
 
 
 class CacheToDisk(Disk):
-    def __init__(self, names: StringsLike, serializer: Union[Serializer, Sequence[Serializer]] = None,
-                 fetch: bool = False, **kwargs):
+    def __init__(
+        self,
+        names: StringsLike,
+        serializer: Union[Serializer, Sequence[Serializer]] = None,
+        fetch: bool = False,
+        **kwargs
+    ):
         repo = Repository.from_here('../data')
         cache = repo.cache
         super().__init__(
-            [x.root for x in cache.local[0].locations], cache.storage, remote=cache.remote if fetch else [],
-            serializer=default_serializer(serializer), names=names, **kwargs
+            [x.root for x in cache.local[0].locations],
+            cache.storage,
+            remote=cache.remote if fetch else [],
+            serializer=default_serializer(serializer),
+            names=names,
+            **kwargs
         )
 
 
 def default_serializer(serializers):
     if serializers is None:
-        arrays = NumpySerializer({np.bool_: 1, np.int_: 1})
+        arrays = NumpySerializer({np.bool_: 1, np.integer: 1})
         serializers = ChainSerializer(
             JsonSerializer(),
             DictSerializer(serializer=arrays),
             arrays,
             PickleSerializer(),
+            # CleanInvalid()
         )
     return serializers
 
@@ -65,13 +75,15 @@ class NumpySerializer(Serializer):
         if len(paths) != 1:
             raise SerializerError
 
-        path, = paths
+        (path,) = paths
         if path.name == 'value.npy':
             loader = np.load
         elif path.name == 'value.npy.gz':
+
             def loader(x):
                 with GzipFile(x, 'rb') as file:
                     return np.load(file)
+
         else:
             raise SerializerError
 

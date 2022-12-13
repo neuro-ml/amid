@@ -1,10 +1,9 @@
 import os.path
-from typing import List
 import warnings
 from functools import lru_cache
 from pathlib import Path
+from typing import List
 
-from skimage.draw import polygon
 import mdai
 import numpy as np
 import pandas as pd
@@ -12,23 +11,30 @@ import pydicom
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
-    expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images,
-    get_slice_locations, get_pixel_spacing, join_tree
+    drop_duplicated_instances,
+    drop_duplicated_slices,
+    expand_volumetric,
+    get_pixel_spacing,
+    get_slice_locations,
+    join_tree,
+    order_series,
+    stack_images,
 )
+from skimage.draw import polygon
 
 from .internals import checksum, register
 
 
-# @register(
-#     body_region='Thorax',
-#     license='CC BY-NC 4.0',
-#     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
-#     modality='CT',
-#     prep_data_size=None,  # TODO: should be measured...
-#     raw_data_size='12G',
-#     task='COVID-19 Segmentation',
-# )
-# @checksum('midrc')
+@register(
+    body_region='Thorax',
+    license='CC BY-NC 4.0',
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='12G',
+    task='COVID-19 Segmentation',
+)
+@checksum('midrc')
 class MIDRC(Source):
     """
 
@@ -70,12 +76,14 @@ class MIDRC(Source):
     """
 
     _root: str = None
-    _pathologies: List[str] = ['Infectious opacity',
-                               'Infectious TIB/micronodules',
-                               'Atelectasis',
-                               'Other noninfectious opacity',
-                               'Noninfectious nodule/mass',
-                               'Infectious cavity']
+    _pathologies: List[str] = [
+        'Infectious opacity',
+        'Infectious TIB/micronodules',
+        'Atelectasis',
+        'Other noninfectious opacity',
+        'Noninfectious nodule/mass',
+        'Infectious cavity',
+    ]
 
     @meta
     def ids(_joined):
@@ -83,15 +91,15 @@ class MIDRC(Source):
 
     @lru_cache(None)
     def _joined(_root: Silent):
-        if os.path.exists(Path(_root) / "joined.csv"):
-            return pd.read_csv(Path(_root) / "joined.csv")
+        if os.path.exists(Path(_root) / 'joined.csv'):
+            return pd.read_csv(Path(_root) / 'joined.csv')
         joined = join_tree(Path(_root) / 'MIDRC-RICORD-1A', verbose=1)
         joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
-        joined.to_csv(Path(_root) / "joined.csv")
+        joined.to_csv(Path(_root) / 'joined.csv')
         return joined
 
     def _annotation(_root: Silent):
-        json_path = "MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json"
+        json_path = 'MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json'
         return mdai.common_utils.json_to_dataframe(Path(_root) / json_path)['annotations']
 
     def _series(i, _root: Silent, _joined):
@@ -109,18 +117,18 @@ class MIDRC(Source):
             if len(series) < _original_num_slices:
                 warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
-        series = order_series(series)
+        series = order_series(series, decreasing=False)
         return series
 
     def image(_series):
-        image = stack_images(_series, -1).astype(np.int16)
+        image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
     def _image_meta(_series):
         metas = [list(dict(s).values()) for s in _series]
         result = {}
-        for meta in metas:
-            for element in meta:
+        for meta_ in metas:
+            for element in meta_:
                 if element.keyword in ['PixelData']:
                     continue
                 if element.keyword not in result:
@@ -144,16 +152,15 @@ class MIDRC(Source):
         pixel_spacing = get_pixel_spacing(_series).tolist()
         slice_locations = get_slice_locations(_series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
-        spacing = np.float32([pixel_spacing[0], pixel_spacing[1], -diffs[np.argsort(counts)[-1]]])
+        spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return spacing
 
     def labels(_study_id, _annotation):
-        sub = _annotation[(_annotation.scope == "STUDY")
-                          & (_annotation.StudyInstanceUID == _study_id)]
+        sub = _annotation[(_annotation.scope == 'STUDY') & (_annotation.StudyInstanceUID == _study_id)]
         return tuple(sub['labelName'].unique())
 
     def mask(i, _image_meta, _annotation, _pathologies):
-        sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == "INSTANCE")]
+        sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == 'INSTANCE')]
         shape = (_image_meta['Rows'], _image_meta['Columns'], len(_image_meta['SOPInstanceUID']))
         mask = np.zeros((len(_pathologies), *shape), dtype=bool)
         if len(sub) == 0:
@@ -164,6 +171,6 @@ class MIDRC(Source):
             if row['data'] is None:
                 warnings.warn(f'{label} annotations for series {i} contains None for slice {slice_index}.')
                 continue
-            ys, xs = np.array(row['data']['vertices']).T[::-1]
+            ys, xs = np.array(row['data']['vertices']).T
             mask[(pathology_index, *polygon(ys, xs, shape[:2]), slice_index)] = True
         return mask

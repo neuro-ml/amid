@@ -2,7 +2,7 @@ import io
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Union, Sequence, Callable, Any, Tuple
+from typing import Any, Callable, Sequence, Tuple, Union
 from urllib.error import HTTPError, URLError
 from urllib.request import urlretrieve
 
@@ -22,8 +22,9 @@ class YandexDisk(RemoteStorage):
         self._api_url = 'https://cloud-api.yandex.net/v1/disk/public/resources/'
         self.levels = self.hash = None
 
-    def fetch(self, keys: Sequence[Key], store: Callable[[Key, Path], Any],
-              config: HashConfig) -> Sequence[Tuple[Any, bool]]:
+    def fetch(
+        self, keys: Sequence[Key], store: Callable[[Key, Path], Any], config: HashConfig
+    ) -> Sequence[Tuple[Any, bool]]:
 
         results = []
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -79,9 +80,9 @@ class YandexDisk(RemoteStorage):
 
         count, total = 0, 1
         while count < total:
-            content = requests.get(self._api_url, dict(
-                public_key=self.url, path=str('/' / relative), offset=count
-            )).json()
+            content = requests.get(
+                self._api_url, dict(public_key=self.url, path=str('/' / relative), offset=count)
+            ).json()
             if 'error' in content:
                 raise requests.exceptions.ConnectionError(f'Error while downloading: {content["error"]}')
 

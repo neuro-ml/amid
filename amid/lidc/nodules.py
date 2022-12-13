@@ -1,9 +1,17 @@
 import numpy as np
-
 from pylidc import Annotation
 
-from .typing import LIDCNodule, Calcification, InternalStructure, \
-    Lobulation, Malignancy, Sphericity, Spiculation, Subtlety, Texture
+from .typing import (
+    Calcification,
+    InternalStructure,
+    LIDCNodule,
+    Lobulation,
+    Malignancy,
+    Sphericity,
+    Spiculation,
+    Subtlety,
+    Texture,
+)
 
 
 def get_nodule(ann: Annotation) -> LIDCNodule:

@@ -1,14 +1,14 @@
 import os
 
 import numpy as np
-from connectome import Source, meta
-from connectome.interface.nodes import Silent, Output
 import pylidc as pl
 import pylidc.utils
-from dicom_csv import expand_volumetric, order_series, stack_images, get_tag, get_orientation_matrix, get_common_tag
+from connectome import Source, meta
+from connectome.interface.nodes import Output, Silent
+from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
 
-from amid.internals import checksum, register
 from amid.cancer_500.dataset import _get_study_date
+from amid.internals import checksum, register
 from amid.lidc.nodules import get_nodule
 
 
@@ -24,8 +24,8 @@ from amid.lidc.nodules import get_nodule
 @checksum('lidc')
 class LIDC(Source):
     """
-    The (L)ung (I)mage (D)atabase (C)onsortium image collection (LIDC-IDRI) [1]_ 
-    consists of diagnostic and lung cancer screening thoracic computed tomography (CT) scans 
+    The (L)ung (I)mage (D)atabase (C)onsortium image collection (LIDC-IDRI) [1]_
+    consists of diagnostic and lung cancer screening thoracic computed tomography (CT) scans
     with marked-up annotated lesions and lung nodules segmentation task.
     Scans contains multiple expert annotations.
 
@@ -43,7 +43,7 @@ class LIDC(Source):
     -----
     Follow the download instructions at https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254.
 
-    Then, the folder with raw downloaded data should contain folder `LIDC-IDRI`, 
+    Then, the folder with raw downloaded data should contain folder `LIDC-IDRI`,
     which contains folders `LIDC-IDRI-*`.
 
     Examples
@@ -59,15 +59,15 @@ class LIDC(Source):
 
     References
     ----------
-    .. [1] Armato III, McLennan, et al. "The lung image database consortium (lidc) and image database 
-    resource initiative (idri): a completed reference database of lung nodules on ct scans." 
+    .. [1] Armato III, McLennan, et al. "The lung image database consortium (lidc) and image database
+    resource initiative (idri): a completed reference database of lung nodules on ct scans."
     Medical physics 38(2) (2011): 915–931.
     https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/
     """
 
     _root: str = None
     _pylidc_config_start: str = '[dicom]\npath = '
-    
+
     def _check_config(_root: Silent, _pylidc_config_start):
         if _root is not None:
             if os.path.exists(os.path.expanduser('~/.pylidcrc')):
@@ -75,12 +75,12 @@ class LIDC(Source):
                     content = config_file.read()
                 if content == f'{_pylidc_config_start}{_root}':
                     return
-                
+
             # save _root path to ~/.pylidcrc file for pylidc
             with open(os.path.expanduser('~/.pylidcrc'), 'w') as config_file:
                 config_file.write(f'{_pylidc_config_start}{_root}')
         return
-                    
+
     @meta
     def ids(_root: Silent, _pylidc_config_start, _check_config):
         result = [scan.series_instance_uid for scan in pl.query(pl.Scan).all()]
@@ -121,17 +121,17 @@ class LIDC(Source):
         return _scan.slice_zvals
 
     def voxel_spacing(_scan, pixel_spacing: Output):
-        """ Returns voxel spacing along axes (x, y, z). """
+        """Returns voxel spacing along axes (x, y, z)."""
         spacing = np.float32([pixel_spacing[0], pixel_spacing[0], _scan.slice_spacing])
         return spacing
 
     def contrast_used(_scan):
-        """ If the DICOM file for the scan had any Contrast tag, this is marked as `True`. """
+        """If the DICOM file for the scan had any Contrast tag, this is marked as `True`."""
         return _scan.contrast_used
 
     def is_from_initial(_scan):
         """
-        Indicates whether or not this PatientID was tagged as 
+        Indicates whether or not this PatientID was tagged as
         part of the initial 399 release.
         """
         return _scan.is_from_initial
@@ -171,7 +171,8 @@ class LIDC(Source):
 
     def cancer(_scan, _shape):
         cancer = np.zeros(_shape, dtype=bool)
-        for nodule_index, anns in enumerate(_scan.cluster_annotations()):
+        # FIXME: is this a typo or a bug?
+        for nodule_index, anns in enumerate(_scan.cluster_annotations()):  # noqa: B007
             cancer |= pl.utils.consensus(anns, pad=np.inf)[0]
 
         return cancer

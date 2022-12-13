@@ -1,0 +1,7 @@
+black
+flake8<=5
+flake8-tidy-imports
+flake8-quotes
+flake8-bugbear
+flake8-comprehensions
+isort

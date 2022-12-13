@@ -1,6 +1,6 @@
 from bev.hookspecs import hookimpl
 
-from .yandex import *
+from .yandex import YandexDisk  # noqa: F401
 
 
 @hookimpl

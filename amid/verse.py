@@ -103,7 +103,7 @@ class VerSe(Source):
                 return np.asarray(image.dataobj)
 
     def affine(_file):
-        """ The 4x4 matrix that gives the image's spatial orientation """
+        """The 4x4 matrix that gives the image's spatial orientation"""
         with _file.open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
@@ -111,16 +111,16 @@ class VerSe(Source):
                 return image.affine
 
     def split(_file):
-        """ The split in which this entry is contained: training, validate, test """
+        """The split in which this entry is contained: training, validate, test"""
         # it's ugly, but it gets the job done (;
         return _file.parent.parent.parent.name.split('_')[-1].split('9')[-1]
 
     def patient(_file):
-        """ The unique patient id """
+        """The unique patient id"""
         return _file.parent.name[4:]
 
     def year(_file):
-        """ The year in which this entry was published: 2019, 2020 """
+        """The year in which this entry was published: 2019, 2020"""
         year = _file.parent.parent.parent.name
         if year.startswith('dataset-verse'):
             assert '19' in year
@@ -131,27 +131,25 @@ class VerSe(Source):
         return _file.parent.parent.parent / 'derivatives' / _file.parent.name
 
     def centers(i, _derivatives):
-        """ Vertebrae centers in format {label: [x, y, z]} """
+        """Vertebrae centers in format {label: [x, y, z]}"""
         ann = [f for f in _derivatives.iterdir() if f.name.endswith('.json') and i in f.name]
         if not ann:
             return {}
         assert len(ann) == 1
-        ann, = ann
+        (ann,) = ann
 
         with ann.open() as file:
             ann = json.load(file)
 
-        return {
-            k['label']: [k['X'], k['Y'], k['Z']] for k in ann[1:]
-        }
+        return {k['label']: [k['X'], k['Y'], k['Z']] for k in ann[1:]}
 
     def masks(i, _derivatives) -> Union[np.ndarray, None]:
-        """ Vertebrae masks """
+        """Vertebrae masks"""
         ann = [f for f in _derivatives.iterdir() if f.name.endswith('.nii.gz') and i in f.name]
         if not ann:
             return
         assert len(ann) == 1
-        ann, = ann
+        (ann,) = ann
 
         with ann.open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:

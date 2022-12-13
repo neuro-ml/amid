@@ -1,8 +1,9 @@
-import inspect
-from typing import NamedTuple, Type
 import importlib
+import inspect
 from collections import OrderedDict
 from pathlib import Path
+from typing import NamedTuple, Type
+
 
 _REGISTRY = {}
 

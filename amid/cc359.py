@@ -117,16 +117,15 @@ class CC359(Source):
 
     def image(_image_file):
         with open_nii_gz_file(_image_file) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
-            return np.int16(nii_image.get_fdata())
+            return np.asarray(nii_image.dataobj)
 
     def affine(_image_file):
-        """ The 4x4 matrix that gives the image's spatial orientation. """
+        """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(_image_file) as nii_image:
             return nii_image.affine
 
     def voxel_spacing(_image_file):
-        """ Returns voxel spacing along axes (x, y, z). """
+        """Returns voxel spacing along axes (x, y, z)."""
         with open_nii_gz_file(_image_file) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 
@@ -175,4 +174,4 @@ def get_zipfile(_id, archive_name, root):
 
 
 def zipfile2meta(zf):
-    return {k: v for k, v in zip(['id', 'vendor', 'field', 'age', 'gender'], zf.name.strip('.nii.gz').split('_'))}
+    return {k: v for k, v in zip(['id', 'vendor', 'field', 'age', 'gender'], zf.name[: -len('.nii.gz')].split('_'))}

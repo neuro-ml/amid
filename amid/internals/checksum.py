@@ -3,23 +3,24 @@ from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
 
-from bev import Repository, Local
+from bev import Local, Repository
 from bev.cli.add import save_tree
 from bev.exceptions import HashNotFound
 from bev.hash import to_hash
 from connectome import Chain
 from connectome.containers.base import EdgesBag
 from connectome.containers.cache import CacheContainer, IdentityContext
-from connectome.engine.base import Command, TreeNode, Node
-from connectome.engine.edges import StaticGraph, StaticHash, IdentityEdge, ConstantEdge
+from connectome.engine.base import Command, Node, TreeNode
+from connectome.engine.edges import ConstantEdge, IdentityEdge, StaticGraph, StaticHash
 from connectome.interface.blocks import CacheLayer
-from connectome.utils import node_to_dict, AntiSet
+from connectome.utils import AntiSet, node_to_dict
+from joblib import Parallel, delayed
 from more_itertools import zip_equal
 from tarn import ReadError
 from tqdm.auto import tqdm
 
 from .base import get_repo
-from .cache import default_serializer, CacheToDisk
+from .cache import CacheToDisk, default_serializer
 
 
 # TODO: this file is a mess, but most of this logic will be moved
@@ -43,39 +44,60 @@ def checksum(path: str, ignore=()):
                         if repository.cache is not None and repository.cache.local:
                             args.append(CacheToDisk(AntiSet(('id',)), serializer=serializer))
 
-                        args.append(CacheAndCheck(
-                            set(dir(ds)) - {'id', 'ids'}, repository, path, fetch=True,
-                            serializer=serializer, version=version
-                        ))
+                        args.append(
+                            CacheAndCheck(
+                                set(dir(ds)) - {'id', 'ids'},
+                                repository,
+                                path,
+                                fetch=True,
+                                serializer=serializer,
+                                version=version,
+                            )
+                        )
 
                 self._version = version
                 super().__init__(*args)
 
-            def _populate(self, ignore_errors: bool = False):
+            def _populate(
+                self, *, ignore_errors: bool = False, cache: bool = True, fetch: bool = True, n_jobs: int = 1
+            ):
                 repository = get_repo()
-                ids = self.ids
+                ds = self[0]
+                fields = sorted(set(dir(ds)) - {'ids', 'id', *ignore})
 
-                fields = sorted(set(dir(self[0])) - {'ids', 'id', *ignore})
-                ds = self[0] >> CacheToDisk(AntiSet(('id',)), serializer=serializer) >> CacheAndCheck(
-                    fields, repository, path, fetch=True,
-                    serializer=serializer, version=self._version, return_tree=True,
+                if cache:
+                    ds = ds >> CacheToDisk(AntiSet(('id', *ignore)), serializer=serializer, fetch=fetch)
+                ids = ds.ids
+
+                ds = ds >> CacheAndCheck(
+                    fields,
+                    repository,
+                    path,
+                    fetch=fetch,
+                    serializer=serializer,
+                    version=self._version,
+                    return_tree=True,
                 )
-                loader = ds._compile(fields)
+                _loader = ds._compile(fields)
+
+                def loader(key):
+                    try:
+                        return key, _loader(key)
+                    except Exception as e:
+                        if not ignore_errors:
+                            raise RuntimeError(f'Error while processing id {key}') from e
+
+                        return key, None
 
                 checksums = {}
                 successes = errors = 0
-                with tqdm(ids, 'Populating the cache') as bar:
-                    for i in bar:
-                        bar.set_postfix_str(i)
-
-                        try:
-                            trees = loader(i)
-                        except Exception as e:
-                            if ignore_errors:
-                                errors += 1
-                                continue
-
-                            raise RuntimeError(f'Error while processing id {i}') from e
+                with ProgressParallel(
+                    n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(desc='Populating the cache', total=len(ids))
+                ) as bar:
+                    for i, trees in tqdm(bar(map(delayed(loader), ids)), 'Saving the checksums'):
+                        if trees is None:
+                            errors += 1
+                            continue
 
                         successes += 1
                         for name, tree in zip_equal(fields, trees):
@@ -93,8 +115,17 @@ def checksum(path: str, ignore=()):
 
 
 class CacheAndCheck(CacheLayer):
-    def __init__(self, names, repository: Repository, path, *, serializer=None, return_tree: bool = False,
-                 fetch: bool = True, version):
+    def __init__(
+        self,
+        names,
+        repository: Repository,
+        path,
+        *,
+        serializer=None,
+        return_tree: bool = False,
+        fetch: bool = True,
+        version,
+    ):
         serializer = default_serializer(serializer)
         # name -> identifier -> tree
         checksums = defaultdict(lambda: defaultdict(dict))
@@ -125,7 +156,7 @@ class CacheAndCheckContainer(CacheContainer):
         state = container.freeze()
         if len(state.inputs) != 1:
             raise ValueError('The input layer must contain exactly one input')
-        key, = state.inputs
+        (key,) = state.inputs
         edges = list(state.edges)
         forward_outputs = node_to_dict(state.outputs)
         outputs = []
@@ -148,9 +179,15 @@ class CacheAndCheckContainer(CacheContainer):
             if self.cache_names is None or node_name in self.cache_names:
                 if not self.allow_impure:
                     self._detect_impure(mapping[output], node_name)
-                edges.append(CheckSumEdge(
-                    self.checksums.get(node_name, {}), self.serializer, self.get_storage(), self.return_tree, True,
-                ).bind([output, key], node))
+                edges.append(
+                    CheckSumEdge(
+                        self.checksums.get(node_name, {}),
+                        self.serializer,
+                        self.get_storage(),
+                        self.return_tree,
+                        True,
+                    ).bind([output, key], node)
+                )
             else:
                 edges.append(IdentityEdge().bind(output, node))
 
@@ -191,9 +228,7 @@ class CheckSumEdge(StaticGraph, StaticHash):
             # TODO: `check` is not the same as save to storage
             tree = self._serialize(value)
             if expected is not None and self.check and tree != expected:
-                raise ValueError(
-                    f'Checksum failed for {identifier}. Actual: {tree}, expected: {expected}'
-                )
+                raise ValueError(f'Checksum failed for {identifier}. Actual: {tree}, expected: {expected}')
             if self.return_tree:
                 return tree
 
@@ -226,3 +261,23 @@ class CheckSumEdge(StaticGraph, StaticHash):
                 tree[str(file.relative_to(base))] = self._storage.write(file)
 
             return tree
+
+
+# source: https://stackoverflow.com/a/61027781
+class ProgressParallel(Parallel):
+    def __init__(self, *args, tqdm_kwargs=None, **kwargs):
+        self._tqdm_kwargs = tqdm_kwargs or {}
+        super().__init__(*args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        with tqdm(**self._tqdm_kwargs) as self._pbar:
+            return super().__call__(*args, **kwargs)
+
+    def print_progress(self):
+        if 'total' not in self._tqdm_kwargs:
+            self._pbar.total = self.n_dispatched_tasks
+        self._pbar.n = self.n_completed_tasks
+        self._pbar.refresh()
+
+    def __getattr__(self, name):
+        return getattr(self._pbar, name)

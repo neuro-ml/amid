@@ -2,7 +2,7 @@ import warnings
 
 import numpy as np
 
-from .typing import Texture, Review, Comment, Cancer500Nodule
+from .typing import Cancer500Nodule, Comment, Review, Texture
 
 
 def get_nodules(protocol, series_number, slice_locations):
@@ -40,7 +40,7 @@ def get_nodule_annotations(nodule: dict, series_number: int, slice_locations: li
             continue
 
         if 'series_no' in ann and str(series_number) not in ann['series_no']:
-            warnings.warn("Cannot check that annotation belongs to this particular series.")
+            warnings.warn('Cannot check that annotation belongs to this particular series.')
             continue
 
         try:
@@ -57,7 +57,7 @@ def parse_nodule_annotation(ann: dict, slice_locations: list):
         comment=parse_comment(ann),
         diameter_mm=parse_diameter_mm(ann),
         texture=parse_texture(ann),
-        malignancy=parse_malignancy(ann)
+        malignancy=parse_malignancy(ann),
     )
 
 
@@ -78,15 +78,22 @@ def parse_center_voxel(ann: dict, slice_locations: list):
         slc = 258
     elif 'не 134 а 143 по оси Х' in comments:
         i = 143
-    elif 'неправильная координата х (должно быть 73, а не 734). сосуд, несовпадение типа (другое), неверный размер' in comments:
+    elif (
+        'неправильная координата х (должно быть 73, а не 734). сосуд, несовпадение типа (другое), неверный размер'
+        in comments
+    ):
         i = 73
     elif 'ошибка в координате Y - должно быть 296, тогда очаг есть' in comments:
         j = 296
     elif 'срез съехал на два ниже' in comments:
         slc -= 2
-    elif set(comments) & {'очага нет', 'промахно', 'промахнулись с координатой х',
-                          'часть координат не совпадает с топикой очага',
-                          'часть координат не совпадает с топикой очага, неверный размер'}:
+    elif set(comments) & {
+        'очага нет',
+        'промахно',
+        'промахнулись с координатой х',
+        'часть координат не совпадает с топикой очага',
+        'часть координат не совпадает с топикой очага, неверный размер',
+    }:
         raise ValueError('Cannot detetmine center voxel')
 
     return i, j, slc
@@ -103,7 +110,7 @@ def parse_review(ann: dict):
     elif 'rejected' in decisions:
         return Review.Rejected
     else:
-        assert False, decisions
+        raise ValueError(decisions)
 
 
 def parse_comment(ann: dict):
@@ -133,7 +140,7 @@ def parse_texture(ann: dict):
     nodule_types = {review['type'] for review in ann['expert decision']} & {'#0S', '#1PS', '#2GG', 'другое'}
     if nodule_types:
         assert len(nodule_types) == 1
-        nodule_type, = nodule_types
+        (nodule_type,) = nodule_types
     elif parse_review(ann) in [Review.Confirmed, Review.ConfirmedPartially, Review.Doubt]:
         assert ann['type'] in ['#0S', '#1PS', '#2GG']
         nodule_type = ann['type']

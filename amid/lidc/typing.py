@@ -1,5 +1,5 @@
-from typing import NamedTuple, Optional, Sequence
 from enum import Enum
+from typing import NamedTuple, Optional, Sequence
 
 import numpy as np
 

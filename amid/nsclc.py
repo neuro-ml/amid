@@ -10,23 +10,30 @@ import pydicom
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
-    expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images,
-    get_slice_locations, get_pixel_spacing, get_orientation_matrix, join_tree
+    drop_duplicated_instances,
+    drop_duplicated_slices,
+    expand_volumetric,
+    get_orientation_matrix,
+    get_pixel_spacing,
+    get_slice_locations,
+    join_tree,
+    order_series,
+    stack_images,
 )
 
 from .internals import checksum, register
 
 
-# @register(
-#     body_region='Thorax',
-#     license='CC BY 3.0',
-#     link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
-#     modality='CT',
-#     prep_data_size=None,  # TODO: should be measured...
-#     raw_data_size='34G',
-#     task='Tumor Segmentation',
-# )
-# @checksum('nsclc')
+@register(
+    body_region='Thorax',
+    license='CC BY 3.0',
+    link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='34G',
+    task='Tumor Segmentation',
+)
+@checksum('nsclc')
 class NSCLC(Source):
     """
 
@@ -44,7 +51,7 @@ class NSCLC(Source):
     -----
     Follow the download instructions at https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics
 
-    The folder with downloaded data should contain two pathes
+    The folder with downloaded data should contain two paths
 
     The folder should have this structure:
         <...>/<NSCLC-root>/NSCLC-Radiomics/LUNG1-XXX
@@ -66,11 +73,18 @@ class NSCLC(Source):
     """
 
     _root: str = None
+
+    # TODO: maybe move to filtering via `ignore_errors=True`?
     _INVALID_PATIENT_IDS = [
         # no dicom with cancer segmentation
-        'LUNG1-128', 'LUNG1-412',
+        'LUNG1-128',
+        'LUNG1-412',
         # image.shape != cancer.shape
-        'LUNG1-194', 'LUNG1-095', 'LUNG1-085', 'LUNG1-014', 'LUNG1-021'
+        'LUNG1-194',
+        'LUNG1-095',
+        'LUNG1-085',
+        'LUNG1-014',
+        'LUNG1-021',
     ]
 
     @meta
@@ -83,11 +97,11 @@ class NSCLC(Source):
 
     @lru_cache(None)
     def _joined(_root: Silent):
-        if os.path.exists(Path(_root) / "joined.csv"):
-            return pd.read_csv(Path(_root) / "joined.csv")
+        if os.path.exists(Path(_root) / 'joined.csv'):
+            return pd.read_csv(Path(_root) / 'joined.csv')
         joined = join_tree(Path(_root) / 'NSCLC-Radiomics', verbose=1)
         joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
-        joined.to_csv(Path(_root) / "joined.csv")
+        joined.to_csv(Path(_root) / 'joined.csv')
         return joined
 
     def _series(i, _root: Silent, _joined):
@@ -105,18 +119,18 @@ class NSCLC(Source):
             if len(series) < _original_num_slices:
                 warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
-        series = order_series(series)
+        series = order_series(series, decreasing=False)
         return series
 
     def image(_series):
-        image = stack_images(_series, -1).astype(np.int16)
+        image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
     def _image_meta(_series):
         metas = [list(dict(s).values()) for s in _series]
         result = {}
-        for meta in metas:
-            for element in meta:
+        for meta_ in metas:
+            for element in meta_:
                 if element.keyword in ['PixelData']:
                     continue
                 if element.keyword not in result:
@@ -140,7 +154,7 @@ class NSCLC(Source):
         pixel_spacing = get_pixel_spacing(_series).tolist()
         slice_locations = get_slice_locations(_series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
-        spacing = np.float32([pixel_spacing[0], pixel_spacing[1], -diffs[np.argsort(counts)[-1]]])
+        spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return spacing
 
     def mask(_extract_segment_masks):
@@ -188,17 +202,18 @@ class NSCLC(Source):
         assert len(dicom_pathes) == 1, annotation_path
         cancer_dicom = pydicom.dcmread(dicom_pathes[0])
         assert np.allclose(get_orientation_matrix(_series), get_cancer_orientation_matrix(cancer_dicom)), i
-        mask = np.moveaxis(cancer_dicom.pixel_array, 0, -1).astype(bool)
+        mask = np.moveaxis(cancer_dicom.pixel_array, 0, -1).astype(bool).transpose(1, 0, 2)
         mask_slice_locations = get_mask_slice_locations(cancer_dicom)
         slice_locations = get_slice_locations(_series)
-        image = stack_images(_series, -1)
+        image = stack_images(_series, -1).transpose(1, 0, 2)
         segments = [x.SegmentDescription for x in cancer_dicom.SegmentSequence]
         assert len(mask_slice_locations) == len(slice_locations) * len(segments), i
 
         all_masks = {}
         for n, seg in enumerate(segments):
-            mask_subslice = slice(len(slice_locations) * n, len(slice_locations) * (n + 1) if n + 1 != len(segments)
-            else None)
+            mask_subslice = slice(
+                len(slice_locations) * n, len(slice_locations) * (n + 1) if n + 1 != len(segments) else None
+            )
             sub_mask = mask[:, :, mask_subslice]
             sub_mask_slice_locations = mask_slice_locations[mask_subslice]
 
@@ -208,21 +223,27 @@ class NSCLC(Source):
             elif np.allclose(sub_mask_slice_locations, slice_locations[::-1], atol=0.01):
                 sub_mask = sub_mask[..., ::-1]
             else:
-                assert False, i
+                raise AssertionError(i)
             all_masks[seg] = sub_mask
         return all_masks
 
 
 def get_cancer_orientation_matrix(cancer_dicom):
-    row, col = np.array([
-        float(x) for x in
-        cancer_dicom.SharedFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient
-    ]).reshape(2, 3)
+    row, col = np.array(
+        [
+            float(x)
+            for x in cancer_dicom.SharedFunctionalGroupsSequence[0].PlaneOrientationSequence[0].ImageOrientationPatient
+        ]
+    ).reshape(2, 3)
     return np.stack([row, col, np.cross(row, col)])
 
 
 def get_mask_slice_locations(cancer_dicom):
     om = get_cancer_orientation_matrix(cancer_dicom)
-    image_position_patient = np.stack([list(map(float, frame.PlanePositionSequence[0].ImagePositionPatient))
-                                       for frame in cancer_dicom.PerFrameFunctionalGroupsSequence])
+    image_position_patient = np.stack(
+        [
+            list(map(float, frame.PlanePositionSequence[0].ImagePositionPatient))
+            for frame in cancer_dicom.PerFrameFunctionalGroupsSequence
+        ]
+    )
     return list(image_position_patient @ om[-1])
