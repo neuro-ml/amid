@@ -1,7 +1,6 @@
-from pathlib import Path
-
 import gzip
 import zipfile
+from pathlib import Path
 from zipfile import ZipFile
 
 import nibabel
@@ -92,7 +91,7 @@ class Totalsegmentator(Source):
     @meta
     def ids(_archive):
         with ZipFile(_archive) as zf:
-            namelist = list(map(lambda x: x.rstrip('/'), zf.namelist()))
+            namelist = [x.rstrip('/') for x in zf.namelist()]
 
             ids = []
             for f in namelist:
