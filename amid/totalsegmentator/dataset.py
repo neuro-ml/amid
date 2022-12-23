@@ -1,5 +1,3 @@
-import json
-import os
 from pathlib import Path
 
 import nibabel
@@ -9,6 +7,7 @@ from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, register
+from .anatomical_structures import ANATOMICAL_STRUCTURES
 
 
 @register(
@@ -16,7 +15,7 @@ from ..internals import checksum, register
     license='CC BY 4.0',
     link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
     modality='CT',
-    prep_data_size=None,
+    prep_data_size='35G',
     raw_data_size='35G',
     task='Supervised anatomical structures segmentation',
 )
@@ -60,10 +59,8 @@ class Totalsegmentator(Source):
 
     _root: str = None
 
+    @staticmethod
     def _add_masks(scope):
-        with open(Path(os.path.abspath(__file__)).parent / 'anatomical_structures.json', 'r') as f:
-            anatomical_structures = json.load(f)
-
         def make_loader(anatomical_structure):
             def loader(i, _root: Silent):
                 nii = Path(_root) / i / 'segmentations' / f'{anatomical_structure}.nii.gz'
@@ -71,7 +68,7 @@ class Totalsegmentator(Source):
 
             return loader
 
-        for anatomical_structure in anatomical_structures:
+        for anatomical_structure in ANATOMICAL_STRUCTURES:
             scope[anatomical_structure] = make_loader(anatomical_structure)
 
     _add_masks(locals())
