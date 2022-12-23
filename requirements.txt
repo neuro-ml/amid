@@ -1,5 +1,5 @@
 connectome>=0.1.1,<1.0.0
-bev>=0.5.2,<1.0.0
+bev>=0.5.3,<1.0.0
 tarn>=0.2.0,<1.0.0
 numpy
 nibabel
@@ -14,3 +14,4 @@ mdai
 SimpleITK
 joblib
 deli
+typer<1.0.0
