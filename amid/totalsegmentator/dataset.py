@@ -1,6 +1,7 @@
 import contextlib
 import gzip
 import zipfile
+from functools import lru_cache
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -11,7 +12,7 @@ from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, register
-from .anatomical_structures import ANATOMICAL_STRUCTURES
+from .const import ANATOMICAL_STRUCTURES, LABELS
 
 
 @register(
@@ -83,6 +84,19 @@ class Totalsegmentator(Source):
 
     add_masks(locals())
 
+    @staticmethod
+    def add_labels(scope):
+        def make_loader(label):
+            def loader(i, _meta):
+                return _meta[_meta["image_id"] == i][label].item()
+
+            return loader
+
+        for label in LABELS:
+            scope[label] = make_loader(label)
+
+    add_labels(locals())
+
     @meta
     def ids(_root: Silent):
         if Path(_root).is_dir():
@@ -97,12 +111,6 @@ class Totalsegmentator(Source):
                 ids.append(f.split('/')[-1])
 
         return sorted(ids)
-
-    def meta(_root: Silent):
-        file = 'Totalsegmentator_dataset/meta.csv'
-
-        with unpack(_root, file) as (unpacked, _):
-            return pd.read_csv(unpacked, sep=';')
 
     def image(i, _root: Silent):
         file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
@@ -124,6 +132,13 @@ class Totalsegmentator(Source):
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return image.affine
+
+    @lru_cache(None)
+    def _meta(_root: Silent):
+        file = 'Totalsegmentator_dataset/meta.csv'
+
+        with unpack(_root, file) as (unpacked, _):
+            return pd.read_csv(unpacked, sep=';')
 
 
 @contextlib.contextmanager

@@ -104,3 +104,5 @@ ANATOMICAL_STRUCTURES = [
     'vertebrae_T8',
     'vertebrae_T9',
 ]
+
+LABELS = ['age', 'gender', 'institute', 'study_type', 'split']
