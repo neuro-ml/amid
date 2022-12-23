@@ -50,7 +50,7 @@ class Totalsegmentator(Source):
     >>> # Download the archive to any folder and pass the path to the constructor:
     >>> ds = Totalsegmentator(root='/path/to/the/downloaded/archive')
     >>> print(len(ds.ids))
-    # 1203
+    # 1204
     >>> print(ds.image(ds.ids[0]).shape)
     # (294, 192, 179)
     >>> print(ds.aorta(ds.ids[25]).shape)
