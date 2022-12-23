@@ -73,10 +73,7 @@ class Totalsegmentator(Source):
                     if is_unpacked:
                         return np.asarray(nibabel.load(file).dataobj)
                     else:
-                        with gzip.GzipFile(fileobj=unpacked) as nii:
-                            nii = nibabel.FileHolder(fileobj=nii)
-                            image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-
+                        with open_nii_gz_file(unpacked) as image:
                             return np.asarray(image.dataobj)
 
             return loader
@@ -88,21 +85,24 @@ class Totalsegmentator(Source):
 
     @meta
     def ids(_root: Silent):
-        with ZipFile(_root) as zf:
-            namelist = [x.rstrip('/') for x in zf.namelist()]
+        if Path(_root).is_dir():
+            namelist = [x.name for x in Path(_root) / 'Totalsegmentator_dataset'.glob('*')]
+        else:
+            with ZipFile(_root) as zf:
+                namelist = [x.rstrip('/') for x in zf.namelist()]
 
-            ids = []
-            for f in namelist:
-                if len(f.split('/')) == 2 and f.split('/')[-1] != 'meta.csv':
-                    ids.append(f.split('/')[-1])
+        ids = []
+        for f in namelist:
+            if len(f.split('/')) == 2 and f.split('/')[-1] != 'meta.csv':
+                ids.append(f.split('/')[-1])
 
-            return sorted(ids)
+        return sorted(ids)
 
     def meta(_root: Silent):
         file = 'Totalsegmentator_dataset/meta.csv'
 
-        with ZipFile(_root) as zf:
-            return pd.read_csv(zf.open(file), sep=';').head()
+        with unpack(_root, file) as (unpacked, _):
+            return pd.read_csv(unpacked, sep=';')
 
     def image(i, _root: Silent):
         file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
@@ -111,10 +111,7 @@ class Totalsegmentator(Source):
             if is_unpacked:
                 return np.asarray(nibabel.load(file).dataobj)
             else:
-                with gzip.GzipFile(fileobj=unpacked) as nii:
-                    nii = nibabel.FileHolder(fileobj=nii)
-                    image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-
+                with open_nii_gz_file(unpacked) as image:
                     return np.asarray(image.dataobj)
 
     def affine(i, _root: Silent):
@@ -125,18 +122,23 @@ class Totalsegmentator(Source):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
-                with gzip.GzipFile(fileobj=unpacked) as nii:
-                    nii = nibabel.FileHolder(fileobj=nii)
-                    image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-
+                with open_nii_gz_file(unpacked) as image:
                     return image.affine
 
 
 @contextlib.contextmanager
 def unpack(root: str, relative: str):
     unpacked = Path(root) / relative
+
     if unpacked.exists():
         yield unpacked, True
     else:
         with zipfile.Path(root, relative).open('rb') as unpacked:
             yield unpacked, False
+
+
+@contextlib.contextmanager
+def open_nii_gz_file(unpacked):
+    with gzip.GzipFile(fileobj=unpacked) as nii:
+        nii = nibabel.FileHolder(fileobj=nii)
+        yield nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
