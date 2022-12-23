@@ -18,11 +18,11 @@ def main():
 
     new = subparsers.add_parser('populate')
     new.set_defaults(callback=populate)
-    parser.add_argument('dataset', help='the dataset name')
-    parser.add_argument('root', help='raw data location')
-    parser.add_argument('--ignore-errors', action='store_true', default=False)
-    parser.add_argument('--fetch', action='store_true', default=False)
-    parser.add_argument('--n-jobs', type=int, default=1)
+    new.add_argument('dataset', help='the dataset name')
+    new.add_argument('root', help='raw data location')
+    new.add_argument('--ignore-errors', action='store_true', default=False)
+    new.add_argument('--fetch', action='store_true', default=False)
+    new.add_argument('--n-jobs', type=int, default=1)
 
     args = vars(parser.parse_args())
     if 'callback' not in args:
