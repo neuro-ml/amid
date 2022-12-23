@@ -1,5 +1,9 @@
 from pathlib import Path
 
+import gzip
+import zipfile
+from zipfile import ZipFile
+
 import nibabel
 import numpy as np
 import pandas as pd
@@ -15,8 +19,8 @@ from .anatomical_structures import ANATOMICAL_STRUCTURES
     license='CC BY 4.0',
     link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
     modality='CT',
-    prep_data_size='35G',
     raw_data_size='35G',
+    prep_data_size='35G',
     task='Supervised anatomical structures segmentation',
 )
 @checksum('totalsegmentator')
@@ -33,17 +37,17 @@ class Totalsegmentator(Source):
     Parameters
     ----------
     root : str, Path, optional
-        path to the unpacked downloaded archive.
+        path to the folder contatinig the downloaded archive.
         If not provided, the cache is assumed to be already populated.
 
     Notes
     -----
-    Download link: https://zenodo.org/record/6802614#.Y6M2MxXP1D8
+    Download link: https://zenodo.org/record/6802614/files/Totalsegmentator_dataset.zip
 
     Examples
     --------
-    >>> # Unpack the downloaded archive at any folder and pass the path to the constructor:
-    >>> ds = FLARE2022(root='/path/to/unpacked/downloaded/archive')
+    >>> # Download the archive to any folder and pass the path to the constructor:
+    >>> ds = Totalsegmentator(root='/path/to/the/folder/')
     >>> print(len(ds.ids))
     # 1203
     >>> print(ds.image(ds.ids[0]).shape)
@@ -59,39 +63,67 @@ class Totalsegmentator(Source):
 
     _root: str = None
 
+    def _archive(_root: Silent):
+        if _root is None:
+            raise ValueError('Please pass the location of the downloaded archive.')
+
+        return Path(_root) / 'Totalsegmentator_dataset.zip'
+
     @staticmethod
-    def _add_masks(scope):
+    def add_masks(scope):
         def make_loader(anatomical_structure):
-            def loader(i, _root: Silent):
-                nii = Path(_root) / i / 'segmentations' / f'{anatomical_structure}.nii.gz'
-                return np.asarray(nibabel.load(nii).dataobj)
+            def loader(i, _archive):
+                file = f'Totalsegmentator_dataset/{i}/segmentations/{anatomical_structure}.nii.gz'
+
+                with zipfile.Path(_archive, file).open('rb') as opened:
+                    with gzip.GzipFile(fileobj=opened) as nii:
+                        nii = nibabel.FileHolder(fileobj=nii)
+                        mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+
+                        return np.asarray(mask.dataobj)
 
             return loader
 
         for anatomical_structure in ANATOMICAL_STRUCTURES:
             scope[anatomical_structure] = make_loader(anatomical_structure)
 
-    _add_masks(locals())
+    add_masks(locals())
 
     @meta
-    def ids(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the location of the unpacked downloaded archive.')
+    def ids(_archive):
+        with ZipFile(_archive) as zf:
+            namelist = list(map(lambda x: x.rstrip('/'), zf.namelist()))
 
-        result = {x.name for x in Path(_root).glob('*') if x.name != 'meta.csv'}
+            ids = []
+            for f in namelist:
+                if len(f.split('/')) == 2 and f.split('/')[-1] != 'meta.csv':
+                    ids.append(f.split('/')[-1])
 
-        return sorted(result)
+            return sorted(ids)
 
-    def meta(_root: Silent):
-        return pd.read_csv(Path(_root) / 'meta.csv', sep=';')
+    def meta(_archive):
+        file = 'Totalsegmentator_dataset/meta.csv'
 
-    def image(i, _root: Silent):
-        nii = Path(_root) / i / 'ct.nii.gz'
+        with ZipFile(_archive) as zf:
+            return pd.read_csv(zf.open(file), sep=';').head()
 
-        return np.asarray(nibabel.load(nii).dataobj)
+    def image(i, _archive):
+        file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
 
-    def affine(i, _root: Silent):
+        with zipfile.Path(_archive, file).open('rb') as opened:
+            with gzip.GzipFile(fileobj=opened) as nii:
+                nii = nibabel.FileHolder(fileobj=nii)
+                image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+
+                return np.asarray(image.dataobj)
+
+    def affine(i, _archive):
         """The 4x4 matrix that gives the image's spatial orientation"""
-        nii = Path(_root) / i / 'ct.nii.gz'
+        file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
 
-        return nibabel.load(nii).affine
+        with zipfile.Path(_archive, file).open('rb') as opened:
+            with gzip.GzipFile(fileobj=opened) as nii:
+                nii = nibabel.FileHolder(fileobj=nii)
+                image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+
+                return image.affine
