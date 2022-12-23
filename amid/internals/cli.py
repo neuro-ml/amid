@@ -42,7 +42,7 @@ def populate(
         'Warning! The failed ids will be excluded from the populated dataset',
     ),
     n_jobs: int = typer.Option(1, help='How many threads to use for population'),
-    fetch: bool = typer.Option(True, help='Whether to fetch the missing data from remote locations, if any'),
+    fetch: bool = typer.Option(False, help='Whether to fetch the missing data from remote locations, if any'),
 ):
     cls = gather_datasets()[dataset][0]
     ds = cls(root=root)
