@@ -1,3 +1,4 @@
+import contextlib
 import gzip
 import zipfile
 from pathlib import Path
@@ -36,7 +37,7 @@ class Totalsegmentator(Source):
     Parameters
     ----------
     root : str, Path, optional
-        path to the folder contatinig the downloaded archive.
+        absolute path to the downloaded archive.
         If not provided, the cache is assumed to be already populated.
 
     Notes
@@ -46,7 +47,7 @@ class Totalsegmentator(Source):
     Examples
     --------
     >>> # Download the archive to any folder and pass the path to the constructor:
-    >>> ds = Totalsegmentator(root='/path/to/the/folder/')
+    >>> ds = Totalsegmentator(root='/path/to/the/downloaded/archive')
     >>> print(len(ds.ids))
     # 1203
     >>> print(ds.image(ds.ids[0]).shape)
@@ -62,24 +63,21 @@ class Totalsegmentator(Source):
 
     _root: str = None
 
-    def _archive(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the location of the downloaded archive.')
-
-        return Path(_root) / 'Totalsegmentator_dataset.zip'
-
     @staticmethod
     def add_masks(scope):
         def make_loader(anatomical_structure):
-            def loader(i, _archive):
+            def loader(i, _root: Silent):
                 file = f'Totalsegmentator_dataset/{i}/segmentations/{anatomical_structure}.nii.gz'
 
-                with zipfile.Path(_archive, file).open('rb') as opened:
-                    with gzip.GzipFile(fileobj=opened) as nii:
-                        nii = nibabel.FileHolder(fileobj=nii)
-                        mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+                with unpack(_root, file) as (unpacked, is_unpacked):
+                    if is_unpacked:
+                        return np.asarray(nibabel.load(file).dataobj)
+                    else:
+                        with gzip.GzipFile(fileobj=unpacked) as nii:
+                            nii = nibabel.FileHolder(fileobj=nii)
+                            image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
 
-                        return np.asarray(mask.dataobj)
+                            return np.asarray(image.dataobj)
 
             return loader
 
@@ -89,8 +87,8 @@ class Totalsegmentator(Source):
     add_masks(locals())
 
     @meta
-    def ids(_archive):
-        with ZipFile(_archive) as zf:
+    def ids(_root: Silent):
+        with ZipFile(_root) as zf:
             namelist = [x.rstrip('/') for x in zf.namelist()]
 
             ids = []
@@ -100,29 +98,45 @@ class Totalsegmentator(Source):
 
             return sorted(ids)
 
-    def meta(_archive):
+    def meta(_root: Silent):
         file = 'Totalsegmentator_dataset/meta.csv'
 
-        with ZipFile(_archive) as zf:
+        with ZipFile(_root) as zf:
             return pd.read_csv(zf.open(file), sep=';').head()
 
-    def image(i, _archive):
+    def image(i, _root: Silent):
         file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
 
-        with zipfile.Path(_archive, file).open('rb') as opened:
-            with gzip.GzipFile(fileobj=opened) as nii:
-                nii = nibabel.FileHolder(fileobj=nii)
-                image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+        with unpack(_root, file) as (unpacked, is_unpacked):
+            if is_unpacked:
+                return np.asarray(nibabel.load(file).dataobj)
+            else:
+                with gzip.GzipFile(fileobj=unpacked) as nii:
+                    nii = nibabel.FileHolder(fileobj=nii)
+                    image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
 
-                return np.asarray(image.dataobj)
+                    return np.asarray(image.dataobj)
 
-    def affine(i, _archive):
+    def affine(i, _root: Silent):
         """The 4x4 matrix that gives the image's spatial orientation"""
         file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
 
-        with zipfile.Path(_archive, file).open('rb') as opened:
-            with gzip.GzipFile(fileobj=opened) as nii:
-                nii = nibabel.FileHolder(fileobj=nii)
-                image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+        with unpack(_root, file) as (unpacked, is_unpacked):
+            if is_unpacked:
+                return nibabel.load(unpacked).affine
+            else:
+                with gzip.GzipFile(fileobj=unpacked) as nii:
+                    nii = nibabel.FileHolder(fileobj=nii)
+                    image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
 
-                return image.affine
+                    return image.affine
+
+
+@contextlib.contextmanager
+def unpack(root: str, relative: str):
+    unpacked = Path(root) / relative
+    if unpacked.exists():
+        yield unpacked, True
+    else:
+        with zipfile.Path(root, relative).open('rb') as unpacked:
+            yield unpacked, False
