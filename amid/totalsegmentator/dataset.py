@@ -64,12 +64,20 @@ class Totalsegmentator(Source):
     add_masks(locals())
     add_labels(locals())
 
+    def _base(_root: Silent):
+        _root = Path(_root)
+        if _root.is_dir():
+            if list(_root.iterdir()) == ['Totalsegmentator_dataset']:
+                return _root / 'Totalsegmentator_dataset'
+        # it's a zip file
+        return _root
+
     @meta
-    def ids(_root: Silent):
-        if Path(_root).is_dir():
-            namelist = [x.name for x in Path(_root) / 'Totalsegmentator_dataset'.glob('*')]
+    def ids(_base):
+        if _base.is_dir():
+            namelist = [x.name for x in _base.glob('*')]
         else:
-            with ZipFile(_root) as zf:
+            with ZipFile(_base) as zf:
                 namelist = [x.rstrip('/') for x in zf.namelist()]
 
         ids = []
@@ -79,21 +87,21 @@ class Totalsegmentator(Source):
 
         return sorted(ids)
 
-    def image(i, _root: Silent):
-        file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
+    def image(i, _base):
+        file = f'{i}/ct.nii.gz'
 
-        with unpack(_root, file) as (unpacked, is_unpacked):
+        with unpack(_base, file) as (unpacked, is_unpacked):
             if is_unpacked:
-                return np.asarray(nibabel.load(file).dataobj)
+                return np.asarray(nibabel.load(unpacked).dataobj)
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return np.asarray(image.dataobj)
 
-    def affine(i, _root: Silent):
+    def affine(i, _base):
         """The 4x4 matrix that gives the image's spatial orientation"""
-        file = f'Totalsegmentator_dataset/{i}/ct.nii.gz'
+        file = f'{i}/ct.nii.gz'
 
-        with unpack(_root, file) as (unpacked, is_unpacked):
+        with unpack(_base, file) as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
@@ -101,8 +109,8 @@ class Totalsegmentator(Source):
                     return image.affine
 
     @lru_cache(None)
-    def _meta(_root: Silent):
-        file = 'Totalsegmentator_dataset/meta.csv'
+    def _meta(_base):
+        file = 'meta.csv'
 
-        with unpack(_root, file) as (unpacked, _):
+        with unpack(_base, file) as (unpacked, _):
             return pd.read_csv(unpacked, sep=';')

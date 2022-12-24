@@ -32,7 +32,7 @@ def init(
     return bev_init(Path(__file__).resolve().parent.parent / 'data', permissions, group)
 
 
-@command(app)
+@app.command()
 def populate(
     dataset: str = typer.Argument(..., help='The dataset to populate'),
     root: Path = typer.Argument(..., help='The path to the downloaded raw data'),

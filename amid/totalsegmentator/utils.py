@@ -1,11 +1,11 @@
 import contextlib
 import gzip
 import zipfile
+from os.path import splitext
 from pathlib import Path
 
 import nibabel
 import numpy as np
-from connectome.interface.nodes import Silent
 
 from .const import ANATOMICAL_STRUCTURES, LABELS
 
@@ -23,12 +23,12 @@ def add_labels(scope):
 
 def add_masks(scope):
     def make_loader(anatomical_structure):
-        def loader(i, _root: Silent):
-            file = f'Totalsegmentator_dataset/{i}/segmentations/{anatomical_structure}.nii.gz'
+        def loader(i, _base):
+            file = f'{i}/segmentations/{anatomical_structure}.nii.gz'
 
-            with unpack(_root, file) as (unpacked, is_unpacked):
+            with unpack(_base, file) as (unpacked, is_unpacked):
                 if is_unpacked:
-                    return np.asarray(nibabel.load(file).dataobj)
+                    return np.asarray(nibabel.load(unpacked).dataobj)
                 else:
                     with open_nii_gz_file(unpacked) as image:
                         return np.asarray(image.dataobj)
@@ -46,7 +46,7 @@ def unpack(root: str, relative: str):
     if unpacked.exists():
         yield unpacked, True
     else:
-        with zipfile.Path(root, relative).open('r') as unpacked:
+        with zipfile.Path(root, str(Path('Totalsegmentator_dataset', relative))).open('rb') as unpacked:
             yield unpacked, False
 
 
