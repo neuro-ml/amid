@@ -88,7 +88,7 @@ class Totalsegmentator(Source):
     def add_labels(scope):
         def make_loader(label):
             def loader(i, _meta):
-                return _meta[_meta["image_id"] == i][label].item()
+                return _meta[_meta['image_id'] == i][label].item()
 
             return loader
 
