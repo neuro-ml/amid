@@ -1,6 +1,3 @@
-import contextlib
-import gzip
-import zipfile
 from functools import lru_cache
 from pathlib import Path
 from zipfile import ZipFile
@@ -12,7 +9,7 @@ from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, register
-from .const import ANATOMICAL_STRUCTURES, LABELS
+from .utils import add_labels, add_masks, open_nii_gz_file, unpack
 
 
 @register(
@@ -64,37 +61,7 @@ class Totalsegmentator(Source):
 
     _root: str = None
 
-    @staticmethod
-    def add_masks(scope):
-        def make_loader(anatomical_structure):
-            def loader(i, _root: Silent):
-                file = f'Totalsegmentator_dataset/{i}/segmentations/{anatomical_structure}.nii.gz'
-
-                with unpack(_root, file) as (unpacked, is_unpacked):
-                    if is_unpacked:
-                        return np.asarray(nibabel.load(file).dataobj)
-                    else:
-                        with open_nii_gz_file(unpacked) as image:
-                            return np.asarray(image.dataobj)
-
-            return loader
-
-        for anatomical_structure in ANATOMICAL_STRUCTURES:
-            scope[anatomical_structure] = make_loader(anatomical_structure)
-
     add_masks(locals())
-
-    @staticmethod
-    def add_labels(scope):
-        def make_loader(label):
-            def loader(i, _meta):
-                return _meta[_meta['image_id'] == i][label].item()
-
-            return loader
-
-        for label in LABELS:
-            scope[label] = make_loader(label)
-
     add_labels(locals())
 
     @meta
@@ -139,21 +106,3 @@ class Totalsegmentator(Source):
 
         with unpack(_root, file) as (unpacked, _):
             return pd.read_csv(unpacked, sep=';')
-
-
-@contextlib.contextmanager
-def unpack(root: str, relative: str):
-    unpacked = Path(root) / relative
-
-    if unpacked.exists():
-        yield unpacked, True
-    else:
-        with zipfile.Path(root, relative).open('rb') as unpacked:
-            yield unpacked, False
-
-
-@contextlib.contextmanager
-def open_nii_gz_file(unpacked):
-    with gzip.GzipFile(fileobj=unpacked) as nii:
-        nii = nibabel.FileHolder(fileobj=nii)
-        yield nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
