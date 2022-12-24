@@ -1,38 +1,49 @@
-from argparse import ArgumentParser
-from functools import partial
 from pathlib import Path
 
-from bev.cli.init import init
+import typer
+from bev.cli.app import command
+from bev.cli.init import init as bev_init
 
 from .registry import gather_datasets
 
 
+app = typer.Typer()
+
+
 def main():
-    parser = ArgumentParser()
-    subparsers = parser.add_subparsers()
-
-    new = subparsers.add_parser('init')
-    new.set_defaults(callback=partial(init, Path(__file__).resolve().parent.parent / 'data'))
-    new.add_argument('-p', '--permissions')
-    new.add_argument('-g', '--group')
-
-    new = subparsers.add_parser('populate')
-    new.set_defaults(callback=populate)
-    parser.add_argument('dataset', help='the dataset name')
-    parser.add_argument('root', help='raw data location')
-    parser.add_argument('--ignore-errors', action='store_true', default=False)
-    parser.add_argument('--fetch', action='store_true', default=False)
-    parser.add_argument('--n-jobs', type=int, default=1)
-
-    args = vars(parser.parse_args())
-    if 'callback' not in args:
-        parser.print_help()
-    else:
-        callback = args.pop('callback')
-        callback(**args)
+    app()
 
 
-def populate(dataset, root, ignore_errors, n_jobs, fetch):
+@command(app)
+def init(
+    permissions: str = typer.Option(
+        None,
+        '--permissions',
+        '-p',
+        help='The permissions mask used to create the storage, e.g. 770',
+    ),
+    group: str = typer.Option(
+        None,
+        '--group',
+        '-g',
+        help='The group used to create the storage',
+    ),
+):
+    return bev_init(Path(__file__).resolve().parent.parent / 'data', permissions, group)
+
+
+@app.command()
+def populate(
+    dataset: str = typer.Argument(..., help='The dataset to populate'),
+    root: Path = typer.Argument(..., help='The path to the downloaded raw data'),
+    ignore_errors: bool = typer.Option(
+        False,
+        help='Whether to ignore all the exception during population. '
+        'Warning! The failed ids will be excluded from the populated dataset',
+    ),
+    n_jobs: int = typer.Option(1, help='How many threads to use for population'),
+    fetch: bool = typer.Option(False, help='Whether to fetch the missing data from remote locations, if any'),
+):
     cls = gather_datasets()[dataset][0]
     ds = cls(root=root)
     success, errors = ds._populate(n_jobs=n_jobs, fetch=fetch, ignore_errors=ignore_errors)
