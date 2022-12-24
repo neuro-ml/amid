@@ -1,7 +1,6 @@
 import contextlib
 import gzip
 import zipfile
-from os.path import splitext
 from pathlib import Path
 
 import nibabel
