@@ -395,6 +395,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.totalsegmentator.dataset.Totalsegmentator" class="md-nav__link">
+    Totalsegmentator
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.vs_seg.VSSEG" class="md-nav__link">
     VSSEG
   </a>
@@ -558,6 +565,13 @@
         <li class="md-nav__item">
   <a href="#amid.nsclc.NSCLC" class="md-nav__link">
     NSCLC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.totalsegmentator.dataset.Totalsegmentator" class="md-nav__link">
+    Totalsegmentator
   </a>
   
 </li>
@@ -4495,6 +4509,139 @@ If not provided, the cache is assumed to be already populated.</p></td>
 
 
   <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.totalsegmentator.dataset.Totalsegmentator" class="doc doc-heading">
+        <code>amid.totalsegmentator.dataset.Totalsegmentator</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>In 1204 CT images we segmented 104 anatomical structures (27 organs, 59 bones, 10 muscles, 8 vessels)
+covering a majority of relevant classes for most use cases.</p>
+<p>The CT images were randomly sampled from clinical routine, thus representing a real world dataset which
+generalizes to clinical application.</p>
+<p>The dataset contains a wide range of different pathologies, scanners, sequences and institutions. [1]</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>absolute path to the downloaded archive.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.totalsegmentator.dataset.Totalsegmentator--notes">Notes</h5>
+<p>Download link: https://zenodo.org/record/6802614/files/Totalsegmentator_dataset.zip</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Download the archive to any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">Totalsegmentator</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/the/downloaded/archive&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 1204</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (294, 192, 179)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">aorta</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">25</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (320, 320, 145)</span>
+</code></pre></div>
+      <h5 id="amid.totalsegmentator.dataset.Totalsegmentator--references">References</h5>
+<p>.. [1] Jakob Wasserthal (2022) Dataset with segmentations of 104 important anatomical structures in 1204 CT images.
+Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.totalsegmentator.dataset.Totalsegmentator.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.totalsegmentator.dataset.Totalsegmentator.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.totalsegmentator.dataset.Totalsegmentator.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation</p>
 
   </div>
 
