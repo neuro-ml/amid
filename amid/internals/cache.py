@@ -5,10 +5,9 @@ from typing import Sequence, Union
 import numpy as np
 from bev import Repository
 from connectome import CacheToDisk as Disk
-from connectome.interface.blocks import StringsLike
-from connectome.serializers import ChainSerializer, DictSerializer, JsonSerializer, Serializer
+from connectome.utils import StringsLike
 from tarn import ReadError, Storage
-from tarn.cache import PickleSerializer, SerializerError
+from tarn.cache import ChainSerializer, DictSerializer, JsonSerializer, PickleSerializer, Serializer, SerializerError
 
 
 class CacheToDisk(Disk):

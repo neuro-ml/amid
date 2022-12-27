@@ -4,15 +4,14 @@ from contextlib import suppress
 from pathlib import Path
 
 from bev import Local, Repository
-from bev.cli.add import save_tree
 from bev.exceptions import HashNotFound
 from bev.hash import to_hash
+from bev.ops import save_hash
 from connectome import Chain
-from connectome.containers.base import EdgesBag
-from connectome.containers.cache import CacheContainer, IdentityContext
-from connectome.engine.base import Command, Node, TreeNode
-from connectome.engine.edges import ConstantEdge, IdentityEdge, StaticGraph, StaticHash
-from connectome.interface.blocks import CacheLayer
+from connectome.cache import Cache
+from connectome.containers import EdgesBag, IdentityContext
+from connectome.engine import Command, ConstantEdge, IdentityEdge, Node, StaticGraph, StaticHash, TreeNode
+from connectome.layers.cache import CacheToStorage
 from connectome.utils import AntiSet, node_to_dict
 from joblib import Parallel, delayed
 from more_itertools import zip_equal
@@ -104,7 +103,7 @@ def checksum(path: str, ignore=()):
                             for k, v in tree.items():
                                 checksums['/'.join((name, i, k))] = v
 
-                save_tree(repository, checksums, to_hash(Path(repository.path / path)))
+                save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
                 return successes, errors
 
         # dirty hack for now to preserve the name
@@ -114,7 +113,7 @@ def checksum(path: str, ignore=()):
     return decorator
 
 
-class CacheAndCheck(CacheLayer):
+class CacheAndCheck(CacheToStorage):
     def __init__(
         self,
         names,
@@ -126,6 +125,7 @@ class CacheAndCheck(CacheLayer):
         fetch: bool = True,
         version,
     ):
+        super().__init__(names, False)
         serializer = default_serializer(serializer)
         # name -> identifier -> tree
         checksums = defaultdict(lambda: defaultdict(dict))
@@ -136,24 +136,17 @@ class CacheAndCheck(CacheLayer):
                 if name in names:
                     checksums[name][identifier][relative] = value
 
-        checksums = dict(checksums)
-        super().__init__(CacheAndCheckContainer(names, serializer, repository.storage, checksums, return_tree))
-
-
-class CacheAndCheckContainer(CacheContainer):
-    def __init__(self, names, serializer, storage, checksums: dict, return_tree: bool):
-        super().__init__(names, False)
+        self.checksums = dict(checksums)
         self.return_tree = return_tree
-        self.checksums = checksums
-        self.storage = storage
+        self.storage = repository.storage
         self.serializer = serializer
         self.keys = 'ids'
 
-    def get_storage(self):
+    def _get_storage(self) -> Cache:
         return self.storage
 
-    def wrap(self, container: EdgesBag) -> EdgesBag:
-        state = container.freeze()
+    def _connect(self, previous: EdgesBag) -> EdgesBag:
+        state = previous.freeze()
         if len(state.inputs) != 1:
             raise ValueError('The input layer must contain exactly one input')
         (key,) = state.inputs
@@ -176,14 +169,14 @@ class CacheAndCheckContainer(CacheContainer):
             outputs.append(node)
 
             output = forward_outputs[node_name]
-            if self.cache_names is None or node_name in self.cache_names:
-                if not self.allow_impure:
+            if self.names is None or node_name in self.names:
+                if not self.impure:
                     self._detect_impure(mapping[output], node_name)
                 edges.append(
                     CheckSumEdge(
                         self.checksums.get(node_name, {}),
                         self.serializer,
-                        self.get_storage(),
+                        self._get_storage(),
                         self.return_tree,
                         True,
                     ).bind([output, key], node)
