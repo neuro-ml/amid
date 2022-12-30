@@ -105,6 +105,7 @@ class AMOS(Source):
         except FileNotFoundError:
             return None
 
+    @lru_cache(None)
     def _id2split(_base):
         id2split = {}
 
