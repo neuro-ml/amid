@@ -88,11 +88,11 @@ def checksum(path: str, ignore=()):
 
                         return key, None
 
+                print(f'Populating the cache with {len(fields)} fields for {len(ids)} ids')
+
                 checksums = {}
                 successes = errors = 0
-                with ProgressParallel(
-                    n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(desc='Populating the cache', total=len(ids))
-                ) as bar:
+                with ProgressParallel(n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids))) as bar:
                     for i, trees in tqdm(bar(map(delayed(loader), ids)), 'Saving the checksums'):
                         if trees is None:
                             errors += 1
