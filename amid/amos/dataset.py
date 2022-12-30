@@ -17,7 +17,7 @@ ARCHIVE_ROOT_NAME = 'amos22'
 
 
 @register(
-    body_region=('Abdomen'),
+    body_region='Abdomen',
     license='CC BY 4.0',
     link='https://zenodo.org/record/7262581',
     modality=('CT', 'MRI'),

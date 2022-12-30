@@ -7,7 +7,7 @@ import nibabel
 
 
 @contextlib.contextmanager
-def unpack(root: str, relative: str, archive_root_name: str = None):
+def unpack(root: str, relative: str, archive_root_name: str = None, archive_ext: str = None):
     """Provides the absolute path to the file in both scenarios: inside archive or inside folder.
 
     Parameters
@@ -18,6 +18,8 @@ def unpack(root: str, relative: str, archive_root_name: str = None):
         Relative file path inside the archive. Archive's root folder sholud be ommited.
     archive_root_name : str, Path, optional
         If `root` is a archive, it's root folder name shold be given.
+    archive_ext: {'.zip'}, optional
+        Compression algorithm used to create the archive
 
     Returns
     -------
@@ -30,7 +32,7 @@ def unpack(root: str, relative: str, archive_root_name: str = None):
 
     if unpacked.exists():
         yield unpacked, True
-    elif root.name.endswith('.zip'):
+    elif archive_ext == '.zip':
         with zipfile.Path(root, str(Path(archive_root_name, relative))).open('rb') as unpacked:
             yield unpacked, False
     else:
@@ -43,7 +45,7 @@ def open_nii_gz_file(unpacked):
 
     Examples
     --------
-    >>> with unpack('/path/to/archive.zip', 'relative/file/path', 'root') as (unpacked, is_unpacked):
+    >>> with unpack('/path/to/archive.zip', 'relative/file/path', 'root', '.zip') as (unpacked, is_unpacked):
     >>>     with open_nii_gz_file(unpacked) as image:
     >>>         print(np.asarray(image.dataobj).shape)
     # (512, 512, 256)
