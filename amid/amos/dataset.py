@@ -6,6 +6,7 @@ import nibabel
 import numpy as np
 import pandas as pd
 from connectome import Source, meta
+from connectome.interface.nodes import Silent
 
 from ..internals import checksum, register
 from ..utils import open_nii_gz_file, unpack
@@ -63,36 +64,39 @@ class AMOS(Source):
 
     add_labels(locals())
 
+    def _base(_root: Silent):
+        return Path(_root)
+
     @meta
     def ids(_id2split):
         return sorted(_id2split)
 
-    def image(i, _id2split, _root):
+    def image(i, _id2split, _base):
         file = f'images{_id2split[i]}/amos_{i}.nii.gz'
 
-        with unpack(Path(_root) / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
+        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
             if is_unpacked:
                 return np.asarray(nibabel.load(unpacked).dataobj)
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return np.asarray(image.dataobj)
 
-    def affine(i, _id2split, _root):
+    def affine(i, _id2split, _base):
         """The 4x4 matrix that gives the image's spatial orientation"""
         file = f'images{_id2split[i]}/amos_{i}.nii.gz'
 
-        with unpack(Path(_root) / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
+        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return image.affine
 
-    def mask(i, _id2split, _root):
+    def mask(i, _id2split, _base):
         file = f'labels{_id2split[i]}/amos_{i}.nii.gz'
 
         try:
-            with unpack(Path(_root) / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
+            with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
                 if is_unpacked:
                     return np.asarray(nibabel.load(unpacked).dataobj)
                 else:
@@ -101,10 +105,10 @@ class AMOS(Source):
         except FileNotFoundError:
             return None
 
-    def _id2split(_root):
+    def _id2split(_base):
         id2split = {}
 
-        with ZipFile(Path(_root) / ARCHIVE_NAME) as zf:
+        with ZipFile(_base / ARCHIVE_NAME) as zf:
             for x in zf.namelist():
                 if (len(x.strip('/').split('/')) == 3) and x.endswith('.nii.gz'):
                     file, split = x.split('/')[-1], x.split('/')[-2][-2:]
@@ -115,8 +119,8 @@ class AMOS(Source):
         return id2split
 
     @lru_cache(None)
-    def _meta(_root):
+    def _meta(_base):
         file = 'labeled_data_meta_0000_0599.csv'
 
-        with unpack(_root, file) as (unpacked, _):
+        with unpack(_base, file) as (unpacked, _):
             return pd.read_csv(unpacked)
