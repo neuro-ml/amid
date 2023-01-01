@@ -1,8 +1,11 @@
 import nibabel
 import numpy as np
 
+from ..utils import open_nii_gz_file, unpack
 from .const import ANATOMICAL_STRUCTURES, LABELS
-from ..utils import unpack, open_nii_gz_file
+
+
+ARCHIVE_ROOT = 'Totalsegmentator_dataset'
 
 
 def add_labels(scope):
@@ -21,7 +24,7 @@ def add_masks(scope):
         def loader(i, _base):
             file = f'{i}/segmentations/{anatomical_structure}.nii.gz'
 
-            with unpack(_base, file, 'Totalsegmentator_dataset.zip', '.zip') as (unpacked, is_unpacked):
+            with unpack(_base, file, ARCHIVE_ROOT, '.zip') as (unpacked, is_unpacked):
                 if is_unpacked:
                     return np.asarray(nibabel.load(unpacked).dataobj)
                 else:
