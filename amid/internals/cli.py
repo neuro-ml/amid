@@ -6,6 +6,7 @@ from bev.cli.init import init as bev_init
 
 from .registry import gather_datasets
 
+
 app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
@@ -15,33 +16,33 @@ def main():
 
 @command(app)
 def init(
-        permissions: str = typer.Option(
-            None,
-            '--permissions',
-            '-p',
-            help='The permissions mask used to create the storage, e.g. 770',
-        ),
-        group: str = typer.Option(
-            None,
-            '--group',
-            '-g',
-            help='The group used to create the storage',
-        ),
+    permissions: str = typer.Option(
+        None,
+        '--permissions',
+        '-p',
+        help='The permissions mask used to create the storage, e.g. 770',
+    ),
+    group: str = typer.Option(
+        None,
+        '--group',
+        '-g',
+        help='The group used to create the storage',
+    ),
 ):
     return bev_init(Path(__file__).resolve().parent.parent / 'data', permissions, group)
 
 
 @app.command()
 def populate(
-        dataset: str = typer.Argument(..., help='The dataset to populate'),
-        root: Path = typer.Argument(..., help='The path to the downloaded raw data'),
-        ignore_errors: bool = typer.Option(
-            False,
-            help='Whether to ignore all the exception during population. '
-                 'Warning! The failed ids will be excluded from the populated dataset',
-        ),
-        n_jobs: int = typer.Option(1, help='How many threads to use for population'),
-        fetch: bool = typer.Option(False, help='Whether to fetch the missing data from remote locations, if any'),
+    dataset: str = typer.Argument(..., help='The dataset to populate'),
+    root: Path = typer.Argument(..., help='The path to the downloaded raw data'),
+    ignore_errors: bool = typer.Option(
+        False,
+        help='Whether to ignore all the exception during population. '
+        'Warning! The failed ids will be excluded from the populated dataset',
+    ),
+    n_jobs: int = typer.Option(1, help='How many threads to use for population'),
+    fetch: bool = typer.Option(False, help='Whether to fetch the missing data from remote locations, if any'),
 ):
     try:
         cls = gather_datasets()[dataset][0]
