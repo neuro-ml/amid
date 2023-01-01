@@ -5,7 +5,7 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
+from connectome import Source, meta, Output
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, register
@@ -91,7 +91,7 @@ class Totalsegmentator(Source):
     def image(i, _base):
         file = f'{i}/ct.nii.gz'
 
-        with unpack(_base, file, 'Totalsegmentator_dataset.zip', '.zip') as (unpacked, is_unpacked):
+        with unpack(_base, file, 'Totalsegmentator_dataset', '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return np.asarray(nibabel.load(unpacked).dataobj)
             else:
@@ -102,19 +102,19 @@ class Totalsegmentator(Source):
         """The 4x4 matrix that gives the image's spatial orientation"""
         file = f'{i}/ct.nii.gz'
 
-        with unpack(_base, file, 'Totalsegmentator_dataset.zip', '.zip') as (unpacked, is_unpacked):
+        with unpack(_base, file, 'Totalsegmentator_dataset', '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return image.affine
 
-    def spacing(affine):
+    def spacing(i, affine: Output):
         return get_spacing_from_affine(affine)
 
     @lru_cache(None)
     def _meta(_base):
         file = 'meta.csv'
 
-        with unpack(_base, file, 'Totalsegmentator_dataset.zip', '.zip') as (unpacked, _):
+        with unpack(_base, file, 'Totalsegmentator_dataset', '.zip') as (unpacked, _):
             return pd.read_csv(unpacked, sep=';')
