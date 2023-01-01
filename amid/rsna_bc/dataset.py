@@ -6,10 +6,8 @@ import pydicom
 from bev.utils import PathOrStr
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
-from dicom_csv import get_image
 
 from ..internals import checksum, register
-
 from .utils import add_csv_fields
 
 
@@ -60,6 +58,14 @@ class RSNABreastCancer(Source):
             raise ValueError('The image ids are not unique')
         return ids
 
-    def image(_row, _base):
-        # this little util function handles rescale intercept and slope correctly
-        return get_image(pydicom.dcmread(_base / f'{_row.part}_images' / _row.patient_id / f'{_row.image_id}.dcm'))
+    def _dicom(_row, _base):
+        return pydicom.dcmread(_base / f'{_row.part}_images' / _row.patient_id / f'{_row.image_id}.dcm')
+
+    def image(_dicom):
+        return _dicom.pixel_array
+
+    def padding_value(_dicom):
+        return getattr(_dicom, 'PixelPaddingValue', None)
+
+    def intensity_sign(_dicom):
+        return getattr(_dicom, 'PixelIntensityRelationshipSign', None)

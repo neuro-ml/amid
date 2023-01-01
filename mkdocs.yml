@@ -3,6 +3,7 @@ site_url: https://neuro-ml.github.io/amid
 repo_url: https://github.com/neuro-ml/amid
 
 plugins:
+  - mkdocs-jupyter
   - search
   - mike:
       canonical_version: latest
