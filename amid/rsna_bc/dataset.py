@@ -1,3 +1,4 @@
+from contextlib import suppress
 from functools import lru_cache
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, register
-from .utils import add_csv_fields
+from .utils import add_csv_fields, fields, unpack
 
 
 @register(
@@ -20,7 +21,7 @@ from .utils import add_csv_fields
     prep_data_size='294G',
     task='Breast cancer classification',
 )
-@checksum('rsna-breast-cancer')
+@checksum('rsna-breast-cancer', cache_columns=tuple(fields))
 class RSNABreastCancer(Source):
     _root: PathOrStr
 
@@ -31,35 +32,37 @@ class RSNABreastCancer(Source):
     def _meta(_base):
         dfs = []
         for part in 'train', 'test':
-            if (_base / f'{part}.csv').exists():
-                df = pd.read_csv(_base / f'{part}.csv')
-                df['part'] = part
-                dfs.append(df)
+            with suppress(FileNotFoundError):
+                with unpack(_base, f'{part}.csv') as (file, _):
+                    df = pd.read_csv(file)
+                    df['part'] = part
+                    dfs.append(df)
 
         if not dfs:
             raise FileNotFoundError('No metadata found')
         dfs = pd.concat(dfs, ignore_index=True)
         for field in 'image_id', 'patient_id', 'site_id':
             dfs[field] = dfs[field].astype(str)
-        return dfs
+
+        raw = list(map(str, dfs.image_id.tolist()))
+        ids = set(raw)
+        if len(ids) != len(raw):
+            raise ValueError('The image ids are not unique')
+
+        return {row.image_id: row for _, row in dfs.iterrows()}
 
     def _row(i, _meta):
-        row = _meta[_meta.image_id == i]
-        assert len(row) == 1
-        return row.iloc[0]
+        return _meta[i]
 
     add_csv_fields(locals())
 
     @meta
     def ids(_meta):
-        raw = list(map(str, _meta.image_id.tolist()))
-        ids = tuple(sorted(set(raw)))
-        if len(ids) != len(raw):
-            raise ValueError('The image ids are not unique')
-        return ids
+        return tuple(sorted(_meta))
 
     def _dicom(_row, _base):
-        return pydicom.dcmread(_base / f'{_row.part}_images' / _row.patient_id / f'{_row.image_id}.dcm')
+        with unpack(_base, f'{_row.part}_images/{_row.patient_id}/{_row.image_id}.dcm') as (file, _):
+            return pydicom.dcmread(file)
 
     def image(_dicom):
         return _dicom.pixel_array

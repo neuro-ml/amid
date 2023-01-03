@@ -19,7 +19,7 @@ from tarn import ReadError
 from tqdm.auto import tqdm
 
 from .base import get_repo
-from .cache import CacheToDisk, default_serializer
+from .cache import CacheColumns, CacheToDisk, default_serializer
 
 
 # TODO: this file is a mess, but most of this logic will be moved
@@ -28,7 +28,12 @@ from .cache import CacheToDisk, default_serializer
 # TODO: add possibility to check the entire tree without the need to pull anything from remote
 
 
-def checksum(path: str, ignore=()):
+def checksum(path: str, *, ignore=(), cache_columns=()):
+    def make_cache():
+        yield CacheToDisk(AntiSet(('id', *cache_columns)), serializer=serializer)
+        if cache_columns:
+            yield CacheColumns(cache_columns, serializer=serializer, verbose=True)
+
     serializer = default_serializer(None)
 
     def decorator(cls):
@@ -40,9 +45,6 @@ def checksum(path: str, ignore=()):
                 if version is not None:
                     repository = get_repo(strict=False)
                     if repository is not None:
-                        if repository.cache is not None and repository.cache.local:
-                            args.append(CacheToDisk(AntiSet(('id',)), serializer=serializer))
-
                         args.append(
                             CacheAndCheck(
                                 set(dir(ds)) - {'id', 'ids'},
@@ -53,6 +55,8 @@ def checksum(path: str, ignore=()):
                                 version=version,
                             )
                         )
+                        if repository.cache is not None and repository.cache.local:
+                            args.extend(make_cache())
 
                 self._version = version
                 super().__init__(*args)
@@ -65,7 +69,7 @@ def checksum(path: str, ignore=()):
                 fields = sorted(set(dir(ds)) - {'ids', 'id', *ignore})
 
                 if cache:
-                    ds = ds >> CacheToDisk(AntiSet(('id', *ignore)), serializer=serializer, fetch=fetch)
+                    ds = Chain(ds, *make_cache())
                 ids = ds.ids
 
                 ds = ds >> CacheAndCheck(
@@ -178,7 +182,7 @@ class CacheAndCheck(CacheToStorage):
                         self.serializer,
                         self._get_storage(),
                         self.return_tree,
-                        True,
+                        False,
                     ).bind([output, key], node)
                 )
             else:
