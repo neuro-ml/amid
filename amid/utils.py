@@ -3,9 +3,8 @@ import zipfile
 from gzip import GzipFile
 from pathlib import Path
 
-import numpy as np
-
 import nibabel
+import numpy as np
 
 
 @contextlib.contextmanager
