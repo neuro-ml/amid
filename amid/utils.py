@@ -4,7 +4,6 @@ from gzip import GzipFile
 from pathlib import Path
 
 import nibabel
-import numpy as np
 
 
 @contextlib.contextmanager
@@ -54,9 +53,3 @@ def open_nii_gz_file(unpacked):
     with GzipFile(fileobj=unpacked) as nii:
         nii = nibabel.FileHolder(fileobj=nii)
         yield nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-
-
-def get_spacing_from_affine(affine):
-    """Constructs a voxel spacing tensor form the given 4x4 affine matrix."""
-
-    return np.linalg.norm(affine[:3, :3], axis=0)

@@ -11,7 +11,7 @@ from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, register
-from ..utils import get_spacing_from_affine, open_nii_gz_file, unpack
+from ..utils import open_nii_gz_file, unpack
 from .utils import ARCHIVE_ROOT, add_labels, add_masks
 
 
@@ -105,9 +105,6 @@ class Totalsegmentator(Source):
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return image.affine
-
-    def spacing(i, affine: Output):
-        return get_spacing_from_affine(affine)
 
     @lru_cache(None)
     def _meta(_base):
