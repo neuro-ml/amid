@@ -7,7 +7,11 @@ from bev.cli.init import init as bev_init
 from .registry import gather_datasets
 
 
-app = typer.Typer(pretty_exceptions_show_locals=False)
+# older versions of typer don't have this arg, and it's simpler to avoid conflicts this way
+try:
+    app = typer.Typer(pretty_exceptions_show_locals=False)
+except TypeError:
+    app = typer.Typer()
 
 
 def main():
