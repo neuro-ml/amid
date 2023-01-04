@@ -23,6 +23,8 @@ jobs:
           pip install -r docs/requirements.txt
 
       - name: Create the storage
+        env:
+          CACHE_HOST: ${{ secrets.CACHE_HOST }}
         run: |
           mkdir -p ~/.config/amid
           cat >~/.config/amid/.bev.yml <<EOL
