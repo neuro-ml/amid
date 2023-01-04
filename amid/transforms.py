@@ -26,5 +26,5 @@ class ParseAffineMatrix(Transform):
         return affine[:-1, -1]
 
     def voxel_spacing(orientation: Output):
-        """Constructs a voxel spacing tensor form the given orientation matrix."""
+        """Constructs a voxel spacing tensor from the given orientation matrix."""
         return np.linalg.norm(orientation, axis=0)
