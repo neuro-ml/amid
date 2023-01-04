@@ -24,6 +24,10 @@ plugins:
             heading_level: 3
       watch:
         - amid
+  - exclude:
+      glob:
+        - 'mkdocstrings/**/*'
+        - 'fill_docs.py'
 
 theme:
   name: material
