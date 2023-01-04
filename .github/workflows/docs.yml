@@ -30,13 +30,13 @@ jobs:
             storage: '/home/runner/work/amid/amid/storage'
             cache: '/home/runner/work/amid/amid/cache'
           
-            remote:
-              storage:
-                - http: $CACHE_HOST
-                  optional: true
+          remote:
+            storage:
+              - http: $CACHE_HOST
+                optional: true
           
-            meta:
-              fallback: local
+          meta:
+            fallback: local
           EOL
           amid init
 
