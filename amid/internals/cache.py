@@ -4,13 +4,33 @@ from typing import Sequence, Union
 
 import numpy as np
 from bev import Repository
-from connectome import CacheToDisk as Disk
+from connectome import CacheColumns as Columns, CacheToDisk as Disk
 from connectome.utils import StringsLike
 from tarn import ReadError, Storage
 from tarn.cache import ChainSerializer, DictSerializer, JsonSerializer, PickleSerializer, Serializer, SerializerError
 
 
 class CacheToDisk(Disk):
+    def __init__(
+        self,
+        names: StringsLike,
+        serializer: Union[Serializer, Sequence[Serializer]] = None,
+        fetch: bool = False,
+        **kwargs
+    ):
+        repo = Repository.from_here('../data')
+        cache = repo.cache
+        super().__init__(
+            [x.root for x in cache.local[0].locations],
+            cache.storage,
+            remote=cache.remote if fetch else [],
+            serializer=default_serializer(serializer),
+            names=names,
+            **kwargs
+        )
+
+
+class CacheColumns(Columns):
     def __init__(
         self,
         names: StringsLike,

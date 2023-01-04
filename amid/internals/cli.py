@@ -7,7 +7,7 @@ from bev.cli.init import init as bev_init
 from .registry import gather_datasets
 
 
-app = typer.Typer()
+app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
 def main():
@@ -44,7 +44,10 @@ def populate(
     n_jobs: int = typer.Option(1, help='How many threads to use for population'),
     fetch: bool = typer.Option(False, help='Whether to fetch the missing data from remote locations, if any'),
 ):
-    cls = gather_datasets()[dataset][0]
-    ds = cls(root=root)
-    success, errors = ds._populate(n_jobs=n_jobs, fetch=fetch, ignore_errors=ignore_errors)
-    print(f'Total added: {success} entries, and encountered {errors} errors')
+    try:
+        cls = gather_datasets()[dataset][0]
+        ds = cls(root=root)
+        success, errors = ds._populate(n_jobs=n_jobs, fetch=fetch, ignore_errors=ignore_errors)
+        print(f'Total added: {success} entries, and encountered {errors} errors')
+    except KeyboardInterrupt as e:
+        raise RuntimeError from e
