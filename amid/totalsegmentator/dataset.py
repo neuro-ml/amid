@@ -1,6 +1,6 @@
+import gzip
 from contextlib import suppress
 from functools import lru_cache
-from gzip import BadGzipFile
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -87,7 +87,7 @@ class Totalsegmentator(Source):
     def image(i, _base):
         file = f'{i}/ct.nii.gz'
 
-        with suppress(BadGzipFile):
+        with suppress(gzip.BadGzipFile):
             with unpack(_base, file, ARCHIVE_ROOT, '.zip') as (unpacked, is_unpacked):
                 if is_unpacked:
                     return np.asarray(nibabel.load(unpacked).dataobj)
