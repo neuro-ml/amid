@@ -55,8 +55,8 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                                 version=version,
                             )
                         )
-                        if repository.cache is not None and repository.cache.local:
-                            args.extend(make_cache())
+                        # if repository.cache is not None and repository.cache.local:
+                        #     args.extend(make_cache())
 
                 self._version = version
                 super().__init__(*args)
