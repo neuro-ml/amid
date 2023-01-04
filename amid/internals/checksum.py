@@ -134,7 +134,7 @@ class CacheAndCheck(CacheToStorage):
         # name -> identifier -> tree
         checksums = defaultdict(lambda: defaultdict(dict))
 
-        with suppress(HashNotFound):
+        with suppress(HashNotFound, ReadError):
             for key, value in repository.load_tree(to_hash(Path(path)), version=version, fetch=fetch).items():
                 name, identifier, relative = key.split('/', 2)
                 if name in names:
