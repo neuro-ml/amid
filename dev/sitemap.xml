@@ -16,16 +16,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://neuro-ml.github.io/amid/latest/fill_docs/</loc>
-         <lastmod>2023-01-04</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://neuro-ml.github.io/amid/latest/mkdocstrings/handlers/python_connectome/</loc>
-         <lastmod>2023-01-04</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://neuro-ml.github.io/amid/latest/recipes/RSNABreastCancer/</loc>
          <lastmod>2023-01-04</lastmod>
          <changefreq>daily</changefreq>
