@@ -17,14 +17,14 @@ class ParseAffineMatrix(Transform):
 
     __inherit__ = True
 
-    def orientation(affine):
-        """Constructs an orientation matrix from the given affine matrix."""
-        return affine[:3, :3]
-
     def origin(affine):
         """Constructs an origin tensor from the given affine matrix."""
         return affine[:-1, -1]
 
-    def voxel_spacing(orientation: Output):
+    def spacing(affine):
         """Constructs a voxel spacing tensor from the given orientation matrix."""
-        return np.linalg.norm(orientation, axis=0)
+        return np.linalg.norm(affine[:3, :3], axis=0)
+
+    def orientation(affine, spacing: Output):
+        """Constructs an orientation matrix from the given affine matrix."""
+        return np.divide(affine[:3, :3], spacing)
