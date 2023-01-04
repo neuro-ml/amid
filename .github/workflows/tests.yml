@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10', '3.11' ]
 
     steps:
       - uses: actions/checkout@v2
@@ -51,7 +51,20 @@ jobs:
 
       - name: Create the storage
         run: |
-          mkdir -p ~/.config/amid/ && cp tests/assets/.bev.yml ~/.config/amid/.bev.yml
+          mkdir -p ~/.config/amid
+          cat >~/.config/amid/.bev.yml <<EOL
+          local:
+            storage: '/home/runner/work/amid/amid/storage'
+            cache: '/home/runner/work/amid/amid/cache'
+          
+            remote:
+              storage:
+                - http: $CACHE_HOST
+                  optional: true
+          
+            meta:
+              fallback: local
+          EOL
           amid init
 
       - name: Test with pytest
