@@ -74,7 +74,7 @@ class AMOS(Source):
     def image(i, _id2split, _base):
         file = f'images{_id2split[i]}/amos_{i}.nii.gz'
 
-        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
+        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return np.asarray(nibabel.load(unpacked).dataobj)
             else:
@@ -85,7 +85,7 @@ class AMOS(Source):
         """The 4x4 matrix that gives the image's spatial orientation"""
         file = f'images{_id2split[i]}/amos_{i}.nii.gz'
 
-        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
+        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
@@ -96,7 +96,7 @@ class AMOS(Source):
         file = f'labels{_id2split[i]}/amos_{i}.nii.gz'
 
         try:
-            with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME) as (unpacked, is_unpacked):
+            with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
                 if is_unpacked:
                     return np.asarray(nibabel.load(unpacked).dataobj)
                 else:
