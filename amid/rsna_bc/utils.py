@@ -27,7 +27,7 @@ fields = {
 def add_csv_fields(scope):
     def make_loader(field, cast):
         def loader(_row):
-            value = getattr(_row, field, None)
+            value = _row.get(field)
             if pd.isnull(value):
                 return None
             if cast is not None:
