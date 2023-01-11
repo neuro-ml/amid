@@ -43,10 +43,10 @@ git checkout lits
 ```
 
 3\. Create a class that loads the raw data. [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) is a good
-   example. Note how each field is just a separate function.
+example. Note how each field is just a separate function.
 
-   There are no strict rules regarding the dataset's fields, but try to keep the "as raw as possible", i.e. don't apply
-   heavy processing, that modifies the data irreversibly.
+There are no strict rules regarding the dataset's fields, but try to keep the "as raw as possible", i.e. don't apply
+heavy processing, that modifies the data irreversibly.
 
 **Rule of thumb:**
 
@@ -94,6 +94,14 @@ amid populate LiTS /shared/data/LiTS
 **Note 7.2:** use the option `--help` for a more detailed information on this command
 
 8\. If there were no error, there will appear the file `amid/data/lits.hash` (the name depends on the `slug` given
-   to `@checksum`)
+to `@checksum`)
 
-9\. Commit all the files you added, including the `*.hash` one
+9\. Check the codestyle and make changes if flake8 is not happy:
+
+```shell
+pip install -r lint-requirements.txt # only for the first time
+flake8 .; black .; isort .
+```
+
+10\. Commit all the files you added, including the `*.hash` one
+

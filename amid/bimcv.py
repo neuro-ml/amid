@@ -19,11 +19,8 @@ from .internals import checksum, register
 @register(
     body_region='Chest',
     license='',
-    link=[
-        'https://github.com/BIMCV-CSUSP/BIMCV-COVID-19',
-        'https://ieee-dataport.org/open-access/bimcv-covid-19'
-        '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
-    ],
+    link='https://ieee-dataport.org/open-access/bimcv-covid-19'
+    '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
     modality='CT',
     prep_data_size='859G',
     raw_data_size='859G',
@@ -38,6 +35,8 @@ class BIMCVCovid19(Source):
     (https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0)
 
     PCR tests are not used
+
+    GitHub page: https://github.com/BIMCV-CSUSP/BIMCV-COVID-19
 
     Parameters
     ----------

@@ -28,6 +28,7 @@ plugins:
       glob:
         - 'mkdocstrings/**/*'
         - 'fill_docs.py'
+        - 'fill_readme.py'
 
 theme:
   name: material
