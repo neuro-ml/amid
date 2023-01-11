@@ -476,9 +476,9 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>lits
 </code></pre></div>
 <p>3. Create a class that loads the raw data. <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTS</a> is a good
-   example. Note how each field is just a separate function.</p>
+example. Note how each field is just a separate function.</p>
 <p>There are no strict rules regarding the dataset's fields, but try to keep the "as raw as possible", i.e. don't apply
-   heavy processing, that modifies the data irreversibly.</p>
+heavy processing, that modifies the data irreversibly.</p>
 <p><strong>Rule of thumb:</strong></p>
 <blockquote>
 <p>The dataset must be written in such a way, that making a submission to a contest should work out of the box.</p>
@@ -513,8 +513,12 @@
 <p><strong>Note 7.1:</strong> use the option <code>--n-jobs</code> to speed up the process</p>
 <p><strong>Note 7.2:</strong> use the option <code>--help</code> for a more detailed information on this command</p>
 <p>8. If there were no error, there will appear the file <code>amid/data/lits.hash</code> (the name depends on the <code>slug</code> given
-   to <code>@checksum</code>)</p>
-<p>9. Commit all the files you added, including the <code>*.hash</code> one</p>
+to <code>@checksum</code>)</p>
+<p>9. Check the codestyle and make changes if flake8 is not happy:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>lint-requirements.txt<span class="w"> </span><span class="c1"># only for the first time</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>flake8<span class="w"> </span>.<span class="p">;</span><span class="w"> </span>black<span class="w"> </span>.<span class="p">;</span><span class="w"> </span>isort<span class="w"> </span>.
+</code></pre></div>
+<p>10. Commit all the files you added, including the <code>*.hash</code> one</p>
 
 
 
