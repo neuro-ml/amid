@@ -8,14 +8,14 @@
       
       
       
-        <link rel="canonical" href="https://neuro-ml.github.io/amid/latest/datasets/">
+        <link rel="canonical" href="https://neuro-ml.github.io/amid/latest/CONTRIBUTING/">
       
       <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
-        <title>Datasets - AMID: Awesome Medical Imaging Datasets</title>
+        <title>Contribution Guidelines - AMID: Awesome Medical Imaging Datasets</title>
       
     
     
@@ -70,7 +70,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#datasets" class="md-skip">
+        <a href="#contribution-guidelines" class="md-skip">
           Skip to content
         </a>
       
@@ -107,7 +107,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Datasets
+              Contribution Guidelines
             
           </span>
         </div>
@@ -254,11 +254,59 @@
 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../CONTRIBUTING/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Contribution Guidelines
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Contribution Guidelines
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#preparing-the-environment" class="md-nav__link">
+    Preparing the environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-a-new-dataset" class="md-nav__link">
+    Adding a new dataset
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -284,21 +332,11 @@
 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../datasets/" class="md-nav__link">
         Datasets
       </a>
-      
     </li>
   
 
@@ -371,6 +409,28 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#preparing-the-environment" class="md-nav__link">
+    Preparing the environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-a-new-dataset" class="md-nav__link">
+    Adding a new dataset
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -383,250 +443,78 @@
                 
                   
 
-  <a href="https://github.com/neuro-ml/amid/edit/master/docs/datasets.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/neuro-ml/amid/edit/master/docs/CONTRIBUTING.md" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
-<h1 id="datasets">Datasets</h1>
-<table>
-<thead>
-<tr>
-<th align="left">Name</th>
-<th align="right">Entries</th>
-<th align="left">Body region</th>
-<th align="left">License</th>
-<th align="left">Link</th>
-<th align="left">Modality</th>
-<th align="left">Prep data size</th>
-<th align="left">Raw data size</th>
-<th align="left">Task</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">AMOS</td>
-<td align="right">600</td>
-<td align="left">Abdomen</td>
-<td align="left">CC BY 4.0</td>
-<td align="left"><a href="https://zenodo.org/record/7262581">Source</a></td>
-<td align="left">('CT', 'MRI')</td>
-<td align="left">23G</td>
-<td align="left">23G</td>
-<td align="left">Supervised multi-modality abdominal multi-organ segmentation</td>
-</tr>
-<tr>
-<td align="left">BIMCVCovid19</td>
-<td align="right">16335</td>
-<td align="left">Chest</td>
-<td align="left"></td>
-<td align="left"><a href="['https://github.com/BIMCV-CSUSP/BIMCV-COVID-19', 'https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0']">Source</a></td>
-<td align="left">CT</td>
-<td align="left">859G</td>
-<td align="left">859G</td>
-<td align="left">Segmentation</td>
-</tr>
-<tr>
-<td align="left">CC359</td>
-<td align="right">359</td>
-<td align="left">Head</td>
-<td align="left">CC BY-ND</td>
-<td align="left"><a href="https://sites.google.com/view/calgary-campinas-dataset/home">Source</a></td>
-<td align="left">MRI T1</td>
-<td align="left">nan</td>
-<td align="left">4,1G</td>
-<td align="left">Segmentation</td>
-</tr>
-<tr>
-<td align="left">CT_ICH</td>
-<td align="right">75</td>
-<td align="left">Head</td>
-<td align="left">PhysioNet Restricted Health Data License 1.5.0</td>
-<td align="left"><a href="https://physionet.org/content/ct-ich/1.3.1/">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">2,8G</td>
-<td align="left">Intracranial hemorrhage segmentation</td>
-</tr>
-<tr>
-<td align="left">CrossMoDA</td>
-<td align="right">484</td>
-<td align="left">Head</td>
-<td align="left">CC BY-NC-SA 4.0</td>
-<td align="left"><a href="https://zenodo.org/record/6504722#.YsgwnNJByV4">Source</a></td>
-<td align="left">('MRI T1c', 'MRI T2hr')</td>
-<td align="left">nan</td>
-<td align="left">17G</td>
-<td align="left">('Segmentation', 'Classification', 'Domain Adaptation')</td>
-</tr>
-<tr>
-<td align="left">EGD</td>
-<td align="right">774</td>
-<td align="left">Head</td>
-<td align="left">EGD data license</td>
-<td align="left"><a href="https://www.sciencedirect.com/science/article/pii/S2352340921004753">Source</a></td>
-<td align="left">('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2')</td>
-<td align="left">nan</td>
-<td align="left">40G</td>
-<td align="left">Segmentation</td>
-</tr>
-<tr>
-<td align="left">FLARE2022</td>
-<td align="right">2100</td>
-<td align="left">Abdomen</td>
-<td align="left">nan</td>
-<td align="left"><a href="https://flare22.grand-challenge.org/">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">247G</td>
-<td align="left">Semi-supervised abdominal organ segmentation</td>
-</tr>
-<tr>
-<td align="left">LIDC</td>
-<td align="right">1018</td>
-<td align="left">Chest</td>
-<td align="left">CC BY 3.0</td>
-<td align="left"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">126G</td>
-<td align="left">Lung nodules segmentation</td>
-</tr>
-<tr>
-<td align="left">LiTS</td>
-<td align="right">201</td>
-<td align="left">Abdominal</td>
-<td align="left">CC BY-NC-ND 4.0</td>
-<td align="left"><a href="https://competitions.codalab.org/competitions/17094">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">35G</td>
-<td align="left">Segmentation</td>
-</tr>
-<tr>
-<td align="left">LiverMedseg</td>
-<td align="right">50</td>
-<td align="left">('Chest', 'Abdomen')</td>
-<td align="left">CC-BY-SA 4.0</td>
-<td align="left"><a href="https://www.medseg.ai/database/liver-segments-50-cases">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">616M</td>
-<td align="left">Segmentation</td>
-</tr>
-<tr>
-<td align="left">MIDRC</td>
-<td align="right">155</td>
-<td align="left">Thorax</td>
-<td align="left">CC BY-NC 4.0</td>
-<td align="left"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">12G</td>
-<td align="left">COVID-19 Segmentation</td>
-</tr>
-<tr>
-<td align="left">MOOD</td>
-<td align="right">1358</td>
-<td align="left">('Head', 'Abdominal')</td>
-<td align="left">nan</td>
-<td align="left"><a href="http://medicalood.dkfz.de/web/">Source</a></td>
-<td align="left">('MRI', 'CT')</td>
-<td align="left">nan</td>
-<td align="left">120G</td>
-<td align="left">Out-of-distribution detection</td>
-</tr>
-<tr>
-<td align="left">Medseg9</td>
-<td align="right">9</td>
-<td align="left">Chest</td>
-<td align="left">CC0</td>
-<td align="left"><a href="http://medicalsegmentation.com/covid19/">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">310M</td>
-<td align="left">COVID-19 segmentation</td>
-</tr>
-<tr>
-<td align="left">MoscowCancer500</td>
-<td align="right">979</td>
-<td align="left">Thorax</td>
-<td align="left">nan</td>
-<td align="left"><a href="https://mosmed.ai/en/datasets/ct_lungcancer_500/">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">187G</td>
-<td align="left">Lung Cancer Detection</td>
-</tr>
-<tr>
-<td align="left">MoscowCovid1110</td>
-<td align="right">1110</td>
-<td align="left">Thorax</td>
-<td align="left">nan</td>
-<td align="left"><a href="https://mosmed.ai/en/datasets/covid191110/">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">21G</td>
-<td align="left">COVID-19 Segmentation</td>
-</tr>
-<tr>
-<td align="left">NSCLC</td>
-<td align="right">422</td>
-<td align="left">Thorax</td>
-<td align="left">CC BY 3.0</td>
-<td align="left"><a href="https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">34G</td>
-<td align="left">Tumor Segmentation</td>
-</tr>
-<tr>
-<td align="left">RSNABreastCancer</td>
-<td align="right">54710</td>
-<td align="left">Thorax</td>
-<td align="left">Non-Commercial Use</td>
-<td align="left"><a href="https://www.kaggle.com/competitions/rsna-breast-cancer-detection/data">Source</a></td>
-<td align="left">MG</td>
-<td align="left">294G</td>
-<td align="left">271G</td>
-<td align="left">Breast cancer classification</td>
-</tr>
-<tr>
-<td align="left">Totalsegmentator</td>
-<td align="right">1204</td>
-<td align="left">('Head', 'Thorax', 'Abdomen', 'Pelvis', 'Legs')</td>
-<td align="left">CC BY 4.0</td>
-<td align="left"><a href="https://zenodo.org/record/6802614#.Y6M2MxXP1D8">Source</a></td>
-<td align="left">CT</td>
-<td align="left">35G</td>
-<td align="left">35G</td>
-<td align="left">Supervised anatomical structures segmentation</td>
-</tr>
-<tr>
-<td align="left">VSSEG</td>
-<td align="right">242</td>
-<td align="left">Head</td>
-<td align="left">CC BY 4.0</td>
-<td align="left"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053">Source</a></td>
-<td align="left">('MRI T1c', 'MRI T2')</td>
-<td align="left">nan</td>
-<td align="left">27G</td>
-<td align="left">Segmentation</td>
-</tr>
-<tr>
-<td align="left">VerSe</td>
-<td align="right">374</td>
-<td align="left">Thorax, Abdomen</td>
-<td align="left">nan</td>
-<td align="left"><a href="https://osf.io/4skx2/">Source</a></td>
-<td align="left">CT</td>
-<td align="left">nan</td>
-<td align="left">97G</td>
-<td align="left">Vertebrae Segmentation</td>
-</tr>
-</tbody>
-</table>
+<h1 id="contribution-guidelines">Contribution Guidelines</h1>
+<h2 id="preparing-the-environment">Preparing the environment</h2>
+<p>1. First, set up a cache storage. Create the file <code>~/.config/amid/.bev.yml</code> with the following content:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">main</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/storage</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/cache</span>
+</code></pre></div>
+<p>where <code>/path/to/storage</code> and <code>/path/to/cache</code> are some paths in your filesystem.</p>
+<p>2. Run</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>amid<span class="w"> </span>init
+</code></pre></div>
+<p>The full command could look something like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/amid
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>cat<span class="w"> </span>&gt;~/.config/amid/.bev.yml<span class="w"> </span><span class="s">&lt;&lt;EOL</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="s">main:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="s">  storage: /mount/data/storage</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="s">  cache: /mount/data/cache</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="s">EOL</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>amid<span class="w"> </span>init
+</code></pre></div>
+<h2 id="adding-a-new-dataset">Adding a new dataset</h2>
+<p>We'll be using <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTS</a> as an example.</p>
+<p>1. Download the raw data to a separate folder in your filesystem</p>
+<p>2. (Optionally) create a new branch for the dataset:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>lits
+</code></pre></div>
+<p>3. Create a class that loads the raw data. <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTS</a> is a good
+   example. Note how each field is just a separate function.</p>
+<p>There are no strict rules regarding the dataset's fields, but try to keep the "as raw as possible", i.e. don't apply
+   heavy processing, that modifies the data irreversibly.</p>
+<p><strong>Rule of thumb:</strong></p>
+<blockquote>
+<p>The dataset must be written in such a way, that making a submission to a contest should work out of the box.</p>
+</blockquote>
+<p><strong>Note 3.1:</strong> If for a given id the value is missing, it is preferable to return <code>None</code> instead of raising an exception</p>
+<p><strong>Note 3.2:</strong> The dataset must have a docstring, which describes it, as well as provides a link to the original data</p>
+<p><strong>Note 3.3:</strong> If the raw data contains a table with metadata, it is preferable to split its columns into separate fields</p>
+<p>4. Add the <code>@checksum(slug)</code> decorator, where <code>slug</code> is a slug for the dataset, e.g. <code>lits</code></p>
+<p>5. Add the <code>@register(...)</code> decorator with the following arguments:</p>
+<ul>
+<li><code>modality</code> — the images' modality/modalities, e.g. CT, MRI</li>
+<li><code>body_region</code> — the anatomical regions present in the dataset, e.g. Head, Thorax, Abdomen</li>
+<li><code>license</code> — the dataset's license, if any</li>
+<li><code>link</code> — the link to the original data</li>
+<li><code>raw_data_size</code> — the total size, required for the raw data, e.g. 10G, 500M</li>
+<li><code>task</code> — the task for which this dataset is provided, if any. E.g. Supervised Learning / Domain Adaptation /
+  Self-supervised Learning, Tumor segmentation etc</li>
+</ul>
+<p>6. Make sure all the methods are working as expected:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">amid.lits</span> <span class="kn">import</span> <span class="n">LiTS</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">dataset</span> <span class="o">=</span> <span class="n">LiTS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;/datasets/LiTS&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">id_</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div>
+<p>7. Populate the dataset:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>amid<span class="w"> </span>populate<span class="w"> </span>LiTS<span class="w"> </span>/shared/data/LiTS
+</code></pre></div>
+<p><strong>Note 7.1:</strong> use the option <code>--n-jobs</code> to speed up the process</p>
+<p><strong>Note 7.2:</strong> use the option <code>--help</code> for a more detailed information on this command</p>
+<p>8. If there were no error, there will appear the file <code>amid/data/lits.hash</code> (the name depends on the <code>slug</code> given
+   to <code>@checksum</code>)</p>
+<p>9. Commit all the files you added, including the <code>*.hash</code> one</p>
 
 
 
@@ -647,7 +535,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../datasets-api/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Datasets API" rel="prev">
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -656,20 +544,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Datasets API
+              Home
             </div>
           </div>
         </a>
       
       
         
-        <a href="../recipes/RSNABreastCancer/" class="md-footer__link md-footer__link--next" aria-label="Next: RSNABreastCancer" rel="next">
+        <a href="../datasets-api/" class="md-footer__link md-footer__link--next" aria-label="Next: Datasets API" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              RSNABreastCancer
+              Datasets API
             </div>
           </div>
           <div class="md-footer__button md-icon">
