@@ -14,7 +14,7 @@ from .internals import checksum, register
 
 
 @register(
-    body_region='Thorax, Abdomen',
+    body_region=('Thorax', 'Abdomen'),
     modality='CT',
     task='Vertebrae Segmentation',
     link='https://osf.io/4skx2/',
