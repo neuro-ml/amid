@@ -49,6 +49,14 @@ jobs:
           isort --check .
           black --check .
 
+      - name: Check readme generation
+        if: "! github.event.pull_request.head.repo.fork "
+        run: |
+          BEFORE=$(sha256sum README.md)
+          python docs/fill_readme.py
+          AFTER=$(sha256sum README.md)
+          if [ "$BEFORE" != "$AFTER" ]; then echo "The README changed after table generation. Please run 'python docs/fill_readme.py'" && exit 1; fi
+
       - name: Create the storage
         env:
           CACHE_HOST: ${{ secrets.CACHE_HOST }}
