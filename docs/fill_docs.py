@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 from amid.internals.registry import gather_datasets, prepare_for_table
 
+
 records = []
 root = Path(__file__).resolve().parent
 with open(root / 'datasets-api.md', 'w') as file:

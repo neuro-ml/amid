@@ -6,12 +6,12 @@ import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from amid.internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Head',
-    license='PhysioNet Restricted Health Data License 1.5.0',
+    license=licenses.PhysioNet_RHD_150,
     link='https://physionet.org/content/ct-ich/1.3.1/',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...

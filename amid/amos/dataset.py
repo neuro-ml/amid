@@ -8,7 +8,7 @@ import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, register
+from ..internals import checksum, licenses, register
 from ..utils import open_nii_gz_file, unpack
 from .utils import add_labels
 
@@ -19,7 +19,7 @@ ARCHIVE_ROOT_NAME = 'amos22'
 
 @register(
     body_region='Abdomen',
-    license='CC BY 4.0',
+    license=licenses.CC_BY_40,
     link='https://zenodo.org/record/7262581',
     modality=('CT', 'MRI'),
     raw_data_size='23G',
