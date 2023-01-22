@@ -1,9 +1,12 @@
 import contextlib
+import datetime
 import zipfile
 from gzip import GzipFile
 from pathlib import Path
 
 import nibabel
+from dicom_csv import get_common_tag
+from dicom_csv.exceptions import ConsistencyError, TagTypeError
 
 
 @contextlib.contextmanager
@@ -53,3 +56,25 @@ def open_nii_gz_file(unpacked):
     with GzipFile(fileobj=unpacked) as nii:
         nii = nibabel.FileHolder(fileobj=nii)
         yield nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+
+
+def get_series_date(series):
+    try:
+        study_date = get_common_tag(series, 'StudyDate')
+    except (TagTypeError, ConsistencyError):
+        return
+
+    if not isinstance(study_date, str) or not study_date.isnumeric() or len(study_date) != 8:
+        return
+
+    try:
+        year = int(study_date[:4])
+        month = int(study_date[4:6])
+        day = int(study_date[6:])
+    except TypeError:
+        return
+
+    if year < 1972:  # the year of creation of the first CT scanner
+        return
+
+    return datetime.date(year, month, day)
