@@ -6,6 +6,7 @@ from tqdm import tqdm
 
 from amid.internals.registry import gather_datasets, prepare_for_table
 
+
 file = Path(__file__).resolve().parent.parent / 'README.md'
 with open(file, 'r') as fd:
     content = fd.read()

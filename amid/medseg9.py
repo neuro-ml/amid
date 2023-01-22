@@ -6,13 +6,13 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from amid.cc359 import open_nii_gz_file
-from amid.internals import checksum, register
+from .cc359 import open_nii_gz_file
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Chest',
-    license='CC0',
+    license=licenses.CC0_10,
     link='http://medicalsegmentation.com/covid19/',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...

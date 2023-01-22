@@ -10,14 +10,14 @@ import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, register
+from ..internals import checksum, licenses, register
 from ..utils import open_nii_gz_file, unpack
 from .utils import ARCHIVE_ROOT, add_labels, add_masks
 
 
 @register(
     body_region=('Head', 'Thorax', 'Abdomen', 'Pelvis', 'Legs'),
-    license='CC BY 4.0',
+    license=licenses.CC_BY_40,
     link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
     modality='CT',
     raw_data_size='35G',

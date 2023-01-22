@@ -13,12 +13,12 @@ from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Chest',
-    license='',
+    license=licenses.CC_BY_40,
     link='https://ieee-dataport.org/open-access/bimcv-covid-19'
     '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
     modality='CT',

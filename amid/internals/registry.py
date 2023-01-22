@@ -6,6 +6,9 @@ from typing import NamedTuple, Type
 
 import pandas as pd
 
+from .licenses import License
+
+
 _REGISTRY = {}
 
 
@@ -24,9 +27,10 @@ def register(**kwargs):
         name = cls.__name__
         module = inspect.getmodule(inspect.stack()[1][0]).__name__
         assert name not in _REGISTRY, name
-        _REGISTRY[name] = cls, module, Description(**kwargs)
+        _REGISTRY[name] = cls, module, description
         return cls
 
+    description = Description(**kwargs)
     return decorator
 
 
@@ -50,6 +54,12 @@ def prepare_for_table(name, cls, description):
 
     entry = {'name': name, 'entries': len(cls().ids)}
     entry.update({k: v for k, v in description._asdict().items() if not pd.isnull(v)})
+    license_ = entry.get('license', None)
+    if license_:
+        if isinstance(license_, License):
+            license_ = f'<a href="{license_.url}">{license_.name}</a>'
+        entry['license'] = license_
+
     link = entry.pop('link', None)
     if link is not None:
         entry['name'] = f'<a href="{link}">{name}</a>'

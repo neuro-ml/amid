@@ -7,13 +7,13 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from amid.cc359 import open_nii_gz_file
-from amid.internals import checksum, register
+from .cc359 import open_nii_gz_file
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region=('Chest', 'Abdomen'),
-    license='CC-BY-SA 4.0',
+    license=licenses.CC_BYSA_40,
     link='https://www.medseg.ai/database/liver-segments-50-cases',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...

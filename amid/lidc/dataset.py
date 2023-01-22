@@ -2,19 +2,18 @@ import os
 
 import numpy as np
 import pylidc as pl
-import pylidc.utils
 from connectome import Source, meta
 from connectome.interface.nodes import Output, Silent
 from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
 
-from amid.cancer_500.dataset import _get_study_date
-from amid.internals import checksum, register
-from amid.lidc.nodules import get_nodule
+from ..cancer_500.dataset import _get_study_date
+from ..internals import checksum, licenses, register
+from ..lidc.nodules import get_nodule
 
 
 @register(
     body_region='Chest',
-    license='CC BY 3.0',
+    license=licenses.CC_BY_30,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...

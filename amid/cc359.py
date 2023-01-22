@@ -9,12 +9,12 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Head',
-    license='CC BY-ND',
+    license=licenses.CC_BYND_40,
     link='https://sites.google.com/view/calgary-campinas-dataset/home',
     modality='MRI T1',
     prep_data_size=None,  # TODO: should be measured...

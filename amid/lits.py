@@ -8,12 +8,12 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Abdominal',
-    license='CC BY-NC-ND 4.0',
+    license=licenses.CC_BYNCND_40,
     link='https://competitions.codalab.org/competitions/17094',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...
