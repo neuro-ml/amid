@@ -87,11 +87,11 @@ class NLST(Source):
         assert get_common_tag(series, 'Modality') == 'CT'
         assert get_slices_plane(series) == Plane.Axial
         series = drop_duplicated_slices(series)
-        series = order_series(series)
+        series = order_series(series, decreasing=False)
         return series
 
     def image(_series):
-        return stack_images(_series, -1).astype(np.int16)
+        return np.moveaxis(stack_images(_series, -1).astype(np.int16), 0, 1)
 
     def study_uid(_series):
         return get_common_tag(_series, 'StudyInstanceUID')
