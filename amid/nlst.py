@@ -21,12 +21,12 @@ from dicom_csv import (
 )
 from dicom_csv.exceptions import ConsistencyError, TagTypeError
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Thorax',
-    license='CC BY 3.0',
+    license=licenses.CC_BY_30,
     link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...
