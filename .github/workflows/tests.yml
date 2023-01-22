@@ -72,6 +72,7 @@ jobs:
       - name: Check readme generation
         if: "! github.event.pull_request.head.repo.fork "
         run: |
+          pip install -r docs/requirements.txt
           BEFORE=$(sha256sum README.md)
           python docs/fill_readme.py
           AFTER=$(sha256sum README.md)
