@@ -23,12 +23,12 @@ from dicom_csv.exceptions import ConsistencyError, TagTypeError
 from scipy import stats
 from skimage.draw import polygon
 
-from amid.internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Head',
-    license='CC BY 4.0',
+    license=licenses.CC_BY_40,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053',
     modality=('MRI T1c', 'MRI T2'),
     prep_data_size=None,  # TODO: should be measured...

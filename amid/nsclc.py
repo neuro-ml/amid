@@ -21,12 +21,12 @@ from dicom_csv import (
     stack_images,
 )
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Thorax',
-    license='CC BY 3.0',
+    license=licenses.CC_BY_30,
     link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...

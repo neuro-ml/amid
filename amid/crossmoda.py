@@ -10,12 +10,12 @@ import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Output, Silent
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Head',
-    license='CC BY-NC-SA 4.0',
+    license=licenses.CC_BYNCSA_40,
     link='https://zenodo.org/record/6504722#.YsgwnNJByV4',
     modality=('MRI T1c', 'MRI T2hr'),
     prep_data_size=None,  # TODO: should be measured...
