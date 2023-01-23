@@ -1,5 +1,8 @@
 import plistlib
 import warnings
+from functools import lru_cache
+
+import pandas as pd
 import pydicom
 from ast import literal_eval
 from enum import IntEnum
@@ -32,19 +35,16 @@ class CoCaClasses(IntEnum):
     task='Segmentation',
 )
 @checksum('stanford_coca')
-class LiTS(Source):
+class StanfordCoCa(Source):
     """
-    A Stanford AIMI's Co(ronary) Ca(lcium)
+    A Stanford AIMI's Co(ronary) Ca(lcium) dataset.
 
-    There are two segmentation tasks on this dataset: liver and liver tumor segmentation.
 
     Parameters
     ----------
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    split: str, optional
-        split, identifying which cases to load - gated or nongated. Default - gated.
     version : str, optional
         the data version. Only has effect if the library was installed from a cloned git repository.
 
@@ -72,9 +72,9 @@ class LiTS(Source):
     Examples
     --------
     >>> # Place the downloaded archives in any folder and pass the path to the constructor:
-    >>> ds = StanfordCoCa(root='/path/to/downloaded/data/folder/', _split='gated')
+    >>> ds = StanfordCoCa(root='/path/to/downloaded/data/folder/')
     >>> print(len(ds.ids))
-    # 201  # actually dunno
+    # 787  # actually dunno
     >>> print(ds.image(ds.ids[0]).shape)
     # (512, 512, 163)
     >>> print(ds.mask(ds.ids[80]).shape)
@@ -83,7 +83,6 @@ class LiTS(Source):
     """
 
     _root: str = None
-    _split: str = 'gated'
     _raise: bool = False
     _class_abbr: dict = {
         'Left Anterior Descending Artery': 'LAD',
@@ -91,6 +90,12 @@ class LiTS(Source):
         'Right Coronary Artery': 'RCA',
         'Left Coronary Artery': 'LCA',
     }
+
+    def _split(i):
+        return i.split('-')[0]
+
+    def _i(i):
+        return i.split('-')[1]
 
     def _folder_with_images(_split):
         if _split == 'gated':
@@ -107,12 +112,14 @@ class LiTS(Source):
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
     @meta
-    def _ids(_root: Silent, _folder_with_images):
-        return tuple((Path(_root) / _folder_with_images).iterdir())
+    def ids(_root: Silent):
+        gated_ids = tuple(sorted('gated-'+x.name for x in (Path(_root) / 'Gated_release_final'/'patient').iterdir() if x.is_dir()))
+        nongated_ids = tuple(sorted('nongated-'+x.name for x in (Path(_root) / 'deidentified_nongated').iterdir() if x.is_dir()))
+        return gated_ids + nongated_ids
 
-    def _series(i, _root: Silent, _folder_with_images):
-        folder_with_dicoms  = Path(_root) / _folder_with_images / i
-        series = list(map(pydicom.dcmread, folder_with_dicoms.iterdir()))
+    def _series(_i, _root: Silent, _folder_with_images):
+        folder_with_dicoms  = Path(_root) / _folder_with_images / _i
+        series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
         # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
@@ -163,20 +170,23 @@ class LiTS(Source):
     def orientation_matrix(_series):
         return get_orientation_matrix(_series)
 
-    def mask(i, image: Output, slice_locations: Output, _image_meta, _annotation,
+    def mask(_i, image: Output, slice_locations: Output, _image_meta,
              _root: Silent, _folder_with_annotations, _class_abbr, _raise):
         if _folder_with_annotations is None:
             warnings.warn("The used split doesn't contain segmentation masks.")
             return None
 
         try:
-            with open(Path(_root)/_folder_with_annotations/f'{i}.xml', 'rb') as fp:
+            with open(Path(_root)/_folder_with_annotations/f'{_i}.xml', 'rb') as fp:
                 annotation = plistlib.load(fp)
                 image_annotations = annotation['Images']
 
-        except FileNotFoundError:
-            warnings.warn(f"Missing annotation for id: {i}")
-            return None
+        except FileNotFoundError as e:
+            if _raise:
+                raise e
+            else:
+                warnings.warn(f"Missing annotation for id: {_i}")
+                return None
 
         shape = image.shape
         sl = slice_locations
@@ -201,11 +211,21 @@ class LiTS(Source):
             if _raise:
                 raise e
             else:
-                warnings.warn(f"Mask preparation for idx {i} failed with: '{str(e)}'. Returning None")
+                warnings.warn(f"Mask preparation for idx {_i} failed with: '{str(e)}'. Returning None")
                 return None
 
         return multiclass_mask
 
-    # pick from series?
-    def score(i, _series):
-        raise NotImplementedError
+    @lru_cache(None)
+    def _scores(_root: Silent, _folder_with_images):
+        p = Path(_root) / _folder_with_images / 'scores.xlsx'
+
+        if not p.exists():
+            return None
+
+        return pd.read_excel(p, index_col=0)
+
+    def score(_i, _scores):
+        if _scores is None:
+            return None
+        return _scores.loc[_i+'A'].to_dict()
