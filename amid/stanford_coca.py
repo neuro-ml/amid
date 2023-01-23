@@ -27,12 +27,12 @@ class CoCaClasses(IntEnum):
 
 @register(
     body_region=('Coronary', 'Chest'),
-    license=licenses.CC_BYNCND_40,
+    license=licenses.StanfordDSResearch,
     link='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...
     raw_data_size='28G',
-    task='Segmentation',
+    task='Coronary Calcium Segmentation',
 )
 @checksum('stanford_coca')
 class StanfordCoCa(Source):
