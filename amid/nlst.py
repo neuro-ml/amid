@@ -1,4 +1,3 @@
-import datetime
 import json
 from pathlib import Path
 
@@ -19,14 +18,14 @@ from dicom_csv import (
     order_series,
     stack_images,
 )
-from dicom_csv.exceptions import ConsistencyError, TagTypeError
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
+from .utils import get_series_date
 
 
 @register(
     body_region='Thorax',
-    license='CC BY 3.0',
+    license=licenses.CC_BY_30,
     link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...
@@ -121,7 +120,7 @@ class NLST(Source):
         return get_common_tag(_series, 'PatientID', default=None)
 
     def study_date(_series):
-        return _get_study_date(_series)
+        return get_series_date(_series)
 
     def accession_number(_series):
         return get_common_tag(_series, 'AccessionNumber', default=None)
@@ -130,25 +129,3 @@ class NLST(Source):
 def _load_json(file):
     with open(file, 'r') as f:
         return json.load(f)
-
-
-def _get_study_date(series):
-    try:
-        study_date = get_common_tag(series, 'StudyDate')
-    except (TagTypeError, ConsistencyError):
-        return
-
-    if not isinstance(study_date, str) or not study_date.isnumeric() or len(study_date) != 8:
-        return
-
-    try:
-        year = int(study_date[:4])
-        month = int(study_date[4:6])
-        day = int(study_date[6:])
-    except TypeError:
-        return
-
-    if year < 1972:  # the year of creation of the first CT scanner
-        return
-
-    return datetime.date(year, month, day)
