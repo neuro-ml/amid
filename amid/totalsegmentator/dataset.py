@@ -10,14 +10,14 @@ import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, register
+from ..internals import checksum, licenses, register
 from ..utils import open_nii_gz_file, unpack
 from .utils import ARCHIVE_ROOT, add_labels, add_masks
 
 
 @register(
     body_region=('Head', 'Thorax', 'Abdomen', 'Pelvis', 'Legs'),
-    license='CC BY 4.0',
+    license=licenses.CC_BY_40,
     link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
     modality='CT',
     raw_data_size='35G',
@@ -82,7 +82,7 @@ class Totalsegmentator(Source):
         else:
             with ZipFile(_base) as zf:
                 parsed_namelist = [x.strip('/').split('/') for x in zf.namelist()]
-                return sorted([x[-1] for x in parsed_namelist if len(x) == 2 and x[-1] != 'meta.csv'])
+                return sorted({x[-1] for x in parsed_namelist if len(x) == 2 and x[-1] != 'meta.csv'})
 
     def image(i, _base):
         file = f'{i}/ct.nii.gz'

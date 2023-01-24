@@ -69,6 +69,15 @@ jobs:
           EOL
           amid init
 
+      - name: Check readme generation
+        if: "! github.event.pull_request.head.repo.fork "
+        run: |
+          pip install -r docs/requirements.txt
+          BEFORE=$(sha256sum README.md)
+          python docs/fill_readme.py
+          AFTER=$(sha256sum README.md)
+          if [ "$BEFORE" != "$AFTER" ]; then echo "The README changed after table generation. Please run 'python docs/fill_readme.py'" && exit 1; fi
+
       - name: Test with pytest
         run: |
           pytest tests --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch

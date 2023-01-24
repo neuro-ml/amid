@@ -10,7 +10,7 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
@@ -19,6 +19,7 @@ from .internals import checksum, register
     task='Vertebrae Segmentation',
     link='https://osf.io/4skx2/',
     raw_data_size='97G',
+    license=licenses.CC_BYSA_40,
 )
 @checksum('verse')
 class VerSe(Source):

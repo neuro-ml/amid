@@ -39,7 +39,7 @@ print(entry.split, entry.patient)
 | <a href="https://sites.google.com/view/calgary-campinas-dataset/home">CC359</a>                                                              |       359 | Head                                | MRI T1                          |
 | <a href="https://physionet.org/content/ct-ich/1.3.1/">CT_ICH</a>                                                                             |        75 | Head                                | CT                              |
 | <a href="https://zenodo.org/record/6504722#.YsgwnNJByV4">CrossMoDA</a>                                                                       |       484 | Head                                | MRI T1c, MRI T2hr               |
-| <a href="https://www.sciencedirect.com/science/article/pii/S2352340921004753">EGD</a>                                                        |       774 | Head                                | FLAIR, MRI T1, MRI T1GD, MRI T2 |
+| <a href="https://xnat.bmia.nl/data/archive/projects/egd">EGD</a>                                                                             |       774 | Head                                | FLAIR, MRI T1, MRI T1GD, MRI T2 |
 | <a href="https://flare22.grand-challenge.org/">FLARE2022</a>                                                                                 |      2100 | Abdomen                             | CT                              |
 | <a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254">LIDC</a>                                                |      1018 | Chest                               | CT                              |
 | <a href="https://competitions.codalab.org/competitions/17094">LiTS</a>                                                                       |       201 | Abdominal                           | CT                              |
@@ -49,6 +49,7 @@ print(entry.split, entry.patient)
 | <a href="http://medicalsegmentation.com/covid19/">Medseg9</a>                                                                                |         9 | Chest                               | CT                              |
 | <a href="https://mosmed.ai/en/datasets/ct_lungcancer_500/">MoscowCancer500</a>                                                               |       979 | Thorax                              | CT                              |
 | <a href="https://mosmed.ai/en/datasets/covid191110/">MoscowCovid1110</a>                                                                     |      1110 | Thorax                              | CT                              |
+| <a href="https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial">NLST</a>                                          |     13623 | Thorax                              | CT                              |
 | <a href="https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics">NSCLC</a>                                                     |       422 | Thorax                              | CT                              |
 | <a href="https://www.kaggle.com/competitions/rsna-breast-cancer-detection/data">RSNABreastCancer</a>                                         |     54710 | Thorax                              | MG                              |
 | <a href="https://zenodo.org/record/6802614#.Y6M2MxXP1D8">Totalsegmentator</a>                                                                |      1204 | Head, Thorax, Abdomen, Pelvis, Legs | CT                              |
@@ -71,3 +72,8 @@ Or if you want to use version control features:
 git clone https://github.com/neuro-ml/amid.git
 cd amid && pip install -e .
 ```
+
+# Contribute
+
+Check our [contribution guide](https://neuro-ml.github.io/amid/latest/CONTRIBUTING/) if you want to add a new dataset to
+AMID.

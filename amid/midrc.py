@@ -22,12 +22,12 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import checksum, register
+from .internals import checksum, licenses, register
 
 
 @register(
     body_region='Thorax',
-    license='CC BY-NC 4.0',
+    license=licenses.CC_BYNC_40,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
     modality='CT',
     prep_data_size=None,  # TODO: should be measured...
