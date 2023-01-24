@@ -483,10 +483,24 @@ heavy processing, that modifies the data irreversibly.</p>
 <blockquote>
 <p>The dataset must be written in such a way, that making a submission to a contest should work out of the box.</p>
 </blockquote>
-<p><strong>Note 3.1:</strong> If for a given id the value is missing, it is preferable to return <code>None</code> instead of raising an exception</p>
-<p><strong>Note 3.2:</strong> The dataset must have a docstring, which describes it, as well as provides a link to the original data</p>
-<p><strong>Note 3.3:</strong> If the raw data contains a table with metadata, it is preferable to split its columns into separate fields</p>
-<p>4. Add the <code>@checksum(slug)</code> decorator, where <code>slug</code> is a slug for the dataset, e.g. <code>lits</code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case of DICOM files, make sure to transpose the first 2 image axes. 
+This way the image axes will be consistent with potential contours' coordinates.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If for a given id the value is missing, it is preferable to return <code>None</code> instead of raising an exception</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The dataset must have a docstring, which describes it, as well as provides a link to the original data</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If the raw data contains a table with metadata, it is preferable to split its columns into separate fields</p>
+</div>
+<p>4. Add the <code>@checksum(slug)</code> decorator, where <code>slug</code> is a slug for the dataset, e.g. <code>'lits'</code></p>
 <p>5. Add the <code>@register(...)</code> decorator with the following arguments:</p>
 <ul>
 <li><code>modality</code> — the images' modality/modalities, e.g. CT, MRI</li>
@@ -510,8 +524,14 @@ heavy processing, that modifies the data irreversibly.</p>
 <p>7. Populate the dataset:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>amid<span class="w"> </span>populate<span class="w"> </span>LiTS<span class="w"> </span>/shared/data/LiTS
 </code></pre></div>
-<p><strong>Note 7.1:</strong> use the option <code>--n-jobs</code> to speed up the process</p>
-<p><strong>Note 7.2:</strong> use the option <code>--help</code> for a more detailed information on this command</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>use the option <code>--n-jobs</code> to speed up the process</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>use the option <code>--help</code> for a more detailed information on this command</p>
+</div>
 <p>8. If there were no error, there will appear the file <code>amid/data/lits.hash</code> (the name depends on the <code>slug</code> given
 to <code>@checksum</code>)</p>
 <p>9. Check the codestyle and make changes if flake8 is not happy:</p>
