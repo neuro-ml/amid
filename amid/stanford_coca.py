@@ -1,5 +1,6 @@
 import plistlib
 import warnings
+from collections import namedtuple
 from functools import lru_cache
 
 import pandas as pd
@@ -9,7 +10,7 @@ from enum import IntEnum
 from pathlib import Path
 
 import numpy as np
-from connectome import Source, meta
+from connectome import Source, meta, Transform
 from connectome.interface.nodes import Silent, Output
 from dicom_csv import expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images, \
     get_pixel_spacing, get_slice_locations, get_orientation_matrix
@@ -23,6 +24,9 @@ class CoCaClasses(IntEnum):
     LCX = 2
     RCA = 3
     LCA = 4
+
+
+Calcification = namedtuple('Calcification', 'label contour_px contour_mm')
 
 
 @register(
@@ -84,12 +88,6 @@ class StanfordCoCa(Source):
 
     _root: str = None
     _raise: bool = False
-    _class_abbr: dict = {
-        'Left Anterior Descending Artery': 'LAD',
-        'Left Circumflex Artery': 'LCA',
-        'Right Coronary Artery': 'RCA',
-        'Left Coronary Artery': 'LCA',
-    }
 
     def _split(i):
         return i.split('-')[0]
@@ -134,7 +132,7 @@ class StanfordCoCa(Source):
         return series
 
     def image(i, _series):
-        image = stack_images(_series, -1).astype(np.int16)
+        image = stack_images(_series, -1).transpose((1, 0, 2)).astype(np.int16)
         return image
 
     def _image_meta(_series):
@@ -170,8 +168,8 @@ class StanfordCoCa(Source):
     def orientation_matrix(_series):
         return get_orientation_matrix(_series)
 
-    def mask(_i, image: Output, slice_locations: Output, _image_meta,
-             _root: Silent, _folder_with_annotations, _class_abbr, _raise):
+    def raw_annotations(_i, _root: Silent, _folder_with_annotations, _raise):
+        """Annotation as it is in xml"""
         if _folder_with_annotations is None:
             warnings.warn("The used split doesn't contain segmentation masks.")
             return None
@@ -188,33 +186,19 @@ class StanfordCoCa(Source):
                 warnings.warn(f"Missing annotation for id: {_i}")
                 return None
 
-        shape = image.shape
-        sl = slice_locations
-        multiclass_mask = np.zeros(shape, np.uint8)
-        try:
-            for slice_annotation in image_annotations:
-                for roi in slice_annotation['ROIs']:
-                    if roi['Area'] > 0:
-                        assert roi['Name'] in _class_abbr, f"Unexpected class: {roi['Name']}"
-                        class_name = _class_abbr[roi['Name']]
-                        class_id = CoCaClasses[class_name].value
-                        slice_location = literal_eval(roi['Point_mm'][0])[-1]
-                        slice_id = np.argwhere(sl == slice_location).squeeze()
-                        assert slice_id, f"Slice where calcification is located is not presented in the series." #(i, slice_location, sl)
-                        roi_contour = [literal_eval(x) for x in roi['Point_px']]
-                        slice_mask = np.zeros(shape[:2])
-                        xs, ys = polygon(*(np.array(roi_contour).T), shape[:2])
-                        slice_mask[ys, xs] = True
-                        multiclass_mask[..., slice_id] = (class_id * slice_mask.astype(int)).astype(np.uint8)
+        return image_annotations
 
-        except AssertionError as e:
-            if _raise:
-                raise e
-            else:
-                warnings.warn(f"Mask preparation for idx {_i} failed with: '{str(e)}'. Returning None")
-                return None
+    def calcifications(raw_annotations: Output):
+        """Returns list of Calcifications"""
+        if raw_annotations is None:
+            return None
 
-        return multiclass_mask
+        cacs = []
+        for slice_annotation in raw_annotations:
+            for roi in slice_annotation['ROIs']:
+                if roi['Area'] > 0:
+                    cacs.append(Calcification(roi['Name'], roi['Point_px'], roi['Point_mm']))
+        return cacs
 
     @lru_cache(None)
     def _scores(_root: Silent, _folder_with_images):
@@ -229,3 +213,46 @@ class StanfordCoCa(Source):
         if _scores is None:
             return None
         return _scores.loc[_i+'A'].to_dict()
+
+
+class ContoursToMask(Transform):
+    """Our implementation of transform of the contours. One can implement own logic based on this calss"""
+
+    __inherit__ = True
+    _raise: bool = False
+    _class_abbr: dict = {
+        'Left Anterior Descending Artery': 'LAD',
+        'Left Circumflex Artery': 'LCA',
+        'Right Coronary Artery': 'RCA',
+        'Left Coronary Artery': 'LCA',
+    }
+
+    def mask(id, calcifications, image, slice_locations, _class_abbr, _raise):
+        if calcifications is None:
+            return None
+
+        shape = image.shape
+        sl = slice_locations
+        multiclass_mask = np.zeros(shape, np.uint8)
+        try:
+            for cac in calcifications:
+                assert cac.label in _class_abbr, f"Unexpected class: {cac.label}"
+                class_name = _class_abbr[cac.label]
+                class_id = CoCaClasses[class_name].value
+                slice_location = literal_eval(cac.contour_mm[0])[-1]
+                slice_id = np.argwhere(sl == slice_location).squeeze()
+                assert slice_id, f"Slice where calcification is located is not presented in the series." #(i, slice_location, sl)
+                roi_contour = [literal_eval(x) for x in cac.contour_px]
+                slice_mask = np.zeros(shape[:2])
+                xs, ys = polygon(*(np.array(roi_contour).T), shape[:2])
+                slice_mask[xs, ys] = True
+                multiclass_mask[..., slice_id] = (class_id * slice_mask.astype(int)).astype(np.uint8)
+
+        except AssertionError as e:
+            if _raise:
+                raise e
+            else:
+                warnings.warn(f"Mask preparation for idx {id} failed with: '{str(e)}'. Returning None")
+                return None
+
+        return multiclass_mask
