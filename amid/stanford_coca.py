@@ -2,6 +2,7 @@ import plistlib
 import warnings
 from collections import namedtuple
 from functools import lru_cache
+from typing import NamedTuple
 
 import pandas as pd
 import pydicom
@@ -26,7 +27,10 @@ class CoCaClasses(IntEnum):
     LCA = 4
 
 
-Calcification = namedtuple('Calcification', 'label contour_px contour_mm')
+class Calcification(NamedTuple):
+    label: str
+    contour_px: np.ndarray
+    contour_mm: np.ndarray
 
 
 @register(
@@ -87,7 +91,6 @@ class StanfordCoCa(Source):
     """
 
     _root: str = None
-    _raise: bool = False
 
     def _split(i):
         return i.split('-')[0]
@@ -116,22 +119,29 @@ class StanfordCoCa(Source):
         return gated_ids + nongated_ids
 
     def _series(_i, _root: Silent, _folder_with_images):
-        folder_with_dicoms  = Path(_root) / _folder_with_images / _i
-        series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
-        # series = sorted(series, key=lambda x: x.InstanceNumber)
-        series = expand_volumetric(series)
-        series = drop_duplicated_instances(series)
+        try:
+            folder_with_dicoms  = Path(_root) / _folder_with_images / _i
+            series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
+            # series = sorted(series, key=lambda x: x.InstanceNumber)
+            series = expand_volumetric(series)
+            series = drop_duplicated_instances(series)
 
-        if True:  # drop_dupl_slices
-            _original_num_slices = len(series)
-            series = drop_duplicated_slices(series)
-            if len(series) < _original_num_slices:
-                warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
+            if True:  # drop_dupl_slices
+                _original_num_slices = len(series)
+                series = drop_duplicated_slices(series)
+                if len(series) < _original_num_slices:
+                    warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
-        series = order_series(series, decreasing=False)
+            series = order_series(series, decreasing=False)
+        except ValueError as e:  # Can occur when slices have the same location, but different data.
+            warnings.warn(f'The series loading for id "{_i}" failed with error - "{str(e)}"')
+            return None
+
         return series
 
     def image(i, _series):
+        if _series is None:
+            return None
         image = stack_images(_series, -1).transpose((1, 0, 2)).astype(np.int16)
         return image
 
@@ -153,11 +163,8 @@ class StanfordCoCa(Source):
     def image_meta(_image_meta):
         return _image_meta
 
-    def study_uid(_series):
-        study_uids = np.unique([x["StudyInstanceUID"] for x in _series])
-        assert len(study_uids) == 1
-        # series_id_to_study
-        return study_uids[0]
+    def study_uid(_image_meta):
+        return _image_meta["StudyInstanceUID"]
 
     def pixel_spacing(_series):
         return get_pixel_spacing(_series).tolist()
@@ -197,7 +204,9 @@ class StanfordCoCa(Source):
         for slice_annotation in raw_annotations:
             for roi in slice_annotation['ROIs']:
                 if roi['Area'] > 0:
-                    cacs.append(Calcification(roi['Name'], roi['Point_px'], roi['Point_mm']))
+                    contour_px = np.array([literal_eval(x) for x in roi['Point_px']])
+                    contour_mm = np.array([literal_eval(x) for x in roi['Point_mm']])
+                    cacs.append(Calcification(roi['Name'], contour_px, contour_mm))
         return cacs
 
     @lru_cache(None)
@@ -216,7 +225,7 @@ class StanfordCoCa(Source):
 
 
 class ContoursToMask(Transform):
-    """Our implementation of transform of the contours. One can implement own logic based on this calss"""
+    """Our implementation of transform for the contours. One can implement own logic based on this class"""
 
     __inherit__ = True
     _raise: bool = False
@@ -239,12 +248,12 @@ class ContoursToMask(Transform):
                 assert cac.label in _class_abbr, f"Unexpected class: {cac.label}"
                 class_name = _class_abbr[cac.label]
                 class_id = CoCaClasses[class_name].value
-                slice_location = literal_eval(cac.contour_mm[0])[-1]
+                slice_location = cac.contour_mm[0][-1]
                 slice_id = np.argwhere(sl == slice_location).squeeze()
-                assert slice_id, f"Slice where calcification is located is not presented in the series." #(i, slice_location, sl)
-                roi_contour = [literal_eval(x) for x in cac.contour_px]
+                assert slice_id, f"Slice where calcification is located is not presented in the series."
+                roi_contour = cac.contour_px
                 slice_mask = np.zeros(shape[:2])
-                xs, ys = polygon(*(np.array(roi_contour).T), shape[:2])
+                xs, ys = polygon(*(roi_contour.T), shape[:2])
                 slice_mask[xs, ys] = True
                 multiclass_mask[..., slice_id] = (class_id * slice_mask.astype(int)).astype(np.uint8)
 
