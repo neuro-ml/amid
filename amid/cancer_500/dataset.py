@@ -29,7 +29,7 @@ from .nodules import get_nodules
     body_region='Thorax',
     modality='CT',
     task='Lung Cancer Detection',
-    link='https://mosmed.ai/en/datasets/ct_lungcancer_500/',
+    link='https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/',
     raw_data_size='187G',
 )
 @checksum('cancer_500')
@@ -48,7 +48,9 @@ class MoscowCancer500(Source):
     Notes
     -----
     Download links:
-    https://mosmed.ai/en/datasets/ct_lungcancer_500/
+    https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/
+    After pressing the `download` button you will have to provide an email address to which further instructions
+    will be sent.
 
     Examples
     --------
