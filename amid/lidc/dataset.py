@@ -6,9 +6,9 @@ from connectome import Source, meta
 from connectome.interface.nodes import Output, Silent
 from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
 
-from ..cancer_500.dataset import _get_study_date
 from ..internals import checksum, licenses, register
-from ..lidc.nodules import get_nodule
+from ..utils import get_series_date
+from .nodules import get_nodule
 
 
 @register(
@@ -145,7 +145,7 @@ class LIDC(Source):
         return get_common_tag(_series, 'KVP', default=None)
 
     def study_date(_series):
-        return _get_study_date(_series)
+        return get_series_date(_series)
 
     def accession_number(_series):
         return get_common_tag(_series, 'AccessionNumber', default=None)

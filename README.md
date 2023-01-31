@@ -49,6 +49,7 @@ print(entry.split, entry.patient)
 | <a href="http://medicalsegmentation.com/covid19/">Medseg9</a>                                                                                |         9 | Chest                               | CT                              |
 | <a href="https://mosmed.ai/en/datasets/ct_lungcancer_500/">MoscowCancer500</a>                                                               |       979 | Thorax                              | CT                              |
 | <a href="https://mosmed.ai/en/datasets/covid191110/">MoscowCovid1110</a>                                                                     |      1110 | Thorax                              | CT                              |
+| <a href="https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial">NLST</a>                                          |     13623 | Thorax                              | CT                              |
 | <a href="https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics">NSCLC</a>                                                     |       422 | Thorax                              | CT                              |
 | <a href="https://www.kaggle.com/competitions/rsna-breast-cancer-detection/data">RSNABreastCancer</a>                                         |     54710 | Thorax                              | MG                              |
 | <a href="https://zenodo.org/record/6802614#.Y6M2MxXP1D8">Totalsegmentator</a>                                                                |      1204 | Head, Thorax, Abdomen, Pelvis, Legs | CT                              |
@@ -71,3 +72,8 @@ Or if you want to use version control features:
 git clone https://github.com/neuro-ml/amid.git
 cd amid && pip install -e .
 ```
+
+# Contribute
+
+Check our [contribution guide](https://neuro-ml.github.io/amid/latest/CONTRIBUTING/) if you want to add a new dataset to
+AMID.

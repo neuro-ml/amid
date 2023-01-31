@@ -52,13 +52,20 @@ heavy processing, that modifies the data irreversibly.
 
 > The dataset must be written in such a way, that making a submission to a contest should work out of the box.
 
-**Note 3.1:** If for a given id the value is missing, it is preferable to return `None` instead of raising an exception
+!!! note
+    In case of DICOM files, make sure to transpose the first 2 image axes. 
+    This way the image axes will be consistent with potential contours' coordinates.
 
-**Note 3.2:** The dataset must have a docstring, which describes it, as well as provides a link to the original data
+!!! tip 
+    If for a given id the value is missing, it is preferable to return `None` instead of raising an exception
 
-**Note 3.3:** If the raw data contains a table with metadata, it is preferable to split its columns into separate fields
+!!! tip
+    The dataset must have a docstring, which describes it, as well as provides a link to the original data
 
-4\. Add the `@checksum(slug)` decorator, where `slug` is a slug for the dataset, e.g. `lits`
+!!! tip
+    If the raw data contains a table with metadata, it is preferable to split its columns into separate fields
+
+4\. Add the `@checksum(slug)` decorator, where `slug` is a slug for the dataset, e.g. `'lits'`
 
 5\. Add the `@register(...)` decorator with the following arguments:
 
@@ -89,9 +96,11 @@ print(dataset.image(id_).shape)
 amid populate LiTS /shared/data/LiTS
 ```
 
-**Note 7.1:** use the option `--n-jobs` to speed up the process
+!!! tip 
+    use the option `--n-jobs` to speed up the process
 
-**Note 7.2:** use the option `--help` for a more detailed information on this command
+!!! tip
+    use the option `--help` for a more detailed information on this command
 
 8\. If there were no error, there will appear the file `amid/data/lits.hash` (the name depends on the `slug` given
 to `@checksum`)
