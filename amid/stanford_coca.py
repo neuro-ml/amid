@@ -179,9 +179,6 @@ class StanfordCoCa(Source):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
-    def image_meta(_image_meta):
-        return _image_meta
-
     def series_uid(_image_meta):
         return _image_meta.get('SeriesInstanceUID', None)
 
