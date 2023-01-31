@@ -1,7 +1,6 @@
 import plistlib
 import warnings
 from ast import literal_eval
-from collections import namedtuple
 from enum import IntEnum
 from functools import lru_cache
 from pathlib import Path
@@ -65,7 +64,8 @@ class StanfordCoCa(Source):
 
     Notes
     -----
-    Follow the download instructions at https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa.
+    Follow the download instructions at
+    https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa.
     You'll need to register and accept the terms of use. After that, copy the files from Azure:
 
     azcopy copy 'some-generated-access-link' /path/to/downloaded/data/ --recursive=true
@@ -178,10 +178,10 @@ class StanfordCoCa(Source):
         return _image_meta
 
     def series_uid(_image_meta):
-        return _image_meta.get("SeriesInstanceUID", None)
+        return _image_meta.get('SeriesInstanceUID', None)
 
     def study_uid(_image_meta):
-        return _image_meta.get("StudyInstanceUID", None)
+        return _image_meta.get('StudyInstanceUID', None)
 
     def pixel_spacing(_series):
         return get_pixel_spacing(_series).tolist() if _series else None
@@ -204,7 +204,7 @@ class StanfordCoCa(Source):
                 image_annotations = annotation['Images']
 
         except FileNotFoundError:
-            warnings.warn(f"Missing annotation for id: {_i}")
+            warnings.warn(f'Missing annotation for id: {_i}')
             return None
 
         return image_annotations
@@ -263,15 +263,15 @@ class ContoursToMask(Transform):
         multiclass_mask = np.zeros(shape, np.uint8)
         try:
             for cac in calcifications:
-                assert cac.label in _class_abbr, f"Unexpected class: {cac.label}"
+                assert cac.label in _class_abbr, f'Unexpected class: {cac.label}'
                 class_name = _class_abbr[cac.label]
                 class_id = CoCaClasses[class_name].value
                 slice_location = cac.contour_mm[0][-1]
                 slice_id = np.argwhere(sl == slice_location).squeeze()
-                assert slice_id, f"Slice where calcification is located is not presented in the series."
+                assert slice_id, 'Slice where calcification is located is not presented in the series.'
                 roi_contour = cac.contour_px
                 slice_mask = np.zeros(shape[:2])
-                xs, ys = polygon(*(roi_contour.T), shape[:2])
+                xs, ys = polygon(*roi_contour.T, shape[:2])
                 slice_mask[xs, ys] = True
                 multiclass_mask[..., slice_id] = (class_id * slice_mask.astype(int)).astype(np.uint8)
 
