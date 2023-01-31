@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pydicom
 from connectome import Source, Transform, meta
-from connectome.interface.nodes import Output, Silent
+from connectome.interface.nodes import Silent
 from dicom_csv import (
     drop_duplicated_instances,
     drop_duplicated_slices,
