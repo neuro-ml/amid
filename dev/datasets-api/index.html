@@ -431,6 +431,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.stanford_coca.StanfordCoCa" class="md-nav__link">
+    StanfordCoCa
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.totalsegmentator.dataset.Totalsegmentator" class="md-nav__link">
     Totalsegmentator
   </a>
@@ -670,6 +677,13 @@
         <li class="md-nav__item">
   <a href="#amid.rsna_bc.dataset.RSNABreastCancer" class="md-nav__link">
     RSNABreastCancer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.stanford_coca.StanfordCoCa" class="md-nav__link">
+    StanfordCoCa
   </a>
   
 </li>
@@ -5157,6 +5171,250 @@ If not provided, the cache is assumed to be already populated.</p></td>
 
 <h4 id="amid.rsna_bc.dataset.RSNABreastCancer.intensity_sign" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">intensity_sign</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.stanford_coca.StanfordCoCa" class="doc doc-heading">
+        <code>amid.stanford_coca.StanfordCoCa</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>A Stanford AIMI's Co(ronary) Ca(lcium) dataset.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.stanford_coca.StanfordCoCa--notes">Notes</h5>
+<p>Follow the download instructions at
+https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa.
+You'll need to register and accept the terms of use. After that, copy the files from Azure:</p>
+<p>azcopy copy 'some-generated-access-link' /path/to/downloaded/data/ --recursive=true</p>
+<p>Then, the folder with raw downloaded data should contain two subfolders - a subset with gated coronary CT scans
+and corresponding coronary calcium segmentation masks (<code>Gated_release_final</code>)
+and a folder with the non-gated CT scans with corresponding coronary with coronary artery calcium scores
+(<code>deidentified_nongated</code>).</p>
+<p>The folder with gated data should have original structure:
+    ./Gated_release_final/patient/0/folder-with-dcms/
+    ./Gated_release_final/calcium_xml/0.xml
+    ...</p>
+<p>The folder with nongated data should have original structure:
+    ./deidentified_nongated/0/folder-with-dcms/
+    ...</p>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">StanfordCoCa</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 971</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 57)</span>
+</code></pre></div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.series_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.study_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.pixel_spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pixel_spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.slice_locations" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">slice_locations</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.orientation_matrix" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">orientation_matrix</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.calcifications" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">calcifications</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns list of Calcifications</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.stanford_coca.StanfordCoCa.score" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">score</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
