@@ -227,10 +227,7 @@ class StanfordCoCa(Source):
                     total, length = roi['Total'], roi['Length']
                     cacs.append(
                         Calcification(
-                            name, contour_px, contour_mm,
-                            center, area,
-                            hu_min, hu_max, hu_dev, hu_mean,
-                            total, length
+                            name, contour_px, contour_mm, center, area, hu_min, hu_max, hu_dev, hu_mean, total, length
                         )
                     )
         return cacs
