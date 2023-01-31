@@ -1,20 +1,27 @@
 import plistlib
 import warnings
+from ast import literal_eval
 from collections import namedtuple
+from enum import IntEnum
 from functools import lru_cache
+from pathlib import Path
 from typing import NamedTuple
 
+import numpy as np
 import pandas as pd
 import pydicom
-from ast import literal_eval
-from enum import IntEnum
-from pathlib import Path
-
-import numpy as np
-from connectome import Source, meta, Transform
-from connectome.interface.nodes import Silent, Output
-from dicom_csv import expand_volumetric, drop_duplicated_instances, drop_duplicated_slices, order_series, stack_images, \
-    get_pixel_spacing, get_slice_locations, get_orientation_matrix
+from connectome import Source, Transform, meta
+from connectome.interface.nodes import Output, Silent
+from dicom_csv import (
+    drop_duplicated_instances,
+    drop_duplicated_slices,
+    expand_volumetric,
+    get_orientation_matrix,
+    get_pixel_spacing,
+    get_slice_locations,
+    order_series,
+    stack_images,
+)
 from skimage.draw import polygon
 
 from .internals import checksum, licenses, register
@@ -84,9 +91,7 @@ class StanfordCoCa(Source):
     >>> print(len(ds.ids))
     # 787  # actually dunno
     >>> print(ds.image(ds.ids[0]).shape)
-    # (512, 512, 163)
-    >>> print(ds.mask(ds.ids[80]).shape)
-    # (512, 512, 771)
+    # (512, 512, 57)
 
     """
 
@@ -100,7 +105,7 @@ class StanfordCoCa(Source):
 
     def _folder_with_images(_split):
         if _split == 'gated':
-            return Path('Gated_release_final')/'patient'
+            return Path('Gated_release_final') / 'patient'
         if _split == 'nongated':
             return 'deidentified_nongated'
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
@@ -114,33 +119,42 @@ class StanfordCoCa(Source):
 
     @meta
     def ids(_root: Silent):
-        gated_ids = tuple(sorted('gated-'+x.name for x in (Path(_root) / 'Gated_release_final'/'patient').iterdir() if x.is_dir()))
-        nongated_ids = tuple(sorted('nongated-'+x.name for x in (Path(_root) / 'deidentified_nongated').iterdir() if x.is_dir()))
-        return gated_ids + nongated_ids
+        gated_ids = tuple(
+            sorted('gated-' + x.name for x in (Path(_root) / 'Gated_release_final' / 'patient').iterdir() if x.is_dir())
+        )
+        nongated_ids = tuple(
+            sorted('nongated-' + x.name for x in (Path(_root) / 'deidentified_nongated').iterdir() if x.is_dir())
+        )
+
+        ignore = {
+            'gated-159',  # Undefined image orientation
+            'gated-388',  # Inconsistent pixel spacing
+            'gated-700',  # Inconsistent pixel spacing
+        }
+        return tuple(sorted(set(gated_ids + nongated_ids) - ignore))
 
     def _series(_i, _root: Silent, _folder_with_images):
         try:
-            folder_with_dicoms  = Path(_root) / _folder_with_images / _i
+            folder_with_dicoms = Path(_root) / _folder_with_images / _i
             series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
             # series = sorted(series, key=lambda x: x.InstanceNumber)
             series = expand_volumetric(series)
             series = drop_duplicated_instances(series)
 
-            if True:  # drop_dupl_slices
-                _original_num_slices = len(series)
-                series = drop_duplicated_slices(series)
-                if len(series) < _original_num_slices:
-                    warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
+            original_num_slices = len(series)
+            series = drop_duplicated_slices(series)
+            if len(series) < original_num_slices:
+                warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
             series = order_series(series, decreasing=False)
         except ValueError as e:  # Can occur when slices have the same location, but different data.
             warnings.warn(f'The series loading for id "{_i}" failed with error - "{str(e)}"')
-            return None
+            return []
 
         return series
 
     def image(i, _series):
-        if _series is None:
+        if not _series:
             return None
         image = stack_images(_series, -1).transpose((1, 0, 2)).astype(np.int16)
         return image
@@ -163,35 +177,35 @@ class StanfordCoCa(Source):
     def image_meta(_image_meta):
         return _image_meta
 
+    def series_uid(_image_meta):
+        return _image_meta.get("SeriesInstanceUID", None)
+
     def study_uid(_image_meta):
-        return _image_meta["StudyInstanceUID"]
+        return _image_meta.get("StudyInstanceUID", None)
 
     def pixel_spacing(_series):
-        return get_pixel_spacing(_series).tolist()
+        return get_pixel_spacing(_series).tolist() if _series else None
 
     def slice_locations(_series):
-        return get_slice_locations(_series)
+        return get_slice_locations(_series) if _series else None
 
     def orientation_matrix(_series):
-        return get_orientation_matrix(_series)
+        return get_orientation_matrix(_series) if _series else None
 
-    def raw_annotations(_i, _root: Silent, _folder_with_annotations, _raise):
+    def raw_annotations(_i, _root: Silent, _folder_with_annotations):
         """Annotation as it is in xml"""
         if _folder_with_annotations is None:
             warnings.warn("The used split doesn't contain segmentation masks.")
             return None
 
         try:
-            with open(Path(_root)/_folder_with_annotations/f'{_i}.xml', 'rb') as fp:
+            with open(Path(_root) / _folder_with_annotations / f'{_i}.xml', 'rb') as fp:
                 annotation = plistlib.load(fp)
                 image_annotations = annotation['Images']
 
-        except FileNotFoundError as e:
-            if _raise:
-                raise e
-            else:
-                warnings.warn(f"Missing annotation for id: {_i}")
-                return None
+        except FileNotFoundError:
+            warnings.warn(f"Missing annotation for id: {_i}")
+            return None
 
         return image_annotations
 
@@ -221,7 +235,11 @@ class StanfordCoCa(Source):
     def score(_i, _scores):
         if _scores is None:
             return None
-        return _scores.loc[_i+'A'].to_dict()
+        try:
+            return _scores.loc[_i + 'A'].to_dict()
+        except KeyError:
+            warnings.warn(f'Missing scores for idx "{_i}"')
+            return None
 
 
 class ContoursToMask(Transform):

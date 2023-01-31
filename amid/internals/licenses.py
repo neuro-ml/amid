@@ -43,5 +43,5 @@ PhysioNet_RHD_150 = License(
 
 StanfordDSResearch = License(
     name='Stanford University Dataset Research Use Agreement',
-    url='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa', # TODO: replace with separate link to terms
+    url='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',  # TODO: separate link
 )
