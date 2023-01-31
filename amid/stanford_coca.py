@@ -97,7 +97,7 @@ class StanfordCoCa(Source):
     >>> # Place the downloaded archives in any folder and pass the path to the constructor:
     >>> ds = StanfordCoCa(root='/path/to/downloaded/data/folder/')
     >>> print(len(ds.ids))
-    # 787  # actually dunno
+    # 995
     >>> print(ds.image(ds.ids[0]).shape)
     # (512, 512, 57)
 
@@ -134,13 +134,7 @@ class StanfordCoCa(Source):
             sorted('nongated-' + x.name for x in (Path(_root) / 'deidentified_nongated').iterdir() if x.is_dir())
         )
 
-        ignore = set()  # Leverage --ignore-errors option when doing `amid populate`
-        # ignore = {
-        #     'gated-159',  # Undefined image orientation
-        #     'gated-388',  # Inconsistent pixel spacing
-        #     'gated-700',  # Inconsistent pixel spacing
-        # }
-        return tuple(sorted(set(gated_ids + nongated_ids) - ignore))
+        return gated_ids + nongated_ids
 
     def _series(_i, _root: Silent, _folder_with_images):
         folder_with_dicoms = Path(_root) / _folder_with_images / _i
@@ -159,8 +153,6 @@ class StanfordCoCa(Source):
         return series
 
     def image(i, _series):
-        if not _series:
-            return None
         image = stack_images(_series, -1).transpose((1, 0, 2)).astype(np.int16)
         return image
 
