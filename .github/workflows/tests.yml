@@ -13,9 +13,9 @@ jobs:
         python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10', '3.11' ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -50,6 +50,7 @@ jobs:
           black --check .
 
       - name: Create the storage
+        if: "! github.event.pull_request.head.repo.fork "
         env:
           CACHE_HOST: ${{ secrets.CACHE_HOST }}
         run: |
@@ -79,22 +80,25 @@ jobs:
           if [ "$BEFORE" != "$AFTER" ]; then echo "The README changed after table generation. Please run 'python docs/fill_readme.py'" && exit 1; fi
 
       - name: Test with pytest
+        if: "! github.event.pull_request.head.repo.fork "
         run: |
           pytest tests --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
       - name: Generate coverage report
+        if: "! github.event.pull_request.head.repo.fork "
         run: |
           coverage xml -o reports/coverage-${{ matrix.python-version }}.xml
           sed -i -e "s|$MODULE_PARENT/||g" reports/coverage-${{ matrix.python-version }}.xml
           sed -i -e "s|$(echo $MODULE_PARENT/ | tr "/" .)||g" reports/coverage-${{ matrix.python-version }}.xml
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        if: "! github.event.pull_request.head.repo.fork "
+        uses: actions/upload-artifact@v3
         with:
           name: reports-${{ matrix.python-version }}
           path: reports/*-${{ matrix.python-version }}.xml
-        if: ${{ always() }}
 
       - name: Upload coverage results
+        if: "! github.event.pull_request.head.repo.fork "
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
