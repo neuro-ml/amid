@@ -97,7 +97,7 @@ class StanfordCoCa(Source):
     >>> # Place the downloaded archives in any folder and pass the path to the constructor:
     >>> ds = StanfordCoCa(root='/path/to/downloaded/data/folder/')
     >>> print(len(ds.ids))
-    # 995
+    # 971
     >>> print(ds.image(ds.ids[0]).shape)
     # (512, 512, 57)
 
