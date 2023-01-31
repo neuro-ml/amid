@@ -37,6 +37,14 @@ class Calcification(NamedTuple):
     label: str
     contour_px: np.ndarray
     contour_mm: np.ndarray
+    center: np.ndarray
+    area: float
+    hu_min: float
+    hu_max: float
+    hu_dev: float
+    hu_mean: float
+    length: float
+    total: int
 
 
 @register(
@@ -126,30 +134,27 @@ class StanfordCoCa(Source):
             sorted('nongated-' + x.name for x in (Path(_root) / 'deidentified_nongated').iterdir() if x.is_dir())
         )
 
-        ignore = {
-            'gated-159',  # Undefined image orientation
-            'gated-388',  # Inconsistent pixel spacing
-            'gated-700',  # Inconsistent pixel spacing
-        }
+        ignore = set()  # Leverage --ignore-errors option when doing `amid populate`
+        # ignore = {
+        #     'gated-159',  # Undefined image orientation
+        #     'gated-388',  # Inconsistent pixel spacing
+        #     'gated-700',  # Inconsistent pixel spacing
+        # }
         return tuple(sorted(set(gated_ids + nongated_ids) - ignore))
 
     def _series(_i, _root: Silent, _folder_with_images):
-        try:
-            folder_with_dicoms = Path(_root) / _folder_with_images / _i
-            series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
-            # series = sorted(series, key=lambda x: x.InstanceNumber)
-            series = expand_volumetric(series)
-            series = drop_duplicated_instances(series)
+        folder_with_dicoms = Path(_root) / _folder_with_images / _i
+        series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
+        # series = sorted(series, key=lambda x: x.InstanceNumber)
+        series = expand_volumetric(series)
+        series = drop_duplicated_instances(series)
 
-            original_num_slices = len(series)
-            series = drop_duplicated_slices(series)
-            if len(series) < original_num_slices:
-                warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
+        original_num_slices = len(series)
+        series = drop_duplicated_slices(series)
+        if len(series) < original_num_slices:
+            warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
-            series = order_series(series, decreasing=False)
-        except ValueError as e:  # Can occur when slices have the same location, but different data.
-            warnings.warn(f'The series loading for id "{_i}" failed with error - "{str(e)}"')
-            return []
+        series = order_series(series, decreasing=False)
 
         return series
 
@@ -192,7 +197,7 @@ class StanfordCoCa(Source):
     def orientation_matrix(_series):
         return get_orientation_matrix(_series) if _series else None
 
-    def raw_annotations(_i, _root: Silent, _folder_with_annotations):
+    def _raw_annotations(_i, _root: Silent, _folder_with_annotations):
         """Annotation as it is in xml"""
         if _folder_with_annotations is None:
             warnings.warn("The used split doesn't contain segmentation masks.")
@@ -209,18 +214,28 @@ class StanfordCoCa(Source):
 
         return image_annotations
 
-    def calcifications(raw_annotations: Output):
+    def calcifications(_raw_annotations):
         """Returns list of Calcifications"""
-        if raw_annotations is None:
+        if _raw_annotations is None:
             return None
 
         cacs = []
-        for slice_annotation in raw_annotations:
+        for slice_annotation in _raw_annotations:
             for roi in slice_annotation['ROIs']:
                 if roi['Area'] > 0:
                     contour_px = np.array([literal_eval(x) for x in roi['Point_px']])
                     contour_mm = np.array([literal_eval(x) for x in roi['Point_mm']])
-                    cacs.append(Calcification(roi['Name'], contour_px, contour_mm))
+                    name, center, area = roi['Name'], roi['Center'], roi['Area']
+                    hu_min, hu_max, hu_dev, hu_mean = roi['Min'], roi['Max'], roi['Dev'], roi['Mean']
+                    total, length = roi['Total'], roi['Length']
+                    cacs.append(
+                        Calcification(
+                            name, contour_px, contour_mm,
+                            center, area,
+                            hu_min, hu_max, hu_dev, hu_mean,
+                            total, length
+                        )
+                    )
         return cacs
 
     @lru_cache(None)
