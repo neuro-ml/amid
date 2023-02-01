@@ -84,7 +84,6 @@ class MOOD(Source):
 
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
-
                     if zipinfo.is_dir():
                         continue
 

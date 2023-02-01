@@ -61,7 +61,6 @@ class Medseg9(Source):
 
         with ZipFile(Path(_root) / 'rp_msk.zip') as zf:
             for zipinfo in zf.infolist():
-
                 if zipinfo.is_dir():
                     continue
                 file_stem = Path(zipinfo.filename).stem

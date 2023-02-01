@@ -1,5 +1,4 @@
 import codecs
-import datetime
 import json
 import warnings
 from functools import lru_cache
@@ -18,10 +17,11 @@ from dicom_csv import (
     order_series,
     stack_images,
 )
-from dicom_csv.exceptions import ConsistencyError, TagMissingError, TagTypeError
+from dicom_csv.exceptions import TagMissingError
 from tqdm.auto import tqdm
 
 from ..internals import checksum, register
+from ..utils import get_series_date
 from .nodules import get_nodules
 
 
@@ -29,7 +29,7 @@ from .nodules import get_nodules
     body_region='Thorax',
     modality='CT',
     task='Lung Cancer Detection',
-    link='https://mosmed.ai/en/datasets/ct_lungcancer_500/',
+    link='https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/',
     raw_data_size='187G',
 )
 @checksum('cancer_500')
@@ -48,7 +48,9 @@ class MoscowCancer500(Source):
     Notes
     -----
     Download links:
-    https://mosmed.ai/en/datasets/ct_lungcancer_500/
+    https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/
+    After pressing the `download` button you will have to provide an email address to which further instructions
+    will be sent.
 
     Examples
     --------
@@ -141,7 +143,7 @@ class MoscowCancer500(Source):
         return get_common_tag(_series, 'PatientID', default=None)
 
     def study_date(_series):
-        return _get_study_date(_series)
+        return get_series_date(_series)
 
     def accession_number(_series):
         return get_common_tag(_series, 'AccessionNumber', default=None)
@@ -165,25 +167,3 @@ class MoscowCancer500(Source):
 def _is_monotonic(sequence):
     sequence = list(sequence)
     return sequence == sorted(sequence) or sequence == sorted(sequence)[::-1]
-
-
-def _get_study_date(series):
-    try:
-        study_date = get_common_tag(series, 'StudyDate')
-    except (TagTypeError, ConsistencyError):
-        return
-
-    if not isinstance(study_date, str) or not study_date.isnumeric() or len(study_date) != 8:
-        return
-
-    try:
-        year = int(study_date[:4])
-        month = int(study_date[4:6])
-        day = int(study_date[6:])
-    except TypeError:
-        return
-
-    if year < 1972:  # year of creation of first CT scanner
-        return
-
-    return datetime.date(year, month, day)

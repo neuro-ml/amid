@@ -62,7 +62,6 @@ class CrossMoDA(Source):
         for archive in Path(_root).glob('*.zip'):
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
-
                     if zipinfo.is_dir():
                         continue
 

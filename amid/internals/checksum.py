@@ -10,7 +10,7 @@ from bev.ops import save_hash
 from connectome import Chain
 from connectome.cache import Cache
 from connectome.containers import EdgesBag, IdentityContext
-from connectome.engine import Command, ConstantEdge, IdentityEdge, Node, StaticGraph, StaticHash, TreeNode
+from connectome.engine import Command, ConstantEdge, Details, Node, StaticGraph, StaticHash, TreeNode
 from connectome.layers.cache import CacheToStorage
 from connectome.utils import AntiSet, node_to_dict
 from joblib import Parallel, delayed
@@ -149,46 +149,51 @@ class CacheAndCheck(CacheToStorage):
     def _get_storage(self) -> Cache:
         return self.storage
 
-    def _connect(self, previous: EdgesBag) -> EdgesBag:
-        state = previous.freeze()
-        if len(state.inputs) != 1:
+    def _prepare_container(self, previous: EdgesBag) -> EdgesBag:
+        if len(previous.inputs) != 1:
             raise ValueError('The input layer must contain exactly one input')
-        (key,) = state.inputs
-        edges = list(state.edges)
-        forward_outputs = node_to_dict(state.outputs)
-        outputs = []
+        details = Details(type(self))
+        key = Node(previous.inputs[0].name, details)
 
+        mapping = TreeNode.from_edges(previous.edges)
+        forward_outputs = node_to_dict(previous.outputs)
+
+        inputs, outputs, edges = [key], [], []
         # do we need to add a `keys` output:
         if self.checksums or self.keys not in forward_outputs:
             forward_outputs.pop(self.keys, None)
-            keys = Node(self.keys)
+            keys = Node(self.keys, details)
             outputs.append(keys)
             # TODO: what if the ids differ in checksum?
             edges.append(ConstantEdge(tuple(sorted(list(self.checksums.values())[0]))).bind((), keys))
 
-        mapping = TreeNode.from_edges(edges)
-
-        for node_name in forward_outputs:
-            node = Node(node_name)
-            outputs.append(node)
-
-            output = forward_outputs[node_name]
-            if self.names is None or node_name in self.names:
+        for name in forward_outputs:
+            if name in self.names:
                 if not self.impure:
-                    self._detect_impure(mapping[output], node_name)
+                    self._detect_impure(mapping[forward_outputs[name]], name)
+
+                inp, out = Node(name, details), Node(name, details)
+                inputs.append(inp)
+                outputs.append(out)
                 edges.append(
                     CheckSumEdge(
-                        self.checksums.get(node_name, {}),
+                        self.checksums.get(name, {}),
                         self.serializer,
                         self._get_storage(),
                         self.return_tree,
                         False,
-                    ).bind([output, key], node)
+                    ).bind([inp, key], out)
                 )
-            else:
-                edges.append(IdentityEdge().bind(output, node))
 
-        return EdgesBag([key], outputs, edges, IdentityContext(), persistent_nodes=state.persistent_nodes)
+        return EdgesBag(
+            inputs,
+            outputs,
+            edges,
+            IdentityContext(),
+            persistent_nodes=None,
+            virtual_nodes=AntiSet(node_to_dict(outputs)),
+            optional_nodes=None,
+        )
 
 
 class CheckSumEdge(StaticGraph, StaticHash):

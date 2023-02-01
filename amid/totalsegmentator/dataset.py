@@ -82,7 +82,7 @@ class Totalsegmentator(Source):
         else:
             with ZipFile(_base) as zf:
                 parsed_namelist = [x.strip('/').split('/') for x in zf.namelist()]
-                return sorted([x[-1] for x in parsed_namelist if len(x) == 2 and x[-1] != 'meta.csv'])
+                return sorted({x[-1] for x in parsed_namelist if len(x) == 2 and x[-1] != 'meta.csv'})
 
     def image(i, _base):
         file = f'{i}/ct.nii.gz'
