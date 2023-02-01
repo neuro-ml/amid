@@ -247,7 +247,7 @@ class ContoursToMask(Transform):
     """Our implementation of transform for the contours. One can implement own logic based on this class"""
 
     __inherit__ = True
-    _raise: bool = False
+    _throw: bool = False
     _class_abbr: dict = {
         'Left Anterior Descending Artery': 'LAD',
         'Left Circumflex Artery': 'LCA',
@@ -255,7 +255,7 @@ class ContoursToMask(Transform):
         'Left Coronary Artery': 'LCA',
     }
 
-    def mask(id, calcifications, image, slice_locations, _class_abbr, _raise):
+    def mask(id, calcifications, image, slice_locations, _class_abbr, _throw):
         if calcifications is None:
             return None
 
@@ -277,7 +277,7 @@ class ContoursToMask(Transform):
                 multiclass_mask[..., slice_id] = (class_id * slice_mask.astype(int)).astype(np.uint8)
 
         except AssertionError as e:
-            if _raise:
+            if _throw:
                 raise e
             else:
                 warnings.warn(f"Mask preparation for idx {id} failed with: '{str(e)}'. Returning None")
