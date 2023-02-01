@@ -86,6 +86,14 @@ class EGD(Source):
         i, suffix = i.rsplit('-', 1)
         return nb.load(_base / 'SUBJECTS' / i / f'{suffix}.nii.gz')
 
+    def modality(i):
+        _, suffix = i.rsplit('-', 1)
+        return suffix
+
+    def subject_id(i):
+        subject, _ = i.rsplit('-', 1)
+        return subject
+
     def affine(_image_file):
         return _image_file.affine
 
