@@ -61,7 +61,6 @@ class LiverMedseg(Source):
 
         with ZipFile(Path(_root) / 'img.zip') as zf:
             for zipinfo in zf.infolist():
-
                 if zipinfo.is_dir():
                     continue
                 file_stem = Path(zipinfo.filename).stem

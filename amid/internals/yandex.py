@@ -25,7 +25,6 @@ class YandexDisk(RemoteStorage):
     def fetch(
         self, keys: Sequence[Key], store: Callable[[Key, Path], Any], config: HashConfig
     ) -> Sequence[Tuple[Any, bool]]:
-
         results = []
         with tempfile.TemporaryDirectory() as temp_dir:
             source = Path(temp_dir) / 'source'
