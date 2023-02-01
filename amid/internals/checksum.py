@@ -10,7 +10,7 @@ from bev.ops import save_hash
 from connectome import Chain
 from connectome.cache import Cache
 from connectome.containers import EdgesBag, IdentityContext
-from connectome.engine import Command, ConstantEdge, Details, IdentityEdge, Node, StaticGraph, StaticHash, TreeNode
+from connectome.engine import Command, ConstantEdge, Details, Node, StaticGraph, StaticHash, TreeNode
 from connectome.layers.cache import CacheToStorage
 from connectome.utils import AntiSet, node_to_dict
 from joblib import Parallel, delayed
