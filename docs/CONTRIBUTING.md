@@ -105,11 +105,11 @@ amid populate LiTS /shared/data/LiTS
 8\. If there were no error, there will appear the file `amid/data/lits.hash` (the name depends on the `slug` given
 to `@checksum`)
 
-9\. Check the codestyle and make changes if flake8 is not happy:
+9\. Check the codestyle and make changes if flake8 is not happy using the `lint.sh` script in the repository's root:
 
 ```shell
 pip install -r lint-requirements.txt # only for the first time
-flake8 .; black .; isort .
+./lint.sh
 ```
 
 10\. Commit all the files you added, including the `*.hash` one

@@ -45,7 +45,7 @@ jobs:
       - name: Check code style
         run: |
           pip install -r lint-requirements.txt
-          flake8 .
+          pflake8 .
           isort --check .
           black --check .
 
