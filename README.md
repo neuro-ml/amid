@@ -54,7 +54,7 @@ print(entry.split, entry.patient)
 | <a href="https://www.kaggle.com/competitions/rsna-breast-cancer-detection/data">RSNABreastCancer</a>                                         |     54710 | Thorax                              | MG                              |
 | <a href="https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa">StanfordCoCa</a>                              |       971 | Coronary, Chest                     | CT                              |
 | <a href="https://zenodo.org/record/6802614#.Y6M2MxXP1D8">Totalsegmentator</a>                                                                |      1204 | Head, Thorax, Abdomen, Pelvis, Legs | CT                              |
-| <a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053">VSSEG</a>                                              |       242 | Head                                | MRI T1c, MRI T2                 |
+| <a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053">VSSEG</a>                                              |       484 | Head                                | MRI T1c, MRI T2                 |
 | <a href="https://osf.io/4skx2/">VerSe</a>                                                                                                    |       374 | Thorax, Abdomen                     | CT                              |
 
 Check out [our docs](https://neuro-ml.github.io/amid/) for a more detailed list of available datasets and their fields.
