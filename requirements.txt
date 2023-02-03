@@ -11,7 +11,9 @@ pylidc
 pyyaml
 requests
 mdai
-SimpleITK
 joblib
 deli<1.0.0
 typer<1.0.0
+scipy
+scikit-image
+pydicom
