@@ -1,1 +1,1 @@
-pflake8 .; black .; isort .
+flake8 .; black .; isort .
