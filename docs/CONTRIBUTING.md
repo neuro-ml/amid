@@ -32,7 +32,7 @@ amid init
 
 ## Adding a new dataset
 
-We'll be using [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) as an example.
+We will be using [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) as an example.
 
 1\. Download the raw data to a separate folder in your filesystem
 
@@ -43,39 +43,40 @@ git checkout lits
 ```
 
 3\. Create a class that loads the raw data. [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) is a good
-example. Note how each field is just a separate function.
+example. Note how each field is implemented as a separate function.
 
-There are no strict rules regarding the dataset's fields, but try to keep the "as raw as possible", i.e. don't apply
-heavy processing, that modifies the data irreversibly.
+There are no strict rules regarding the dataset fields,
+but try to keep the output "as raw as possible",
+i.e., do not apply heavy processing that modifies the data irreversibly.
 
 **Rule of thumb:**
 
-> The dataset must be written in such a way, that making a submission to a contest should work out of the box.
+> The dataset should be written in such a way, that making a submission to a contest would work out of the box.
 
 !!! note
     In case of DICOM files, make sure to transpose the first 2 image axes. 
-    This way the image axes will be consistent with potential contours' coordinates.
+    This way, the image axes will be consistent with the potential contour coordinates.
 
 !!! tip 
-    If for a given id the value is missing, it is preferable to return `None` instead of raising an exception
+    If some value is missing for a given id, it is preferable to return `None` instead of raising an exception.
 
 !!! tip
-    The dataset must have a docstring, which describes it, as well as provides a link to the original data
+    The dataset must have a docstring which describes it and provides a link to the original data.
 
 !!! tip
-    If the raw data contains a table with metadata, it is preferable to split its columns into separate fields
+    If the raw data contains a table with metadata, it is preferable to split the metadata columns into separate fields.
 
-4\. Add the `@checksum(slug)` decorator, where `slug` is a slug for the dataset, e.g. `'lits'`
+4\. Add the `@checksum(slug)` decorator, where `slug` is a slug for the dataset, e.g., `'lits'`.
 
 5\. Add the `@register(...)` decorator with the following arguments:
 
-- `modality` — the images' modality/modalities, e.g. CT, MRI
-- `body_region` — the anatomical regions present in the dataset, e.g. Head, Thorax, Abdomen
+- `modality` — the images' modality/modalities, e.g., CT, MRI
+- `body_region` — the anatomical regions present in the dataset, e.g., Head, Thorax, Abdomen
 - `license` — the dataset's license, if any
 - `link` — the link to the original data
-- `raw_data_size` — the total size, required for the raw data, e.g. 10G, 500M
-- `task` — the task for which this dataset is provided, if any. E.g. Supervised Learning / Domain Adaptation /
-  Self-supervised Learning, Tumor segmentation etc
+- `raw_data_size` — the total size, required for the raw data, e.g., 10G, 500M
+- `task` — the dataset's downstream task if any.
+    E.g., Supervised Learning, Domain Adaptation, Self-supervised Learning, Tumor Segmentation, etc.
 
 6\. Make sure all the methods are working as expected:
 
@@ -97,20 +98,18 @@ amid populate LiTS /shared/data/LiTS
 ```
 
 !!! tip 
-    use the option `--n-jobs` to speed up the process
+    Use the option `--n-jobs` to speed up the process.
 
 !!! tip
-    use the option `--help` for a more detailed information on this command
+    Use the option `--help` for a more detailed information on this command.
 
-8\. If there were no error, there will appear the file `amid/data/lits.hash` (the name depends on the `slug` given
-to `@checksum`)
+8\. If there is no error, the file `amid/data/lits.hash` will appear (the name depends on `slug` given to `@checksum`).
 
-9\. Check the codestyle and make changes if flake8 is not happy using the `lint.sh` script in the repository's root:
+9\. Check the codestyle using the `lint.sh` script in the repository's root and make changes if flake8 is not happy:
 
 ```shell
 pip install -r lint-requirements.txt # only for the first time
 ./lint.sh
 ```
 
-10\. Commit all the files you added, including the `*.hash` one
-
+10\. Commit all the files you added, including the `*.hash` one.

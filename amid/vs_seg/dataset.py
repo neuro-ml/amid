@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 
 import numpy as np
@@ -175,8 +174,8 @@ def _load_series(_id, root):
     df = df[df['Classic Directory Name'].apply(lambda x: _id in x)]
 
     study_id, series_id = df[df['Modality'] == f'{modality} image']['Classic Directory Name'].iloc[0].split('/')[1:]
-    some_date = os.listdir(root / 'Vestibular-Schwannoma-SEG' / _id / study_id)[0]
-    path_to_series = root / 'Vestibular-Schwannoma-SEG' / _id / study_id / some_date / series_id
+    next_single_folder = list((root / 'Vestibular-Schwannoma-SEG' / _id / study_id).glob('*'))[0].name
+    path_to_series = root / 'Vestibular-Schwannoma-SEG' / _id / study_id / next_single_folder / series_id
     tree = join_tree(path_to_series)
     tree = tree[tree['NoError']]
 
@@ -207,7 +206,7 @@ def _norm_contours(contours, voxel_spacing, origin):
 
 
 def _contour2mask(cnt: list, shape):
-    msk = np.zeros(shape, dtype=np.uint8)
+    msk = np.zeros(shape, dtype=bool)
     for planar_c in cnt:
         idx = int(planar_c[0][-1])
         slc = msk[..., idx]

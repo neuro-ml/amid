@@ -1,5 +1,6 @@
 import contextlib
 import datetime
+import functools
 import zipfile
 from gzip import GzipFile
 from pathlib import Path
@@ -78,3 +79,11 @@ def get_series_date(series):
         return
 
     return datetime.date(year, month, day)
+
+
+def propagate_none(func):
+    @functools.wraps(func)
+    def wrapper(x, *args, **kwargs):
+        return None if (x is None) else func(x, *args, **kwargs)
+
+    return wrapper
