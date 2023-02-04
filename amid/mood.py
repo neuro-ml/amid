@@ -7,8 +7,8 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from amid.cc359 import open_nii_gz_file
-from amid.internals import checksum, register
+from .cc359 import open_nii_gz_file
+from .internals import checksum, register
 
 
 @register(
@@ -25,7 +25,7 @@ class MOOD(Source):
     """
     A (M)edival (O)ut-(O)f-(D)istribution analysis challenge [1]_
 
-    This dataset contains raw brain MRI and abdomainal CT images.
+    This dataset contains raw brain MRI and abdominal CT images.
 
     Number of training samples:
     - Brain: 800 scans ( 256 x 256 x 256 )
