@@ -470,46 +470,47 @@
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>amid<span class="w"> </span>init
 </code></pre></div>
 <h2 id="adding-a-new-dataset">Adding a new dataset</h2>
-<p>We'll be using <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTS</a> as an example.</p>
+<p>We will be using <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTS</a> as an example.</p>
 <p>1. Download the raw data to a separate folder in your filesystem</p>
 <p>2. (Optionally) create a new branch for the dataset:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>lits
 </code></pre></div>
 <p>3. Create a class that loads the raw data. <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTS</a> is a good
-example. Note how each field is just a separate function.</p>
-<p>There are no strict rules regarding the dataset's fields, but try to keep the "as raw as possible", i.e. don't apply
-heavy processing, that modifies the data irreversibly.</p>
+example. Note how each field is implemented as a separate function.</p>
+<p>There are no strict rules regarding the dataset fields,
+but try to keep the output "as raw as possible",
+i.e., do not apply heavy processing that modifies the data irreversibly.</p>
 <p><strong>Rule of thumb:</strong></p>
 <blockquote>
-<p>The dataset must be written in such a way, that making a submission to a contest should work out of the box.</p>
+<p>The dataset should be written in such a way, that making a submission to a contest would work out of the box.</p>
 </blockquote>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In case of DICOM files, make sure to transpose the first 2 image axes. 
-This way the image axes will be consistent with potential contours' coordinates.</p>
+This way, the image axes will be consistent with the potential contour coordinates.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If for a given id the value is missing, it is preferable to return <code>None</code> instead of raising an exception</p>
+<p>If some value is missing for a given id, it is preferable to return <code>None</code> instead of raising an exception.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The dataset must have a docstring, which describes it, as well as provides a link to the original data</p>
+<p>The dataset must have a docstring which describes it and provides a link to the original data.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If the raw data contains a table with metadata, it is preferable to split its columns into separate fields</p>
+<p>If the raw data contains a table with metadata, it is preferable to split the metadata columns into separate fields.</p>
 </div>
-<p>4. Add the <code>@checksum(slug)</code> decorator, where <code>slug</code> is a slug for the dataset, e.g. <code>'lits'</code></p>
+<p>4. Add the <code>@checksum(slug)</code> decorator, where <code>slug</code> is a slug for the dataset, e.g., <code>'lits'</code>.</p>
 <p>5. Add the <code>@register(...)</code> decorator with the following arguments:</p>
 <ul>
-<li><code>modality</code> — the images' modality/modalities, e.g. CT, MRI</li>
-<li><code>body_region</code> — the anatomical regions present in the dataset, e.g. Head, Thorax, Abdomen</li>
+<li><code>modality</code> — the images' modality/modalities, e.g., CT, MRI</li>
+<li><code>body_region</code> — the anatomical regions present in the dataset, e.g., Head, Thorax, Abdomen</li>
 <li><code>license</code> — the dataset's license, if any</li>
 <li><code>link</code> — the link to the original data</li>
-<li><code>raw_data_size</code> — the total size, required for the raw data, e.g. 10G, 500M</li>
-<li><code>task</code> — the task for which this dataset is provided, if any. E.g. Supervised Learning / Domain Adaptation /
-  Self-supervised Learning, Tumor segmentation etc</li>
+<li><code>raw_data_size</code> — the total size, required for the raw data, e.g., 10G, 500M</li>
+<li><code>task</code> — the dataset's downstream task if any.
+    E.g., Supervised Learning, Domain Adaptation, Self-supervised Learning, Tumor Segmentation, etc.</li>
 </ul>
 <p>6. Make sure all the methods are working as expected:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">amid.lits</span> <span class="kn">import</span> <span class="n">LiTS</span>
@@ -526,19 +527,18 @@ This way the image axes will be consistent with potential contours' coordinates.
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>use the option <code>--n-jobs</code> to speed up the process</p>
+<p>Use the option <code>--n-jobs</code> to speed up the process.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>use the option <code>--help</code> for a more detailed information on this command</p>
+<p>Use the option <code>--help</code> for a more detailed information on this command.</p>
 </div>
-<p>8. If there were no error, there will appear the file <code>amid/data/lits.hash</code> (the name depends on the <code>slug</code> given
-to <code>@checksum</code>)</p>
-<p>9. Check the codestyle and make changes if flake8 is not happy:</p>
+<p>8. If there is no error, the file <code>amid/data/lits.hash</code> will appear (the name depends on <code>slug</code> given to <code>@checksum</code>).</p>
+<p>9. Check the codestyle using the <code>lint.sh</code> script in the repository's root and make changes if flake8 is not happy:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>lint-requirements.txt<span class="w"> </span><span class="c1"># only for the first time</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>flake8<span class="w"> </span>.<span class="p">;</span><span class="w"> </span>black<span class="w"> </span>.<span class="p">;</span><span class="w"> </span>isort<span class="w"> </span>.
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>./lint.sh
 </code></pre></div>
-<p>10. Commit all the files you added, including the <code>*.hash</code> one</p>
+<p>10. Commit all the files you added, including the <code>*.hash</code> one.</p>
 
 
 

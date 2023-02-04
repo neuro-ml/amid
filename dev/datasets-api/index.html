@@ -445,7 +445,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#amid.vs_seg.VSSEG" class="md-nav__link">
+  <a href="#amid.vs_seg.dataset.VSSEG" class="md-nav__link">
     VSSEG
   </a>
   
@@ -696,7 +696,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#amid.vs_seg.VSSEG" class="md-nav__link">
+  <a href="#amid.vs_seg.dataset.VSSEG" class="md-nav__link">
     VSSEG
   </a>
   
@@ -2194,6 +2194,38 @@ Please, refer to its README for further information.</p>
 
 
 
+<h4 id="amid.egd.EGD.modality" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">modality</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.egd.EGD.subject_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">subject_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
 <h4 id="amid.egd.EGD.affine" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
@@ -2226,56 +2258,8 @@ Please, refer to its README for further information.</p>
 
 
 
-<h4 id="amid.egd.EGD.flair" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">flair</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.egd.EGD.t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.egd.EGD.t1gd" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">t1gd</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.egd.EGD.t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.egd.EGD.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -3600,7 +3584,7 @@ Download both Images and Annotations to the same folder</p>
 
   
       <p>A (M)edival (O)ut-(O)f-(D)istribution analysis challenge [1]_</p>
-<p>This dataset contains raw brain MRI and abdomainal CT images.</p>
+<p>This dataset contains raw brain MRI and abdominal CT images.</p>
 <p>Number of training samples:
 - Brain: 800 scans ( 256 x 256 x 256 )
 - Abdominal: 550 scans ( 512 x 512 x 512 )</p>
@@ -5570,8 +5554,8 @@ Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8</p>
 
 
 
-<h3 id="amid.vs_seg.VSSEG" class="doc doc-heading">
-        <code>amid.vs_seg.VSSEG</code>
+<h3 id="amid.vs_seg.dataset.VSSEG" class="doc doc-heading">
+        <code>amid.vs_seg.dataset.VSSEG</code>
 
 
 </h3>
@@ -5618,17 +5602,17 @@ If not provided, the cache is assumed to be already populated.</p></td>
         </tr>
     </tbody>
   </table>
-      <h5 id="amid.vs_seg.VSSEG--notes">Notes</h5>
+      <h5 id="amid.vs_seg.dataset.VSSEG--notes">Notes</h5>
 <p>The dataset and corresponding metadata could be downloaded at the TCIA page:
 https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053.</p>
-<p>To download DICOM images using <code>.tcia</code> file, we use public build of TCIA downloader:
+<p>To download DICOM images using <code>.tcia</code> file, we used public build of TCIA downloader:
 https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 <p>Then, download the rest of metadata from TCIA page:
   - <code>DirectoryNamesMappingModality.csv</code>
   - <code>Vestibular-Schwannoma-SEG_matrices Mar 2021.zip</code>
   - <code>Vestibular-Schwannoma-SEG contours Mar 2021.zip</code></p>
 <p>and unzip the latter two <code>.zip</code> archives.</p>
-<p>So the root folder to pass to this dataset should contain 3 folders and 1 <code>.csv</code> file:
+<p>So the <code>root</code> folder should contain 3 folders and 1 <code>.csv</code> file:
     &lt;...&gt;/DirectoryNamesMappingModality.csv
     &lt;...&gt;/Vestibular-Schwannoma-SEG/
             ├── VS-SEG-001/...
@@ -5641,13 +5625,13 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">VSSEG</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 250</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image_t1</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 484</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 120)</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">schwannoma_t1</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">80</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (512, 512, 120)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">schwannoma</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go"># (384, 384, 80)</span>
 </code></pre></div>
-      <h5 id="amid.vs_seg.VSSEG--references">References</h5>
+      <h5 id="amid.vs_seg.dataset.VSSEG--references">References</h5>
 <p>.. [1] Shapey, Jonathan, et al. "Segmentation of vestibular schwannoma from MRI,
        an open annotated dataset and baseline algorithm."
        Scientific Data 8.1 (2021): 1-6.
@@ -5671,7 +5655,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.ids" class="doc doc-heading">
+<h4 id="amid.vs_seg.dataset.VSSEG.ids" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
 
 </h4>
@@ -5687,8 +5671,8 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.registration_matrix_t1_to_t2_params" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">registration_matrix_t1_to_t2_params</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.vs_seg.dataset.VSSEG.modality" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">modality</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -5703,8 +5687,8 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.registration_matrix_t2_to_t1_params" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">registration_matrix_t2_to_t1_params</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.vs_seg.dataset.VSSEG.subject_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">subject_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -5719,8 +5703,8 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.contours_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">contours_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.vs_seg.dataset.VSSEG.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -5735,8 +5719,27 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.contours_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">contours_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.vs_seg.dataset.VSSEG.spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The maximum relative difference in <code>slice_locations</code> &lt; 1e-12,
+so we allow ourselves to use the common spacing for the whole 3D image.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.vs_seg.dataset.VSSEG.schwannoma" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">schwannoma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -5751,8 +5754,8 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.normed_contours_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">normed_contours_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.vs_seg.dataset.VSSEG.cochlea" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">cochlea</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -5767,8 +5770,8 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.normed_contours_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">normed_contours_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.vs_seg.dataset.VSSEG.meningioma" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">meningioma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -5783,183 +5786,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.has_schwannoma" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">has_schwannoma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.has_cochlea" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">has_cochlea</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.has_meningioma" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">has_meningioma</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.schwannoma_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">schwannoma_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.schwannoma_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">schwannoma_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.cochlea_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">cochlea_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.cochlea_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">cochlea_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.meningioma_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">meningioma_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.meningioma_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">meningioma_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.image_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">image_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.image_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">image_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.study_uid" class="doc doc-heading">
+<h4 id="amid.vs_seg.dataset.VSSEG.study_uid" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">study_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
@@ -5975,8 +5802,8 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.series_uid_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">series_uid_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.vs_seg.dataset.VSSEG.series_uid" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_uid</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
@@ -5991,183 +5818,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.series_uid_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">series_uid_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.pixel_spacing_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">pixel_spacing_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.pixel_spacing_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">pixel_spacing_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.slice_locations_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">slice_locations_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.slice_locations_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">slice_locations_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.voxel_spacing_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">voxel_spacing_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.voxel_spacing_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">voxel_spacing_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.orientation_matrix_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">orientation_matrix_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.orientation_matrix_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">orientation_matrix_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.patient_position_t1" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">patient_position_t1</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.patient_position_t2" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">patient_position_t2</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
-
-</h4>
-
-
-  <div class="doc doc-contents ">
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="amid.vs_seg.VSSEG.patient_id" class="doc doc-heading">
+<h4 id="amid.vs_seg.dataset.VSSEG.patient_id" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">patient_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
@@ -6183,7 +5834,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 
 
-<h4 id="amid.vs_seg.VSSEG.study_date" class="doc doc-heading">
+<h4 id="amid.vs_seg.dataset.VSSEG.study_date" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">study_date</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
