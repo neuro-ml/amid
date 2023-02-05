@@ -16,7 +16,7 @@ class CacheToDisk(Disk):
         names: StringsLike,
         serializer: Union[Serializer, Sequence[Serializer]] = None,
         fetch: bool = False,
-        **kwargs
+        **kwargs,
     ):
         repo = Repository.from_here('../data')
         cache = repo.cache
@@ -26,7 +26,7 @@ class CacheToDisk(Disk):
             remote=cache.remote if fetch else [],
             serializer=default_serializer(serializer),
             names=names,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -36,7 +36,7 @@ class CacheColumns(Columns):
         names: StringsLike,
         serializer: Union[Serializer, Sequence[Serializer]] = None,
         fetch: bool = False,
-        **kwargs
+        **kwargs,
     ):
         repo = Repository.from_here('../data')
         cache = repo.cache
@@ -46,7 +46,7 @@ class CacheColumns(Columns):
             remote=cache.remote if fetch else [],
             serializer=default_serializer(serializer),
             names=names,
-            **kwargs
+            **kwargs,
         )
 
 
