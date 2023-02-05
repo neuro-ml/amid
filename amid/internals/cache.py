@@ -1,6 +1,6 @@
 from gzip import GzipFile
 from pathlib import Path
-from typing import Sequence, Union
+from typing import Dict, Sequence, Union
 
 import numpy as np
 from bev import Repository
@@ -16,7 +16,7 @@ class CacheToDisk(Disk):
         names: StringsLike,
         serializer: Union[Serializer, Sequence[Serializer]] = None,
         fetch: bool = False,
-        **kwargs
+        **kwargs,
     ):
         repo = Repository.from_here('../data')
         cache = repo.cache
@@ -26,7 +26,7 @@ class CacheToDisk(Disk):
             remote=cache.remote if fetch else [],
             serializer=default_serializer(serializer),
             names=names,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -36,7 +36,7 @@ class CacheColumns(Columns):
         names: StringsLike,
         serializer: Union[Serializer, Sequence[Serializer]] = None,
         fetch: bool = False,
-        **kwargs
+        **kwargs,
     ):
         repo = Repository.from_here('../data')
         cache = repo.cache
@@ -46,7 +46,7 @@ class CacheColumns(Columns):
             remote=cache.remote if fetch else [],
             serializer=default_serializer(serializer),
             names=names,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -64,7 +64,7 @@ def default_serializer(serializers):
 
 
 class NumpySerializer(Serializer):
-    def __init__(self, compression):
+    def __init__(self, compression: Union[int, Dict[type, int]] = None):
         self.compression = compression
 
     def _choose_compression(self, value):
@@ -106,7 +106,10 @@ class NumpySerializer(Serializer):
         else:
             raise SerializerError
 
-        return self._load_file(storage, loader, path)
+        try:
+            return self._load_file(storage, loader, path)
+        except ValueError as e:
+            raise ReadError from e
 
 
 class CleanInvalid(Serializer):

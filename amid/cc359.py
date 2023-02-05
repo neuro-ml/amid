@@ -90,7 +90,6 @@ class CC359(Source):
         result = set()
         with ZipFile(Path(_root) / 'Original.zip') as zf:
             for zipinfo in zf.infolist():
-
                 if zipinfo.is_dir():
                     continue
 

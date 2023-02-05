@@ -1,4 +1,4 @@
-connectome>=0.3.1,<1.0.0
+connectome>=0.4.1,<1.0.0
 bev>=0.5.3,<1.0.0
 tarn>=0.2.0,<1.0.0
 numpy
@@ -11,7 +11,10 @@ pylidc
 pyyaml
 requests
 mdai
-SimpleITK
 joblib
-deli
+deli<1.0.0
 typer<1.0.0
+scipy
+scikit-image
+pydicom
+imops

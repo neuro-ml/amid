@@ -1,11 +1,10 @@
-import json
-import os
 from pathlib import Path
 
 import nibabel as nb
 import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
+from deli import load
 
 from .internals import checksum, register
 
@@ -63,20 +62,37 @@ class EGD(Source):
 
     _root: str = None
 
-    @meta
-    def ids(_root):
-        return tuple(sorted(set(os.listdir(Path(_root) / 'SUBJECTS'))))
+    def _base(_root: Silent):
+        if _root is None:
+            raise ValueError('Please provide the `root` argument')
+        return Path(_root)
 
     @meta
-    def brain_mask(_root):
-        return np.bool_(nb.load(Path(_root) / 'METADATA' / 'Brain_mask.nii.gz').get_fdata())
+    def ids(_base):
+        result = []
+        for folder in (_base / 'SUBJECTS').iterdir():
+            for suffix in 'FLAIR', 'T1', 'T1GD', 'T2':
+                result.append(f'{folder.name}-{suffix}')
 
-    @meta
-    def deface_mask(_root):
-        return np.bool_(nb.load(Path(_root) / 'METADATA' / 'Deface_mask.nii.gz').get_fdata())
+        return tuple(sorted(result))
 
-    def _image_file(i, _root: Silent):
-        return nb.load(Path(_root) / 'SUBJECTS' / i / 'FLAIR.nii.gz')
+    def brain_mask(i, _base):
+        return np.bool_(nb.load(_base / 'METADATA' / 'Brain_mask.nii.gz').get_fdata())
+
+    def deface_mask(i, _base):
+        return np.bool_(nb.load(_base / 'METADATA' / 'Deface_mask.nii.gz').get_fdata())
+
+    def _image_file(i, _base):
+        i, suffix = i.rsplit('-', 1)
+        return nb.load(_base / 'SUBJECTS' / i / f'{suffix}.nii.gz')
+
+    def modality(i):
+        _, suffix = i.rsplit('-', 1)
+        return suffix
+
+    def subject_id(i):
+        subject, _ = i.rsplit('-', 1)
+        return subject
 
     def affine(_image_file):
         return _image_file.affine
@@ -85,25 +101,13 @@ class EGD(Source):
         # voxel spacing is [1, 1, 1] for all images in this dataset...
         return tuple(_image_file.header['pixdim'][1:4])
 
-    def flair(_image_file):
+    def image(_image_file):
         # intensities are not integer-valued in this dataset...
         return np.asarray(_image_file.dataobj)
 
-    def t1(i, _root: Silent):
-        # intensities are not integer-valued in this dataset...
-        return np.asarray(nb.load(Path(_root) / 'SUBJECTS' / i / 'T1.nii.gz').dataobj)
-
-    def t1gd(i, _root: Silent):
-        # intensities are not integer-valued in this dataset...
-        return np.asarray(nb.load(Path(_root) / 'SUBJECTS' / i / 'T1GD.nii.gz').dataobj)
-
-    def t2(i, _root: Silent):
-        # intensities are not integer-valued in this dataset...
-        return np.asarray(nb.load(Path(_root) / 'SUBJECTS' / i / 'T2.nii.gz').dataobj)
-
-    def _metadata(i, _root: Silent):
-        with open(Path(_root) / 'SUBJECTS' / i / 'metadata.json', 'r') as f:
-            return json.load(f)
+    def _metadata(i, _base):
+        i, _ = i.rsplit('-', 1)
+        return load(_base / 'SUBJECTS' / i / 'metadata.json')
 
     def genetic_and_histological_label_idh(_metadata):
         return _metadata['Genetic_and_Histological_labels']['IDH']
@@ -135,5 +139,6 @@ class EGD(Source):
     def field(_metadata):
         return _metadata['Scan_characteristics']['Field']
 
-    def mask(i, _root: Silent):
-        return np.bool_(nb.load(Path(_root) / 'SUBJECTS' / i / 'MASK.nii.gz').get_fdata())
+    def mask(i, _base):
+        i, _ = i.rsplit('-', 1)
+        return np.bool_(nb.load(_base / 'SUBJECTS' / i / 'MASK.nii.gz').get_fdata())
