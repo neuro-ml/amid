@@ -1,3 +1,70 @@
+[project]
+name = "amid"
+dynamic = ["version"]
+description = "A curated list of medical imaging datasets with unified interfaces"
+readme = "README.md"
+requires-python = ">=3.6"
+license = { file = "LICENSE" }
+keywords = ["medical imaging", "dataset"]
+authors = [
+    { name = "NeuroML Group", email = "maxs987@gmail.com" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = [
+    "connectome>=0.4.1,<1.0.0",
+    "bev>=0.5.3,<1.0.0",
+    "tarn>=0.2.0,<1.0.0",
+    "numpy",
+    "nibabel",
+    "more-itertools",
+    "dicom-csv",
+    "tqdm",
+    "pandas",
+    "pylidc",
+    "pyyaml",
+    "requests",
+    "mdai",
+    "joblib",
+    "deli<1.0.0",
+    "typer<1.0.0",
+    "scipy",
+    "scikit-image",
+    "pydicom",
+    "imops"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/neuro-ml/amid"
+"Issues" = "https://github.com/neuro-ml/amid/issues"
+"Source" = "https://github.com/neuro-ml/amid"
+"Docs" = "https://neuro-ml.github.io/amid"
+
+[project.scripts]
+amid = "amid.internals.cli:main"
+[project.entry-points.bev_plugin]
+amid = "amid.internals.hooks"
+
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["amid"]
+
+[tool.setuptools.dynamic]
+version = { attr = "amid.__version__.__version__" }
+
 [tool.black]
 line-length = 120
 skip-string-normalization = true
