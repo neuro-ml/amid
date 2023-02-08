@@ -1,3 +1,4 @@
+import functools
 import tempfile
 from collections import defaultdict
 from contextlib import suppress
@@ -110,8 +111,7 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                 save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
                 return successes, errors
 
-        # dirty hack for now to preserve the name
-        Checked.__name__ = cls.__name__
+        functools.update_wrapper(Checked, cls, updated=())
         return Checked
 
     return decorator
@@ -190,9 +190,9 @@ class CacheAndCheck(CacheToStorage):
             outputs,
             edges,
             IdentityContext(),
-            persistent_nodes=None,
-            virtual_nodes=AntiSet(node_to_dict(outputs)),
-            optional_nodes=None,
+            persistent=None,
+            virtual=AntiSet(node_to_dict(outputs)),
+            optional=None,
         )
 
 
