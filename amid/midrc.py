@@ -31,7 +31,7 @@ from .utils import deprecate
     license=licenses.CC_BYNC_40,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
     modality='CT',
-    prep_data_size='7,88G',
+    prep_data_size='7,9G',
     raw_data_size='12G',
     task='COVID-19 Segmentation',
 )
@@ -161,13 +161,14 @@ class MIDRC(Source):
         slice_locations = get_slice_locations(_series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
         spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
-        return spacing
+        return tuple(spacing.tolist())
 
     def labels(_study_id, _annotation):
         sub = _annotation[(_annotation.scope == 'STUDY') & (_annotation.StudyInstanceUID == _study_id)]
         return tuple(sub['labelName'].unique())
 
     def mask(i, _image_meta, _annotation, _pathologies):
+        # TODO: mask has 6 channels now. Consider adding different methods ot at least a docstring naming channels...
         sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == 'INSTANCE')]
         shape = (_image_meta['Rows'], _image_meta['Columns'], len(_image_meta['SOPInstanceUID']))
         mask = np.zeros((len(_pathologies), *shape), dtype=bool)
