@@ -6,7 +6,6 @@ from tqdm import tqdm
 
 from amid.internals.registry import gather_datasets, prepare_for_table
 
-
 file = Path(__file__).resolve().parent.parent / 'README.md'
 with open(file, 'r') as fd:
     content = fd.read()
@@ -16,7 +15,7 @@ stop = re.search(r'Check out \[our docs\]', content).start()
 
 records = []
 for name, (cls, module, description) in tqdm(list(gather_datasets().items())):  # noqa
-    records.append(prepare_for_table(name, cls, description))
+    records.append(prepare_for_table(name, cls, module, description, 'latest'))
 
 table = pd.DataFrame.from_records(records).fillna('')
 table.columns = [x.replace('_', ' ').capitalize() for x in table.columns]

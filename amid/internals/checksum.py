@@ -23,9 +23,6 @@ from .base import get_repo
 from .cache import CacheColumns, CacheToDisk, default_serializer
 
 
-# TODO: this file is a mess, but most of this logic will be moved
-#  to connectome, bev and tarn eventually
-
 # TODO: add possibility to check the entire tree without the need to pull anything from remote
 
 
