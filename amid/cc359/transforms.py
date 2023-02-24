@@ -11,21 +11,21 @@ class CanonicalMRIOrientation(Transform):
     __inherit__ = True
 
     def image(image):
-        return np.transpose(image, (1, 0, 2))[..., ::-1]
+        return np.transpose(image, (1, 0, 2))[::-1, :, ::-1]
 
     def spacing(spacing):
         return tuple(np.array(spacing)[[1, 0, 2]].tolist())
 
     def brain(brain):
-        return np.transpose(brain, (1, 0, 2))[..., ::-1]
+        return np.transpose(brain, (1, 0, 2))[::-1, :, ::-1]
 
     @propagate_none
     def hippocampus(hippocampus):
-        return np.transpose(hippocampus, (1, 0, 2))[..., ::-1]
+        return np.transpose(hippocampus, (1, 0, 2))[::-1, :, ::-1]
 
     @propagate_none
     def wm_gm_csf(wm_gm_csf):
-        return np.transpose(wm_gm_csf, (1, 0, 2))[..., ::-1]
+        return np.transpose(wm_gm_csf, (1, 0, 2))[::-1, :, ::-1]
 
 
 class Rescale(Transform):
