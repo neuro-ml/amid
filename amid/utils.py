@@ -4,10 +4,15 @@ import functools
 import zipfile
 from gzip import GzipFile
 from pathlib import Path
+from typing import Union
 
 import nibabel
+import numpy as np
 from dicom_csv import get_common_tag
 from dicom_csv.exceptions import ConsistencyError, TagTypeError
+
+
+Numeric = Union[float, int]
 
 
 @contextlib.contextmanager
@@ -87,3 +92,10 @@ def propagate_none(func):
         return None if (x is None) else func(x, *args, **kwargs)
 
     return wrapper
+
+
+def deprecate(message=None):
+    def decorator(func):
+        return functools.wraps(func)(np.deprecate(message=message)(func))
+
+    return decorator

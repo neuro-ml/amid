@@ -2,11 +2,12 @@ from pathlib import Path
 
 import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
 from .internals import checksum, register
+from .utils import deprecate
 
 
 @register(
@@ -14,7 +15,7 @@ from .internals import checksum, register
     license='EGD data license',
     link='https://xnat.bmia.nl/data/archive/projects/egd',
     modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2'),
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='107,49G',
     raw_data_size='40G',
     task='Segmentation',
 )
@@ -97,7 +98,11 @@ class EGD(Source):
     def affine(_image_file):
         return _image_file.affine
 
-    def voxel_spacing(_image_file):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_image_file):
         # voxel spacing is [1, 1, 1] for all images in this dataset...
         return tuple(_image_file.header['pixdim'][1:4])
 

@@ -16,17 +16,16 @@ class CanonicalMRIOrientation(Transform):
     def spacing(spacing):
         return tuple(np.array(spacing)[[1, 0, 2]].tolist())
 
-    @propagate_none
-    def schwannoma(schwannoma):
-        return np.transpose(schwannoma, (1, 0, 2))[..., ::-1]
+    def brain(brain):
+        return np.transpose(brain, (1, 0, 2))[..., ::-1]
 
     @propagate_none
-    def cochlea(cochlea):
-        return np.transpose(cochlea, (1, 0, 2))[..., ::-1]
+    def hippocampus(hippocampus):
+        return np.transpose(hippocampus, (1, 0, 2))[..., ::-1]
 
     @propagate_none
-    def meningioma(meningioma):
-        return np.transpose(meningioma, (1, 0, 2))[..., ::-1]
+    def wm_gm_csf(wm_gm_csf):
+        return np.transpose(wm_gm_csf, (1, 0, 2))[..., ::-1]
 
 
 class Rescale(Transform):
@@ -49,14 +48,17 @@ class Rescale(Transform):
     def image(image, _scale_factor, _order):
         return zoom(image.astype(np.float32), _scale_factor, order=_order)
 
-    @propagate_none
-    def schwannoma(schwannoma, _scale_factor, _order):
-        return zoom(schwannoma.astype(np.float32), _scale_factor, order=_order) > 0.5
+    def brain(brain, _scale_factor, _order):
+        return zoom(brain.astype(np.float32), _scale_factor, order=_order) > 0.5
 
     @propagate_none
-    def cochlea(cochlea, _scale_factor, _order):
-        return zoom(cochlea.astype(np.float32), _scale_factor, order=_order) > 0.5
+    def hippocampus(hippocampus, _scale_factor, _order):
+        return zoom(hippocampus.astype(np.float32), _scale_factor, order=_order) > 0.5
 
     @propagate_none
-    def meningioma(meningioma, _scale_factor, _order):
-        return zoom(meningioma.astype(np.float32), _scale_factor, order=_order) > 0.5
+    def wm_gm_csf(wm_gm_csf, _scale_factor, _order):
+        onehot = np.arange(wm_gm_csf.max() + 1) == wm_gm_csf[..., None]
+        onehot = onehot.astype(wm_gm_csf.dtype).transpose(3, 0, 1, 2)
+        out = np.array(zoom(onehot.astype(np.float32), _scale_factor, axis=(1, 2, 3)) > 0.5, dtype=wm_gm_csf.dtype)
+        labels = out.argmax(axis=0)
+        return labels

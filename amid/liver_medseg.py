@@ -1,14 +1,17 @@
+import contextlib
+import gzip
 import re
 import zipfile
 from pathlib import Path
 from zipfile import ZipFile
 
+import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .cc359 import open_nii_gz_file
 from .internals import checksum, licenses, register
+from .utils import deprecate
 
 
 @register(
@@ -16,7 +19,7 @@ from .internals import checksum, licenses, register
     license=licenses.CC_BYSA_40,
     link='https://www.medseg.ai/database/liver-segments-50-cases',
     modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='1,88G',
     raw_data_size='616M',
     task='Segmentation',
 )
@@ -81,7 +84,11 @@ class LiverMedseg(Source):
         with open_nii_gz_file(_file) as nii_file:
             return nii_file.affine
 
-    def voxel_spacing(_file) -> tuple:
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output) -> tuple:
+        return spacing
+
+    def spacing(_file) -> tuple:
         with open_nii_gz_file(_file) as nii_file:
             return tuple(nii_file.header['pixdim'][1:4])
 
@@ -91,3 +98,12 @@ class LiverMedseg(Source):
         _file = zipfile.Path(folder, image)
         with open_nii_gz_file(_file) as nii_file:
             return np.asarray(nii_file.dataobj).astype(np.uint8)
+
+
+# TODO: sync with amid.utils
+@contextlib.contextmanager
+def open_nii_gz_file(file):
+    with file.open('rb') as opened:
+        with gzip.GzipFile(fileobj=opened) as nii:
+            nii = nb.FileHolder(fileobj=nii)
+            yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})

@@ -3,10 +3,11 @@ from pathlib import Path
 import nibabel as nb
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
+from .utils import deprecate
 
 
 @register(
@@ -14,7 +15,7 @@ from .internals import checksum, licenses, register
     license=licenses.PhysioNet_RHD_150,
     link='https://physionet.org/content/ct-ich/1.3.1/',
     modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='661M',
     raw_data_size='2,8G',
     task='Intracranial hemorrhage segmentation',
 )
@@ -34,10 +35,12 @@ class CT_ICH(Source):
         If not provided, the cache is assumed to be already populated.
     version : str, optional
         the data version. Only has effect if the library was installed from a cloned git repository.
+
     Notes
     -----
     Data can be downloaded here: https://physionet.org/content/ct-ich/1.3.1/.
     Then, the folder with raw downloaded data should contain folders `ct_scans` and `masks` along with other files.
+
     Examples
     --------
     >>> # Place the downloaded archives in any folder and pass the path to the constructor:
@@ -75,7 +78,11 @@ class CT_ICH(Source):
         """The 4x4 matrix that gives the image's spatial orientation."""
         return _image_file.affine
 
-    def voxel_spacing(_image_file):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_image_file):
         """Returns voxel spacing along axes (x, y, z)."""
         return tuple(_image_file.header['pixdim'][1:4])
 

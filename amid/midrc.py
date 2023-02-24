@@ -8,7 +8,7 @@ import mdai
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
     drop_duplicated_instances,
@@ -23,6 +23,7 @@ from dicom_csv import (
 from skimage.draw import polygon
 
 from .internals import checksum, licenses, register
+from .utils import deprecate
 
 
 @register(
@@ -30,7 +31,7 @@ from .internals import checksum, licenses, register
     license=licenses.CC_BYNC_40,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
     modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='7,88G',
     raw_data_size='12G',
     task='COVID-19 Segmentation',
 )
@@ -91,6 +92,7 @@ class MIDRC(Source):
 
     @lru_cache(None)
     def _joined(_root: Silent):
+        # TODO: switch from os.path to pathlib
         if os.path.exists(Path(_root) / 'joined.csv'):
             return pd.read_csv(Path(_root) / 'joined.csv')
         joined = join_tree(Path(_root) / 'MIDRC-RICORD-1A', verbose=1)
@@ -100,6 +102,7 @@ class MIDRC(Source):
 
     def _annotation(_root: Silent):
         json_path = 'MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json'
+        # TODO: do we really need a whole lib to parse one json??? it also generates annoying pandas warning
         return mdai.common_utils.json_to_dataframe(Path(_root) / json_path)['annotations']
 
     def _series(i, _root: Silent, _joined):
@@ -140,6 +143,7 @@ class MIDRC(Source):
         return result
 
     def image_meta(_image_meta):
+        # TODO: do we really need a field duplicate?
         return _image_meta
 
     def _study_id(i, _joined):
@@ -148,7 +152,11 @@ class MIDRC(Source):
         # series_id_to_study
         return study_ids[0]
 
-    def voxel_spacing(_series):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_series):
         pixel_spacing = get_pixel_spacing(_series).tolist()
         slice_locations = get_slice_locations(_series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)

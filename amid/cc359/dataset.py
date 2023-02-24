@@ -6,10 +6,11 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from ..internals import checksum, licenses, register
+from ..utils import deprecate
 
 
 @register(
@@ -17,7 +18,7 @@ from .internals import checksum, licenses, register
     license=licenses.CC_BYND_40,
     link='https://sites.google.com/view/calgary-campinas-dataset/home',
     modality='MRI T1',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='14,66G',
     raw_data_size='4,1G',
     task='Segmentation',
 )
@@ -123,7 +124,11 @@ class CC359(Source):
         with open_nii_gz_file(_image_file) as nii_image:
             return nii_image.affine
 
-    def voxel_spacing(_image_file):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_image_file):
         """Returns voxel spacing along axes (x, y, z)."""
         with open_nii_gz_file(_image_file) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
@@ -147,13 +152,11 @@ class CC359(Source):
     def wm_gm_csf(i, _root: Silent):
         for file in (Path(_root) / 'WM-GM-CSF').glob('*'):
             if file.name.startswith(i):
-                with file.open('rb') as opened:
-                    with gzip.GzipFile(fileobj=opened) as nii:
-                        nii = nb.FileHolder(fileobj=nii)
-                        image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                        return np.uint8(image.get_fdata())
+                with open_nii_gz_file(file) as nii_image:
+                    return np.uint8(nii_image.get_fdata())
 
 
+# TODO: sync with amid.utils
 @contextlib.contextmanager
 def open_nii_gz_file(file):
     with file.open('rb') as opened:
