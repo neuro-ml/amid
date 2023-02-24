@@ -7,6 +7,16 @@ from imops import zoom
 from ..utils import Numeric
 
 
+class CanonicalCTOrientation(Transform):
+    __inherit__ = True
+
+    def image(image):
+        return image[..., ::-1]
+
+    def cancer(cancer):
+        return cancer[..., ::-1]
+
+
 class Rescale(Transform):
     __inherit__ = True
 
