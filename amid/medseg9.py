@@ -6,7 +6,7 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
@@ -86,10 +86,8 @@ class Medseg9(Source):
             return nii_image.affine
 
     @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(_file):
-        """Returns voxel spacing along axes (x, y, z)."""
-        with open_nii_gz_file(_file) as nii_image:
-            return tuple(nii_image.header['pixdim'][1:4])
+    def voxel_spacing(spacing: Output):
+        return spacing
 
     def spacing(_file):
         """Returns voxel spacing along axes (x, y, z)."""
