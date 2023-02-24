@@ -30,6 +30,7 @@ from .nodules import get_nodules
     modality='CT',
     task='Lung Cancer Detection',
     link='https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/',
+    prep_data_size='103G',
     raw_data_size='187G',
 )
 @checksum('cancer_500')

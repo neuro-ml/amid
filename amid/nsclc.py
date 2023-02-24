@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
     drop_duplicated_instances,
@@ -22,6 +22,7 @@ from dicom_csv import (
 )
 
 from .internals import checksum, licenses, register
+from .utils import deprecate
 
 
 @register(
@@ -29,7 +30,7 @@ from .internals import checksum, licenses, register
     license=licenses.CC_BY_30,
     link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
     modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='13G',
     raw_data_size='34G',
     task='Tumor Segmentation',
 )
@@ -74,7 +75,7 @@ class NSCLC(Source):
 
     _root: str = None
 
-    # TODO: maybe move to filtering via `ignore_errors=True`?
+    # FIXME: move to filtering via `ignore_errors=True` + filtering via Filter (if needed)
     _INVALID_PATIENT_IDS = [
         # no dicom with cancer segmentation
         'LUNG1-128',
@@ -93,10 +94,12 @@ class NSCLC(Source):
         return tuple(uid[uid > 1].keys())
 
     def j(_joined):
+        # FIXME: is it used somewhere? remove?
         return _joined
 
     @lru_cache(None)
     def _joined(_root: Silent):
+        # TODO: switch from os.path to pathlib
         if os.path.exists(Path(_root) / 'joined.csv'):
             return pd.read_csv(Path(_root) / 'joined.csv')
         joined = join_tree(Path(_root) / 'NSCLC-Radiomics', verbose=1)
@@ -109,7 +112,6 @@ class NSCLC(Source):
         series_files = sub['PathToFolder'] + os.path.sep + sub['FileName']
         series_files = [Path(_root) / 'NSCLC-Radiomics' / x for x in series_files]
         series = list(map(pydicom.dcmread, series_files))
-        # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
 
@@ -142,6 +144,7 @@ class NSCLC(Source):
         return result
 
     def image_meta(_image_meta):
+        # TODO: do we really need a field duplicate?
         return _image_meta
 
     def _study_id(i, _joined):
@@ -150,7 +153,11 @@ class NSCLC(Source):
         # series_id_to_study
         return study_ids[0]
 
-    def voxel_spacing(_series):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_series):
         pixel_spacing = get_pixel_spacing(_series).tolist()
         slice_locations = get_slice_locations(_series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)

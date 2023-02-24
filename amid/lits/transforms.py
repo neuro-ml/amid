@@ -7,30 +7,24 @@ from imops import zoom
 from ..utils import Numeric, propagate_none
 
 
-class CanonicalMRIOrientation(Transform):
+class CanonicalCTOrientation(Transform):
     __inherit__ = True
 
     def image(image):
-        return np.transpose(image, (1, 0, 2))[..., ::-1]
+        return np.transpose(image, (1, 0, 2))[::-1, :, ::-1]
+
+    def mask(mask):
+        return np.transpose(mask, (1, 0, 2))[::-1, :, ::-1]
 
     def spacing(spacing):
         return tuple(np.array(spacing)[[1, 0, 2]].tolist())
 
-    @propagate_none
-    def schwannoma(schwannoma):
-        return np.transpose(schwannoma, (1, 0, 2))[..., ::-1]
-
-    @propagate_none
-    def cochlea(cochlea):
-        return np.transpose(cochlea, (1, 0, 2))[..., ::-1]
-
-    @propagate_none
-    def meningioma(meningioma):
-        return np.transpose(meningioma, (1, 0, 2))[..., ::-1]
-
 
 class Rescale(Transform):
-    __inherit__ = True
+    __exclude__ = (
+        'voxel_spacing',
+        'affine',
+    )
 
     _new_spacing: Union[Sequence[Numeric], Numeric]
     _order: int = 1
@@ -50,13 +44,9 @@ class Rescale(Transform):
         return zoom(image.astype(np.float32), _scale_factor, order=_order)
 
     @propagate_none
-    def schwannoma(schwannoma, _scale_factor, _order):
-        return zoom(schwannoma.astype(np.float32), _scale_factor, order=_order) > 0.5
-
-    @propagate_none
-    def cochlea(cochlea, _scale_factor, _order):
-        return zoom(cochlea.astype(np.float32), _scale_factor, order=_order) > 0.5
-
-    @propagate_none
-    def meningioma(meningioma, _scale_factor, _order):
-        return zoom(meningioma.astype(np.float32), _scale_factor, order=_order) > 0.5
+    def mask(mask, _scale_factor, _order):
+        onehot = np.arange(mask.max() + 1) == mask[..., None]
+        onehot = onehot.astype(mask.dtype).transpose(3, 0, 1, 2)
+        out = np.array(zoom(onehot.astype(np.float32), _scale_factor, axis=(1, 2, 3)) > 0.5, dtype=mask.dtype)
+        labels = out.argmax(axis=0)
+        return labels

@@ -27,7 +27,7 @@ from ..utils import get_series_date
     license=licenses.CC_BY_40,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053',
     modality=('MRI T1c', 'MRI T2'),
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='14,42G',
     raw_data_size='27G',
     task='Segmentation',
 )

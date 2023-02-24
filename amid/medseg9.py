@@ -1,13 +1,16 @@
+import contextlib
+import gzip
 import zipfile
 from pathlib import Path
 from zipfile import ZipFile
 
+import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .cc359 import open_nii_gz_file
 from .internals import checksum, licenses, register
+from .utils import deprecate
 
 
 @register(
@@ -15,7 +18,7 @@ from .internals import checksum, licenses, register
     license=licenses.CC0_10,
     link='http://medicalsegmentation.com/covid19/',
     modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='300M',
     raw_data_size='310M',
     task='COVID-19 segmentation',
 )
@@ -80,21 +83,21 @@ class Medseg9(Source):
     def affine(_file):
         """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(_file) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return nii_image.affine
 
-    def voxel_spacing(_file):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_file):
         """Returns voxel spacing along axes (x, y, z)."""
         with open_nii_gz_file(_file) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return tuple(nii_image.header['pixdim'][1:4])
 
     def lungs(_file):
-        """Boolean mask. Lungs are not separated."""
         mask_file = zipfile.Path(Path(_file.root.filename).parent / 'rp_lung_msk.zip', f'rp_lung_msk/{_file.name}')
         with open_nii_gz_file(mask_file) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
-            return np.uint8(nii_image.get_fdata())
+            return np.bool_(nii_image.get_fdata())
 
     def covid(_file):
         """
@@ -105,3 +108,12 @@ class Medseg9(Source):
         with open_nii_gz_file(mask_file) as nii_image:
             # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return np.uint8(nii_image.get_fdata())
+
+
+# TODO: sync with amid.utils
+@contextlib.contextmanager
+def open_nii_gz_file(file):
+    with file.open('rb') as opened:
+        with gzip.GzipFile(fileobj=opened) as nii:
+            nii = nb.FileHolder(fileobj=nii)
+            yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
