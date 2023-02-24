@@ -4,21 +4,27 @@ import numpy as np
 from connectome import Transform
 from imops import zoom
 
-from ..utils import Numeric
+from ..utils import Numeric, propagate_none
 
 
 class CanonicalCTOrientation(Transform):
-    __exclude__ = ('nodules', 'nodules_masks')
+    __inherit__ = True
 
     def image(image):
-        return image[..., ::-1]
+        return np.transpose(image, (1, 0, 2))[::-1, :, ::-1]
 
-    def cancer(cancer):
-        return cancer[..., ::-1]
+    def mask(mask):
+        return np.transpose(mask, (1, 0, 2))[::-1, :, ::-1]
+
+    def spacing(spacing):
+        return tuple(np.array(spacing)[[1, 0, 2]].tolist())
 
 
 class Rescale(Transform):
-    __exclude__ = ('pixel_spacing', 'slice_locations', 'voxel_spacing', 'orientation_matrix')
+    __exclude__ = (
+        'voxel_spacing',
+        'affine',
+    )
 
     _new_spacing: Union[Sequence[Numeric], Numeric]
     _order: int = 1
@@ -37,5 +43,10 @@ class Rescale(Transform):
     def image(image, _scale_factor, _order):
         return zoom(image.astype(np.float32), _scale_factor, order=_order)
 
-    def cancer(cancer, _scale_factor, _order):
-        return zoom(cancer.astype(np.float32), _scale_factor, order=_order) > 0.5
+    @propagate_none
+    def mask(mask, _scale_factor, _order):
+        onehot = np.arange(mask.max() + 1) == mask[..., None]
+        onehot = onehot.astype(mask.dtype).transpose(3, 0, 1, 2)
+        out = np.array(zoom(onehot.astype(np.float32), _scale_factor, axis=(1, 2, 3)) > 0.5, dtype=mask.dtype)
+        labels = out.argmax(axis=0)
+        return labels

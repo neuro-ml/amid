@@ -7,8 +7,8 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
-from .utils import deprecate
+from ..internals import checksum, licenses, register
+from ..utils import deprecate
 
 
 @register(
