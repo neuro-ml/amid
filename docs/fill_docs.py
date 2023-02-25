@@ -6,6 +6,7 @@ from tqdm import tqdm
 
 from amid.internals.registry import gather_datasets, prepare_for_table
 
+
 version = os.environ.get('VERSION')
 if not version:
     raise RuntimeError('Please define the "VERSION" env variable')

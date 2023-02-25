@@ -8,6 +8,7 @@ import pandas as pd
 
 from .licenses import License
 
+
 _REGISTRY = {}
 
 
