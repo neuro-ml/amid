@@ -5,6 +5,7 @@ repo_url: https://github.com/neuro-ml/amid
 plugins:
   - mkdocs-jupyter
   - search
+  - autorefs
   - mike:
       canonical_version: latest
   - mkdocstrings:

@@ -5,9 +5,11 @@ import pylidc as pl
 from connectome import Source, meta
 from connectome.interface.nodes import Output, Silent
 from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
+from pylidc.utils import consensus
+from scipy import stats
 
 from ..internals import checksum, licenses, register
-from ..utils import get_series_date
+from ..utils import deprecate, get_series_date
 from .nodules import get_nodule
 
 
@@ -16,7 +18,7 @@ from .nodules import get_nodule
     license=licenses.CC_BY_30,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254',
     modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='71,2G',
     raw_data_size='126G',
     task='Lung nodules segmentation',
 )
@@ -119,10 +121,31 @@ class LIDC(Source):
     def slice_locations(_scan):
         return _scan.slice_zvals
 
+    @deprecate(message='Use `spacing` method instead.')
     def voxel_spacing(_scan, pixel_spacing: Output):
         """Returns voxel spacing along axes (x, y, z)."""
         spacing = np.float32([pixel_spacing[0], pixel_spacing[0], _scan.slice_spacing])
         return spacing
+
+    def spacing(pixel_spacing: Output, slice_locations: Output):
+        """
+        Volumetric spacing of the image.
+        The maximum relative difference in `slice_locations` < 1e-3
+        (except 4 images listed below),
+        so we allow ourselves to use the common spacing for the whole 3D image.
+
+        Note
+        ----
+        The `slice_locations` attribute typically (but not always!) has the constant step.
+        In LIDC dataset, only 4 images have difference in `slice_locations` > 1e-3:
+            1.3.6.1.4.1.14519.5.2.1.6279.6001.526570782606728516388531252230
+            1.3.6.1.4.1.14519.5.2.1.6279.6001.329334252028672866365623335798
+            1.3.6.1.4.1.14519.5.2.1.6279.6001.245181799370098278918756923992
+            1.3.6.1.4.1.14519.5.2.1.6279.6001.103115201714075993579787468219
+        And these differences appear in the maximum of 3 slices.
+        Therefore, we consider their impact negligible.
+        """
+        return (*pixel_spacing, stats.mode(np.diff(slice_locations))[0].item())
 
     def contrast_used(_scan):
         """If the DICOM file for the scan had any Contrast tag, this is marked as `True`."""
@@ -170,8 +193,7 @@ class LIDC(Source):
 
     def cancer(_scan, _shape):
         cancer = np.zeros(_shape, dtype=bool)
-        # FIXME: is this a typo or a bug?
-        for nodule_index, anns in enumerate(_scan.cluster_annotations()):  # noqa: B007
-            cancer |= pl.utils.consensus(anns, pad=np.inf)[0]
+        for anns in _scan.cluster_annotations():
+            cancer |= consensus(anns, pad=np.inf)[0]
 
         return cancer

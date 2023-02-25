@@ -1,14 +1,14 @@
-import warnings
 import zipfile
 from pathlib import Path
 from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from ..internals import checksum, licenses, register
+from ..utils import deprecate
 
 
 @register(
@@ -16,7 +16,7 @@ from .internals import checksum, licenses, register
     license=licenses.CC_BYNCND_40,
     link='https://competitions.codalab.org/competitions/17094',
     modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='24,7G',
     raw_data_size='35G',
     task='Segmentation',
 )
@@ -143,7 +143,11 @@ class LiTS(Source):
             image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
             return image.affine
 
-    def voxel_spacing(_file):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_file):
         """Returns voxel spacing along axes (x, y, z)."""
         with _file.open('rb') as nii:
             nii = nb.FileHolder(fileobj=nii)
@@ -151,12 +155,8 @@ class LiTS(Source):
             return tuple(image.header['pixdim'][1:4])
 
     def mask(_file):
-        if 'test' in _file.name:
-            warnings.warn('Test images has no corresponding annotations.')
-            return None
-            # raise ValueError('Test images has no corresponding annotations.')
-
-        with (_file.parent / _file.name.replace('volume', 'segmentation')).open('rb') as nii:
-            nii = nb.FileHolder(fileobj=nii)
-            image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-            return np.uint8(image.get_fdata())
+        if 'test' not in _file.name:
+            with (_file.parent / _file.name.replace('volume', 'segmentation')).open('rb') as nii:
+                nii = nb.FileHolder(fileobj=nii)
+                image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+                return np.uint8(image.get_fdata())

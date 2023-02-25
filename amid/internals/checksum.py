@@ -1,3 +1,4 @@
+import functools
 import tempfile
 from collections import defaultdict
 from contextlib import suppress
@@ -21,9 +22,6 @@ from tqdm.auto import tqdm
 from .base import get_repo
 from .cache import CacheColumns, CacheToDisk, default_serializer
 
-
-# TODO: this file is a mess, but most of this logic will be moved
-#  to connectome, bev and tarn eventually
 
 # TODO: add possibility to check the entire tree without the need to pull anything from remote
 
@@ -110,8 +108,7 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                 save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
                 return successes, errors
 
-        # dirty hack for now to preserve the name
-        Checked.__name__ = cls.__name__
+        functools.update_wrapper(Checked, cls, updated=())
         return Checked
 
     return decorator
@@ -190,9 +187,9 @@ class CacheAndCheck(CacheToStorage):
             outputs,
             edges,
             IdentityContext(),
-            persistent_nodes=None,
-            virtual_nodes=AntiSet(node_to_dict(outputs)),
-            optional_nodes=None,
+            persistent=None,
+            virtual=AntiSet(node_to_dict(outputs)),
+            optional=None,
         )
 
 

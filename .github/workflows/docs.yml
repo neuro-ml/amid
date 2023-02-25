@@ -42,10 +42,6 @@ jobs:
           EOL
           amid init
 
-      - name: Generate the missing pages
-        run: |
-          cd docs && python fill_docs.py
-
       # release
       - id: get_version
         if: github.event_name == 'release'
@@ -55,10 +51,16 @@ jobs:
       - name: Deploy the docs
         if: github.event_name == 'release'
         run: |
+          cd docs
+          VERSION=${{ steps.get_version.outputs.version-without-v }} python fill_docs.py
+          cd ..
           PYTHONPATH=$PYTHONPATH:./docs mike deploy ${{ steps.get_version.outputs.version-without-v }} latest --push --update-aliases
 
       # dev
       - name: Deploy the docs
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
+          cd docs
+          VERSION=dev python fill_docs.py
+          cd ..
           PYTHONPATH=$PYTHONPATH:./docs mike deploy dev --push

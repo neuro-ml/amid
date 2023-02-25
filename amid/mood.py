@@ -1,14 +1,16 @@
-import warnings
+import contextlib
+import gzip
 import zipfile
 from pathlib import Path
 from zipfile import ZipFile
 
+import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .cc359 import open_nii_gz_file
 from .internals import checksum, register
+from .utils import deprecate
 
 
 @register(
@@ -16,7 +18,7 @@ from .internals import checksum, register
     license=None,  # FIXME: inherit licenses from the original datasets...
     link='http://medicalood.dkfz.de/web/',
     modality=('MRI', 'CT'),
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='405G',
     raw_data_size='120G',
     task='Out-of-distribution detection',
 )
@@ -101,14 +103,14 @@ class MOOD(Source):
         """Returns fold: train or toy (test)."""
         if 'train' in i:
             return 'train'
-        # if 'toy' in i
+        # if 'toy' in i:
         return 'toy'
 
     def task(i, _root: Silent):
         """Returns task: brain (MRI) or abdominal (CT)."""
         if 'brain' in i:
             return 'brain'
-        # if 'abdom' in i
+        # if 'abdom' in i:
         return 'abdom'
 
     def _file(i, _root: Silent):
@@ -126,7 +128,11 @@ class MOOD(Source):
         with open_nii_gz_file(_file) as nii_image:
             return nii_image.affine
 
-    def voxel_spacing(_file):
+    @deprecate(message='Use `spacing` method instead.')
+    def voxel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_file):
         """Returns voxel spacing along axes (x, y, z)."""
         with open_nii_gz_file(_file) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
@@ -136,21 +142,24 @@ class MOOD(Source):
         Returns sample-level OOD score for toy examples and None otherwise.
         0 indicates no abnormality and 1 indicates abnormal input.
         """
-        if 'toy' not in _file.name:
-            warnings.warn('Train images have no corresponding OOD scores.')
-            return None
-
-        with (_file.parent.parent / 'toy_label/sample' / f'{_file.name}.txt').open('r') as nii:
-            return int(nii.read())
+        if 'toy' in _file.name:
+            with (_file.parent.parent / 'toy_label/sample' / f'{_file.name}.txt').open('r') as nii:
+                return int(nii.read())
 
     def pixel_label(_file):
         """
         Returns voxel-level OOD scores for toy examples and None otherwise.
         0 indicates no abnormality and 1 indicates abnormal input.
         """
-        if 'toy' not in _file.name:
-            warnings.warn('Train images have no corresponding OOD scores.')
-            return None
+        if 'toy' in _file.name:
+            with open_nii_gz_file(_file.parent.parent / 'toy_label/pixel' / _file.name) as nii_image:
+                return np.bool_(nii_image.get_fdata())
 
-        with open_nii_gz_file(_file.parent.parent / 'toy_label/pixel' / _file.name) as nii_image:
-            return np.bool_(nii_image.get_fdata())
+
+# TODO: sync with amid.utils
+@contextlib.contextmanager
+def open_nii_gz_file(file):
+    with file.open('rb') as opened:
+        with gzip.GzipFile(fileobj=opened) as nii:
+            nii = nb.FileHolder(fileobj=nii)
+            yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})

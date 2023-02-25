@@ -1,16 +1,18 @@
+import contextlib
 import gzip
 import zipfile
 from pathlib import Path
 from typing import Union
 from zipfile import ZipFile
 
-import nibabel
+import nibabel as nb
 import numpy as np
 import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Output, Silent
 
 from .internals import checksum, licenses, register
+from .utils import deprecate
 
 
 @register(
@@ -18,7 +20,7 @@ from .internals import checksum, licenses, register
     license=licenses.CC_BYNCSA_40,
     link='https://zenodo.org/record/6504722#.YsgwnNJByV4',
     modality=('MRI T1c', 'MRI T2hr'),
-    prep_data_size=None,  # TODO: should be measured...
+    prep_data_size='8,96G',
     raw_data_size='17G',
     task=('Segmentation', 'Classification', 'Domain Adaptation'),
 )
@@ -89,29 +91,22 @@ class CrossMoDA(Source):
         raise ValueError(f'Id "{i}" not found')
 
     def image(_file) -> Union[np.ndarray, None]:
-        with _file.open('rb') as opened:
-            with gzip.GzipFile(fileobj=opened) as nii:
-                nii = nibabel.FileHolder(fileobj=nii)
-                image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                # most ct scans are integer-valued, this will help us improve compression rates
-                #  (instead of using `image.get_fdata()`)
-                return np.asarray(image.dataobj)
+        with open_nii_gz_file(_file) as nii_image:
+            return np.asarray(nii_image.dataobj)
 
-    def pixel_spacing(_file):
+    @deprecate(message='Use `spacing` method instead.')
+    def pixel_spacing(spacing: Output):
+        return spacing
+
+    def spacing(_file):
         """Returns pixel spacing along axes (x, y, z)"""
-        with _file.open('rb') as opened:
-            with gzip.GzipFile(fileobj=opened) as nii:
-                nii = nibabel.FileHolder(fileobj=nii)
-                image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                return tuple(image.header['pixdim'][1:4])
+        with open_nii_gz_file(_file) as nii_image:
+            return tuple(nii_image.header['pixdim'][1:4])
 
     def affine(_file):
         """The 4x4 matrix that gives the image's spatial orientation"""
-        with _file.open('rb') as opened:
-            with gzip.GzipFile(fileobj=opened) as nii:
-                nii = nibabel.FileHolder(fileobj=nii)
-                image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                return image.affine
+        with open_nii_gz_file(_file) as nii_image:
+            return nii_image.affine
 
     def split(_file) -> str:
         """The split in which this entry is contained: training_source, training_target, validation"""
@@ -142,16 +137,21 @@ class CrossMoDA(Source):
 
     def masks(i, _file) -> Union[np.ndarray, None]:
         """Combined mask of schwannoma and cochlea (1 and 2 respectively)"""
-        if 'T2' in _file.name:
-            return None
-        with (_file.parent / _file.name.replace('ceT1', 'Label')).open('rb') as opened:
-            with gzip.GzipFile(fileobj=opened) as nii:
-                nii = nibabel.FileHolder(fileobj=nii)
-                mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                return mask.get_fdata().astype(np.uint8)
+        if 'T2' not in _file.name:
+            with open_nii_gz_file(_file.parent / _file.name.replace('ceT1', 'Label')) as nii_image:
+                return nii_image.get_fdata().astype(np.uint8)
 
-    def koos_grade(i, train_source_df: Output, split: Output) -> int:
+    def koos_grade(i, train_source_df: Output, split: Output):
         """VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative)"""
-        if split != 'training_source':
-            return None
-        return (lambda x: -1 if x == 'post-operative-london' else int(x))(train_source_df.loc[i, 'koos'])
+        if split == 'training_source':
+            grade = train_source_df.loc[i, 'koos']
+            return -1 if (grade == 'post-operative-london') else int(grade)
+
+
+# TODO: sync with amid.utils
+@contextlib.contextmanager
+def open_nii_gz_file(file):
+    with file.open('rb') as opened:
+        with gzip.GzipFile(fileobj=opened) as nii:
+            nii = nb.FileHolder(fileobj=nii)
+            yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})

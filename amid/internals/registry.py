@@ -42,7 +42,7 @@ def gather_datasets():
     return OrderedDict((k, _REGISTRY[k]) for k in sorted(_REGISTRY))
 
 
-def prepare_for_table(name, cls, description):
+def prepare_for_table(name, cls, module, description, version):
     def stringify(x):
         if pd.isnull(x):
             return ''
@@ -62,6 +62,7 @@ def prepare_for_table(name, cls, description):
 
     link = entry.pop('link', None)
     if link is not None:
-        entry['name'] = f'<a href="{link}">{name}</a>'
+        entry['link'] = f'<a href="{link}">Source</a>'
 
+    entry['name'] = f'<a href="https://neuro-ml.github.io/amid/{version}/datasets-api/#{module}.{name}">{name}</a>'
     return {k: stringify(v) for k, v in entry.items()}
