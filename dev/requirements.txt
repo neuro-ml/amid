@@ -3,7 +3,8 @@ mkdocs-material
 mkdocstrings[python]
 mkdocs-jupyter
 mkdocs-exclude
+mkdocs-autorefs
+mike
 pandas
 tabulate
-mike
 ipython-genutils
