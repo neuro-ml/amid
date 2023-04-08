@@ -60,8 +60,10 @@ class LiverMedseg(Source):
 
     @meta
     def ids(_root: Silent):
-        result = set()
+        if _root is None:
+            raise ValueError('Please provide the `root` argument')
 
+        result = set()
         with ZipFile(Path(_root) / 'img.zip') as zf:
             for zipinfo in zf.infolist():
                 if zipinfo.is_dir():
@@ -72,6 +74,9 @@ class LiverMedseg(Source):
         return tuple(sorted(result))
 
     def _file(i: str, _root: Silent):
+        if _root is None:
+            raise ValueError('Please provide the `root` argument')
+
         num_id = i.split('_')[-1]
         return zipfile.Path(Path(_root) / 'img.zip', f'img{num_id}.nii.gz')
 

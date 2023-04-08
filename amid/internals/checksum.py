@@ -257,7 +257,7 @@ class CheckSumEdge(StaticGraph, StaticHash):
                 if file.is_dir():
                     continue
 
-                tree[str(file.relative_to(base))] = self._storage.write(file)
+                tree[str(file.relative_to(base))] = self._storage.write(file).hex()
 
             return tree
 

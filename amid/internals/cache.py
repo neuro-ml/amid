@@ -6,8 +6,15 @@ import numpy as np
 from bev import Repository
 from connectome import CacheColumns as Columns, CacheToDisk as Disk
 from connectome.utils import StringsLike
-from tarn import ReadError, Storage
-from tarn.cache import ChainSerializer, DictSerializer, JsonSerializer, PickleSerializer, Serializer, SerializerError
+from tarn import HashKeyStorage, ReadError
+from tarn.serializers import (
+    ChainSerializer,
+    DictSerializer,
+    JsonSerializer,
+    PickleSerializer,
+    Serializer,
+    SerializerError,
+)
 
 
 class CacheToDisk(Disk):
@@ -15,7 +22,6 @@ class CacheToDisk(Disk):
         self,
         names: StringsLike,
         serializer: Union[Serializer, Sequence[Serializer]] = None,
-        fetch: bool = False,
         **kwargs,
     ):
         repo = Repository.from_here('../data')
@@ -23,7 +29,6 @@ class CacheToDisk(Disk):
         super().__init__(
             [x.root for x in cache.local[0].locations],
             cache.storage,
-            remote=cache.remote if fetch else [],
             serializer=default_serializer(serializer),
             names=names,
             **kwargs,
@@ -35,7 +40,6 @@ class CacheColumns(Columns):
         self,
         names: StringsLike,
         serializer: Union[Serializer, Sequence[Serializer]] = None,
-        fetch: bool = False,
         **kwargs,
     ):
         repo = Repository.from_here('../data')
@@ -43,7 +47,6 @@ class CacheColumns(Columns):
         super().__init__(
             [x.root for x in cache.local[0].locations],
             cache.storage,
-            remote=cache.remote if fetch else [],
             serializer=default_serializer(serializer),
             names=names,
             **kwargs,
@@ -89,7 +92,7 @@ class NumpySerializer(Serializer):
         else:
             np.save(folder / 'value.npy', value, allow_pickle=False)
 
-    def load(self, folder: Path, storage: Storage):
+    def load(self, folder: Path, storage: HashKeyStorage):
         paths = list(folder.iterdir())
         if len(paths) != 1:
             raise SerializerError
@@ -116,5 +119,5 @@ class CleanInvalid(Serializer):
     def save(self, value, folder: Path):
         raise SerializerError
 
-    def load(self, folder: Path, storage: Storage):
+    def load(self, folder: Path, storage: HashKeyStorage):
         raise ReadError
