@@ -32,30 +32,30 @@ print(entry.split, entry.patient)
 
 # Available datasets
 
-| Name                                                                                                                               | Entries | Body region                         | Modality                        |
-|:-----------------------------------------------------------------------------------------------------------------------------------|--------:|:------------------------------------|:--------------------------------|
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.amos.dataset.AMOS">AMOS</a>                                     |     600 | Abdomen                             | CT, MRI                         |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.bimcv.BIMCVCovid19">BIMCVCovid19</a>                            |   16335 | Chest                               | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.cc359.dataset.CC359">CC359</a>                                  |     359 | Head                                | MRI T1                          |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.ct_ich.CT_ICH">CT_ICH</a>                                       |      75 | Head                                | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.crossmoda.CrossMoDA">CrossMoDA</a>                              |     484 | Head                                | MRI T1c, MRI T2hr               |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.egd.EGD">EGD</a>                                                |    3096 | Head                                | FLAIR, MRI T1, MRI T1GD, MRI T2 |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.flare2022.FLARE2022">FLARE2022</a>                              |    2100 | Abdomen                             | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.lidc.dataset.LIDC">LIDC</a>                                     |    1018 | Chest                               | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.lits.dataset.LiTS">LiTS</a>                                     |     201 | Abdominal                           | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.liver_medseg.LiverMedseg">LiverMedseg</a>                       |      50 | Chest, Abdomen                      | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.midrc.MIDRC">MIDRC</a>                                          |     155 | Thorax                              | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.mood.MOOD">MOOD</a>                                             |    1358 | Head, Abdominal                     | MRI, CT                         |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.medseg9.Medseg9">Medseg9</a>                                    |       9 | Chest                               | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.cancer_500.dataset.MoscowCancer500">MoscowCancer500</a>         |     979 | Thorax                              | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.covid_1110.MoscowCovid1110">MoscowCovid1110</a>                 |    1110 | Thorax                              | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.nlst.NLST">NLST</a>                                             |   13624 | Thorax                              | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.nsclc.NSCLC">NSCLC</a>                                          |     422 | Thorax                              | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.rsna_bc.dataset.RSNABreastCancer">RSNABreastCancer</a>          |   54710 | Thorax                              | MG                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.stanford_coca.StanfordCoCa">StanfordCoCa</a>                    |     971 | Coronary, Chest                     | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.totalsegmentator.dataset.Totalsegmentator">Totalsegmentator</a> |    1204 | Head, Thorax, Abdomen, Pelvis, Legs | CT                              |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.vs_seg.dataset.VSSEG">VSSEG</a>                                 |     484 | Head                                | MRI T1c, MRI T2                 |
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.verse.VerSe">VerSe</a>                                          |     374 | Thorax, Abdomen                     | CT                              |
+| Name                                                                                                                               |   Entries | Body region                         | Modality                        |
+|:-----------------------------------------------------------------------------------------------------------------------------------|----------:|:------------------------------------|:--------------------------------|
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.amos.dataset.AMOS">AMOS</a>                                     |       600 | Abdomen                             | CT, MRI                         |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.bimcv.BIMCVCovid19">BIMCVCovid19</a>                            |     16335 | Chest                               | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.cc359.dataset.CC359">CC359</a>                                  |       359 | Head                                | MRI T1                          |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.ct_ich.CT_ICH">CT_ICH</a>                                       |        75 | Head                                | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.crossmoda.CrossMoDA">CrossMoDA</a>                              |       484 | Head                                | MRI T1c, MRI T2hr               |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.egd.EGD">EGD</a>                                                |      3096 | Head                                | FLAIR, MRI T1, MRI T1GD, MRI T2 |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.flare2022.FLARE2022">FLARE2022</a>                              |      2100 | Abdomen                             | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.lidc.dataset.LIDC">LIDC</a>                                     |      1018 | Chest                               | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.lits.dataset.LiTS">LiTS</a>                                     |       201 | Abdominal                           | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.liver_medseg.LiverMedseg">LiverMedseg</a>                       |        50 | Chest, Abdomen                      | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.midrc.MIDRC">MIDRC</a>                                          |       155 | Thorax                              | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.mood.MOOD">MOOD</a>                                             |      1358 | Head, Abdominal                     | MRI, CT                         |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.medseg9.Medseg9">Medseg9</a>                                    |         9 | Chest                               | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.cancer_500.dataset.MoscowCancer500">MoscowCancer500</a>         |       979 | Thorax                              | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.covid_1110.MoscowCovid1110">MoscowCovid1110</a>                 |      1110 | Thorax                              | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.nlst.NLST">NLST</a>                                             |     13624 | Thorax                              | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.nsclc.NSCLC">NSCLC</a>                                          |       422 | Thorax                              | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.rsna_bc.dataset.RSNABreastCancer">RSNABreastCancer</a>          |     54710 | Thorax                              | MG                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.stanford_coca.StanfordCoCa">StanfordCoCa</a>                    |       971 | Coronary, Chest                     | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.totalsegmentator.dataset.Totalsegmentator">Totalsegmentator</a> |      1204 | Head, Thorax, Abdomen, Pelvis, Legs | CT                              |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.vs_seg.dataset.VSSEG">VSSEG</a>                                 |       484 | Head                                | MRI T1c, MRI T2                 |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.verse.VerSe">VerSe</a>                                          |       374 | Thorax, Abdomen                     | CT                              |
 
 Check out [our docs](https://neuro-ml.github.io/amid/) for a more detailed list of available datasets and their fields.
 
