@@ -176,4 +176,4 @@ def get_zipfile(_id, archive_name, root):
 
 
 def zipfile2meta(zf):
-    return {k: v for k, v in zip(['id', 'vendor', 'field', 'age', 'gender'], zf.name[: -len('.nii.gz')].split('_'))}
+    return dict(zip(['id', 'vendor', 'field', 'age', 'gender'], zf.name[: -len('.nii.gz')].split('_')))
