@@ -4,12 +4,13 @@ import functools
 import zipfile
 from gzip import GzipFile
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 import nibabel
 import numpy as np
-from dicom_csv import get_common_tag
+from dicom_csv import get_common_tag, order_series, stack_images
 from dicom_csv.exceptions import ConsistencyError, TagTypeError
+from pydicom import dcmread, Dataset
 
 
 Numeric = Union[float, int]
@@ -99,3 +100,11 @@ def deprecate(message=None):
         return functools.wraps(func)(np.deprecate(message=message)(func))
 
     return decorator
+
+
+def image_from_folder(folder: Union[str, Path]) -> np.ndarray:
+    return stack_images(series_from_folder(folder))
+
+
+def series_from_folder(folder: Union[str, Path]) -> List[Dataset]:
+    return order_series([dcmread(p) for p in folder.glob("*.dcm")])
