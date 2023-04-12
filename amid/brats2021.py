@@ -1,18 +1,15 @@
-import contextlib
-import gzip
 import zipfile
 from pathlib import Path
 from typing import Tuple, Union
 from zipfile import ZipFile
 
-import nibabel as nb
 import numpy as np
 import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Output, Silent
 
 from .internals import checksum, licenses, register
-from .utils import deprecate, open_nii_gz_file, unpack
+from .utils import open_nii_gz_file, unpack
 
 
 @register(
@@ -43,11 +40,11 @@ class BraTS2021(Source):
     Examples
     --------
     >>> # Place the downloaded archives in any folder and pass the path to the constructor:
-    >>> ds = BraTS(root='/path/to/archives/root')
+    >>> ds = BraTS2021(root='/path/to/archives/root')
     >>> print(len(ds.ids))
-    # 484
+    # 5880
     >>> print(ds.image(ds.ids[0]).shape)
-    # (512, 512, 214)
+    # (240, 240, 155)
 
     References
     ----------
