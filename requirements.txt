@@ -1,6 +1,6 @@
-connectome>=0.4.2,<1.0.0
-bev>=0.5.3,<1.0.0
-tarn>=0.2.0,<1.0.0
+connectome>=0.6.0,<1.0.0
+bev>=0.7.0,<1.0.0
+tarn>=0.4.0,<1.0.0
 numpy
 nibabel
 more-itertools

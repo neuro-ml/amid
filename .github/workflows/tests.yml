@@ -6,19 +6,6 @@ env:
   MODULE_NAME: amid
 
 jobs:
-  test-reqs:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-      - name: Check reqs
-        run: |
-          python scripts/check-reqs-consistency.py
-
   test:
     runs-on: ubuntu-20.04
     strategy:

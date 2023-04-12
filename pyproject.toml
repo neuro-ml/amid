@@ -1,6 +1,6 @@
 [project]
 name = "amid"
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 description = "A curated list of medical imaging datasets with unified interfaces"
 readme = "README.md"
 requires-python = ">=3.6"
@@ -20,28 +20,6 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
-]
-dependencies = [
-    "connectome>=0.4.2,<1.0.0",
-    "bev>=0.5.3,<1.0.0",
-    "tarn>=0.2.0,<1.0.0",
-    "numpy",
-    "nibabel",
-    "more-itertools",
-    "dicom-csv",
-    "tqdm",
-    "pandas",
-    "pylidc",
-    "pyyaml",
-    "requests",
-    "mdai",
-    "joblib",
-    "deli<1.0.0",
-    "typer<1.0.0",
-    "scipy",
-    "scikit-image",
-    "pydicom",
-    "imops"
 ]
 
 [project.urls]
@@ -64,6 +42,7 @@ include = ["amid"]
 
 [tool.setuptools.dynamic]
 version = { attr = "amid.__version__.__version__" }
+dependencies = { file = "requirements.txt" }
 
 [tool.black]
 line-length = 120
