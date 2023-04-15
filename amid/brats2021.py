@@ -52,13 +52,35 @@ class BraTS2021(Source):
 
     _root: str = None
 
-    @meta
-    def train_ids(_root: Silent):
+    def _base(_root: Silent) -> Path:
         if _root is None:
             raise ValueError('Please pass the locations of the zip archives')
+        return Path(_root)
 
+    @meta
+    def ids(_base):
         result = set()
-        for archive in Path(_root).glob('*.zip'):
+        for archive in _base.glob('*.zip'):
+            if "TrainingData" not in str(archive) and "ValidationData" not in str(archive):
+                continue
+            with ZipFile(archive) as zf:
+                for zipinfo in zf.infolist():
+                    if zipinfo.is_dir():
+                        continue
+
+                    file = Path(zipinfo.filename)
+                    assert file.stem not in result, file.stem
+
+                    if file.suffix == ".gz" and "seg" not in file.name:
+                        result.add(file.stem.replace(".nii", ""))
+                    else:
+                        continue
+
+        return sorted(result)
+
+    def from_train(i, _base):
+        """Check if image comes from training dataset"""
+        for archive in _base.glob('*.zip'):
             if "TrainingData" not in str(archive):
                 continue
             with ZipFile(archive) as zf:
@@ -67,22 +89,17 @@ class BraTS2021(Source):
                         continue
 
                     file = Path(zipinfo.filename)
-                    assert file.stem not in result, file.stem
 
                     if file.suffix == ".gz" and "seg" not in file.name:
-                        result.add(file.stem.replace(".nii", ""))
+                        if i in str(file):
+                            return True
                     else:
                         continue
+        return False
 
-        return sorted(result)
-    
-    @meta
-    def val_ids(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the locations of the zip archives')
-
-        result = set()
-        for archive in Path(_root).glob('*.zip'):
+    def from_val(i, _base):
+        """Check if image comes from validation dataset"""
+        for archive in _base.glob('*.zip'):
             if "ValidationData" not in str(archive):
                 continue
             with ZipFile(archive) as zf:
@@ -91,25 +108,20 @@ class BraTS2021(Source):
                         continue
 
                     file = Path(zipinfo.filename)
-                    assert file.stem not in result, file.stem
 
                     if file.suffix == ".gz" and "seg" not in file.name:
-                        result.add(file.stem.replace(".nii", ""))
+                        if i in str(file):
+                            return True
                     else:
                         continue
-
-        return sorted(result)
+        return False
 
     @meta
-    def ids(train_ids: Output, val_ids: Output):
-        return sorted(set(train_ids).union(val_ids))
-    
-    @meta
-    def mapping21_17(_root) -> pd.DataFrame:
-        return pd.read_csv(Path(_root) / "BraTS21-17_Mapping.csv")
-    
-    def _file(i, _root: Silent) -> Tuple[Path, Path]:
-        for archive in Path(_root).glob('*.zip'):
+    def mapping21_17(_base) -> pd.DataFrame:
+        return pd.read_csv(_base / "BraTS21-17_Mapping.csv")
+
+    def _file(i, _base) -> Tuple[Path, Path]:
+        for archive in _base.glob('*.zip'):
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
                     if i == Path(zipinfo.filename).stem.replace(".nii", ""):
@@ -119,26 +131,29 @@ class BraTS2021(Source):
                         return archive_path, relative_path
 
         raise ValueError(f'Id "{i}" not found')
-    
+
+    def subject_id(_file) -> str:
+        return _file[1].stem.replace(".nii", "").rsplit("_", 1)[0]
+
     def modality(_file) -> str:
-        return _file[1].stem.replace(".nii", "").split("_")[-1]
-    
+        return _file[1].stem.replace(".nii", "").rsplit("_", 1)[1]
+
     def image(_file) -> Union[np.ndarray, None]:
         with unpack(str(_file[0]), str(_file[1]), ".", ".zip") as (unpacked, is_unpacked):
             with open_nii_gz_file(unpacked) as nii_image:
                 return np.asarray(nii_image.dataobj)
-    
+
     def mask(_file) -> Union[np.ndarray, None]:
         mask_postfix = ".".join(["seg", "nii", _file[1].name.split(".")[-1]])
-        relative_path = _file[1].parent / "_".join([*_file[1].name.split("_")[:-1], mask_postfix])
-        
+        relative_path = str(_file[1].parent / "_".join([*_file[1].name.split("_")[:-1], mask_postfix]))
+
         if "Val" in str(_file[0]):
             return None
-        
-        with unpack(str(_file[0]), str(_file[1]), ".", ".zip") as (unpacked, is_unpacked):
+
+        with unpack(str(_file[0]), relative_path, ".", ".zip") as (unpacked, is_unpacked):
             with open_nii_gz_file(unpacked) as nii_image:
                 return np.asarray(nii_image.dataobj)
-    
+
     def spacing(_file):
         """Returns pixel spacing along axes (x, y, z)"""
         with unpack(str(_file[0]), str(_file[1]), ".", ".zip") as (unpacked, is_unpacked):
