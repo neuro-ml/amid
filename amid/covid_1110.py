@@ -15,6 +15,7 @@ from .internals import checksum, register
     task='COVID-19 Segmentation',
     link='https://mosmed.ai/en/datasets/covid191110/',
     raw_data_size='21G',
+    prep_data_size='12,1G',
 )
 @checksum('covid_1110')
 class MoscowCovid1110(Source):
