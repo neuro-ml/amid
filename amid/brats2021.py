@@ -21,7 +21,7 @@ from .utils import open_nii_gz_file, unpack
     raw_data_size='15G',
     task=('Segmentation', 'Classification', 'Domain Adaptation'),
 )
-@checksum('brats2021')
+@checksum('brats2021', ignore=['mapping21_17'])
 class BraTS2021(Source):
     """
     Parameters
