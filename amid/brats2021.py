@@ -1,12 +1,12 @@
-import zipfile
+import contextlib
 from pathlib import Path
-from typing import Tuple, Union
 from zipfile import ZipFile
 
+import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
-from connectome.interface.nodes import Output, Silent
+from connectome import Source, meta, Output
+from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
 from .utils import open_nii_gz_file, unpack
@@ -59,109 +59,81 @@ class BraTS2021(Source):
 
     @meta
     def ids(_base):
-        result = set()
-        for archive in _base.glob('*.zip'):
-            if "TrainingData" not in str(archive) and "ValidationData" not in str(archive):
-                continue
-            with ZipFile(archive) as zf:
-                for zipinfo in zf.infolist():
-                    if zipinfo.is_dir():
-                        continue
+        return sorted(_get_ids_or_file(_base, 'TrainingData') + _get_ids_or_file(_base, 'ValidationData'))
 
-                    file = Path(zipinfo.filename)
-                    assert file.stem not in result, file.stem
-
-                    if file.suffix == ".gz" and "seg" not in file.name:
-                        result.add(file.stem.replace(".nii", ""))
-                    else:
-                        continue
-
-        return sorted(result)
-
-    def from_train(i, _base):
-        """Check if image comes from training dataset"""
-        for archive in _base.glob('*.zip'):
-            if "TrainingData" not in str(archive):
-                continue
-            with ZipFile(archive) as zf:
-                for zipinfo in zf.infolist():
-                    if zipinfo.is_dir():
-                        continue
-
-                    file = Path(zipinfo.filename)
-
-                    if file.suffix == ".gz" and "seg" not in file.name:
-                        if i in str(file):
-                            return True
-                    else:
-                        continue
-        return False
-
-    def from_val(i, _base):
-        """Check if image comes from validation dataset"""
-        for archive in _base.glob('*.zip'):
-            if "ValidationData" not in str(archive):
-                continue
-            with ZipFile(archive) as zf:
-                for zipinfo in zf.infolist():
-                    if zipinfo.is_dir():
-                        continue
-
-                    file = Path(zipinfo.filename)
-
-                    if file.suffix == ".gz" and "seg" not in file.name:
-                        if i in str(file):
-                            return True
-                    else:
-                        continue
-        return False
+    def fold(i, _base):
+        return 'ValidationData' if _get_ids_or_file(_base, 'ValidationData', check_id=i) else 'TrainingData'
 
     @meta
     def mapping21_17(_base) -> pd.DataFrame:
         return pd.read_csv(_base / "BraTS21-17_Mapping.csv")
 
-    def _file(i, _base) -> Tuple[Path, Path]:
-        for archive in _base.glob('*.zip'):
+    def subject_id(i) -> str:
+        return i.rsplit('_', 1)[0]
+
+    def modality(i) -> str:
+        return i.rsplit('_', 1)[1]
+
+    def image(i, _base, fold: Output):
+        root, relative = _get_ids_or_file(_base, fold, check_id=i, return_image=True)
+        with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
+            return np.asarray(nii_image.dataobj)
+
+    def mask(i, _base, fold: Output):
+        if fold == 'ValidationData':
+            return None
+        else:
+            root, relative = _get_ids_or_file(_base, fold, check_id=i, return_segm=True)
+            with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
+                return np.asarray(nii_image.dataobj)
+
+    def spacing(i, _base, fold: Output):
+        """Returns the voxel spacing along axes (x, y, z)."""
+        root, relative = _get_ids_or_file(_base, fold, check_id=i, return_image=True)
+        with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
+            return tuple(nii_image.header['pixdim'][1:4])
+
+    def affine(i, _base, fold: Output):
+        """Returns 4x4 matrix that gives the image's spatial orientation."""
+        root, relative = _get_ids_or_file(_base, fold, check_id=i, return_image=True)
+        with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
+            return nii_image.affine
+
+
+def _get_ids_or_file(base_path, archive_name_part: str = 'TrainingData',
+                     check_id: str = None, return_image: bool = False, return_segm: bool = False):
+    # TODO: implement the same functionality for folder extraction.
+    ids = []
+    for archive in base_path.glob('*.zip'):
+        if archive_name_part in archive.name:
+
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
-                    if i == Path(zipinfo.filename).stem.replace(".nii", ""):
-                        p = Path(str(zipfile.Path(archive, zipinfo.filename)))
-                        archive_path = p.parent.parent.parent
-                        relative_path = p.relative_to(archive_path)
-                        return archive_path, relative_path
+                    if not zipinfo.is_dir():
+                        file = Path(zipinfo.filename)
+                        _id = file.stem.replace('.nii', '')
 
-        raise ValueError(f'Id "{i}" not found')
+                        if 'seg' not in _id:
+                            ids.append(_id)
 
-    def subject_id(_file) -> str:
-        return _file[1].stem.replace(".nii", "").rsplit("_", 1)[0]
+                        if (check_id is not None) and (check_id == _id):
 
-    def modality(_file) -> str:
-        return _file[1].stem.replace(".nii", "").rsplit("_", 1)[1]
+                            if return_segm:
+                                return str(archive), str(file)[:-len('.nii.gz')].rsplit('_', 1)[0] + '_seg.nii.gz'
 
-    def image(_file) -> Union[np.ndarray, None]:
-        with unpack(str(_file[0]), str(_file[1]), ".", ".zip") as (unpacked, is_unpacked):
+                            if return_image:
+                                return str(archive), str(file)
+
+                            return True  # if check_id in archive
+
+    return ids if (check_id is None) else False  # if check_id not in archive
+
+
+@contextlib.contextmanager
+def _load_nibabel_probably_from_zip(root: str, relative: str, archive_root_name: str = None, archive_ext: str = None):
+    with unpack(root, relative, archive_root_name, archive_ext) as (unpacked, is_unpacked):
+        if is_unpacked:
+            yield nibabel.load(unpacked)
+        else:
             with open_nii_gz_file(unpacked) as nii_image:
-                return np.asarray(nii_image.dataobj)
-
-    def mask(_file) -> Union[np.ndarray, None]:
-        mask_postfix = ".".join(["seg", "nii", _file[1].name.split(".")[-1]])
-        relative_path = str(_file[1].parent / "_".join([*_file[1].name.split("_")[:-1], mask_postfix]))
-
-        if "Val" in str(_file[0]):
-            return None
-
-        with unpack(str(_file[0]), relative_path, ".", ".zip") as (unpacked, is_unpacked):
-            with open_nii_gz_file(unpacked) as nii_image:
-                return np.asarray(nii_image.dataobj)
-
-    def spacing(_file):
-        """Returns pixel spacing along axes (x, y, z)"""
-        with unpack(str(_file[0]), str(_file[1]), ".", ".zip") as (unpacked, is_unpacked):
-            with open_nii_gz_file(unpacked) as nii_image:
-                return tuple(nii_image.header['pixdim'][1:4])
-
-    def affine(_file):
-        """The 4x4 matrix that gives the image's spatial orientation"""
-        with unpack(str(_file[0]), str(_file[1]), ".", ".zip") as (unpacked, is_unpacked):
-            with open_nii_gz_file(unpacked) as nii_image:
-                return nii_image.affine
+                yield nii_image
