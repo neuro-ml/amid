@@ -175,7 +175,7 @@ class LIDC(Source):
 
     def nodules(_scan):
         nodules = []
-        for anns in _scan.cluster_annotations():
+        for anns in _scan.cluster_annotations(verbose=False):
             nodule_annotations = []
             for ann in anns:
                 nodule_annotations.append(get_nodule(ann))
@@ -184,7 +184,7 @@ class LIDC(Source):
 
     def nodules_masks(_scan):
         nodules = []
-        for anns in _scan.cluster_annotations():
+        for anns in _scan.cluster_annotations(verbose=False):
             nodule_annotations = []
             for ann in anns:
                 nodule_annotations.append(ann.boolean_mask())
@@ -193,7 +193,7 @@ class LIDC(Source):
 
     def cancer(_scan, _shape):
         cancer = np.zeros(_shape, dtype=bool)
-        for anns in _scan.cluster_annotations():
+        for anns in _scan.cluster_annotations(verbose=False):
             cancer |= consensus(anns, pad=np.inf)[0]
 
         return cancer
