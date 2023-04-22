@@ -5,7 +5,7 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Source, meta, Output
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
@@ -66,7 +66,7 @@ class BraTS2021(Source):
 
     @meta
     def mapping21_17(_base) -> pd.DataFrame:
-        return pd.read_csv(_base / "BraTS21-17_Mapping.csv")
+        return pd.read_csv(_base / 'BraTS21-17_Mapping.csv')
 
     def subject_id(i) -> str:
         return i.rsplit('_', 1)[0]
@@ -100,13 +100,17 @@ class BraTS2021(Source):
             return nii_image.affine
 
 
-def _get_ids_or_file(base_path, archive_name_part: str = 'TrainingData',
-                     check_id: str = None, return_image: bool = False, return_segm: bool = False):
+def _get_ids_or_file(
+    base_path,
+    archive_name_part: str = 'TrainingData',
+    check_id: str = None,
+    return_image: bool = False,
+    return_segm: bool = False,
+):
     # TODO: implement the same functionality for folder extraction.
     ids = []
     for archive in base_path.glob('*.zip'):
         if archive_name_part in archive.name:
-
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
                     if not zipinfo.is_dir():
@@ -117,9 +121,8 @@ def _get_ids_or_file(base_path, archive_name_part: str = 'TrainingData',
                             ids.append(_id)
 
                         if (check_id is not None) and (check_id == _id):
-
                             if return_segm:
-                                return str(archive), str(file)[:-len('.nii.gz')].rsplit('_', 1)[0] + '_seg.nii.gz'
+                                return str(archive), str(file)[: -len('.nii.gz')].rsplit('_', 1)[0] + '_seg.nii.gz'
 
                             if return_image:
                                 return str(archive), str(file)
