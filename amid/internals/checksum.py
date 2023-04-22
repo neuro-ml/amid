@@ -45,7 +45,7 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                     if repository is not None:
                         args.append(
                             CacheAndCheck(
-                                set(dir(ds)) - {'id', 'ids'},
+                                set(dir(ds)) - {'id', 'ids', *ignore},
                                 repository,
                                 path,
                                 fetch=True,
