@@ -23,7 +23,7 @@ ARCHIVE_ROOT_NAME = 'amos22'
     link='https://zenodo.org/record/7262581',
     modality=('CT', 'MRI'),
     raw_data_size='23G',
-    prep_data_size='23G',
+    prep_data_size='89,5G',
     task='Supervised multi-modality abdominal multi-organ segmentation',
 )
 @checksum('amos')
