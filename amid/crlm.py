@@ -55,7 +55,7 @@ class CRLM(Source):
     >>> print(len(ds.ids))
     # 197
     >>> print(ds.image(ds.ids[0]).shape)
-    # (240, 240, 155)
+    # (512, 512, 52)
 
     References
     ----------
@@ -106,8 +106,9 @@ class CRLM(Source):
         masks = lmap(partial(restore_crop, box=seg_box, shape=image.shape), raw_masks)
 
         liver_mask = {"liver": masks[0].astype(bool)}
-        veins = {"hepatic": masks[1].astype(bool), "portal": masks[2].astype(bool)}
-        tumors = {f"tumor_{i}": array.astype(bool) for i, array in enumerate(masks[3:])}
+        # skip liver remnant
+        veins = {"hepatic": masks[2].astype(bool), "portal": masks[3].astype(bool)}
+        tumors = {f"tumor_{i}": array.astype(bool) for i, array in enumerate(masks[4:])}
 
         return {**liver_mask, **veins, **tumors}
 
