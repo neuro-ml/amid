@@ -1,6 +1,6 @@
 from gzip import GzipFile
 from pathlib import Path
-from typing import Dict, Sequence, Union, NamedTuple
+from typing import Dict, Sequence, Union
 
 import numpy as np
 from bev import Repository
@@ -117,7 +117,8 @@ class NumpySerializer(Serializer):
 
 class JsonSerializer(BaseJsonSerializer):
     def save(self, value, folder: Path):
-        if isinstance(value, NamedTuple):
+        # if namedtuple
+        if isinstance(value, tuple) and hasattr(value, '_asdict') and hasattr(value, '_fields'):
             raise SerializerError
 
         return super().save(value, folder)
