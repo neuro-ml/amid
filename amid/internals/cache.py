@@ -1,6 +1,6 @@
 from gzip import GzipFile
 from pathlib import Path
-from typing import Dict, Sequence, Union
+from typing import Dict, Sequence, Union, NamedTuple
 
 import numpy as np
 from bev import Repository
@@ -10,7 +10,7 @@ from tarn import HashKeyStorage, ReadError
 from tarn.serializers import (
     ChainSerializer,
     DictSerializer,
-    JsonSerializer,
+    JsonSerializer as BaseJsonSerializer,
     PickleSerializer,
     Serializer,
     SerializerError,
@@ -113,6 +113,14 @@ class NumpySerializer(Serializer):
             return self._load_file(storage, loader, path)
         except ValueError as e:
             raise ReadError from e
+
+
+class JsonSerializer(BaseJsonSerializer):
+    def save(self, value, folder: Path):
+        if isinstance(value, NamedTuple):
+            raise SerializerError
+
+        return super().save(value, folder)
 
 
 class CleanInvalid(Serializer):
