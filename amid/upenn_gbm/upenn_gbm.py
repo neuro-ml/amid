@@ -13,7 +13,6 @@ from ..internals import checksum, register, licenses
 from ..utils import deprecate
 
 
-
 @register(
     body_region='Head',
     license=licenses.CC_BY_40,
@@ -88,23 +87,14 @@ class UPENN_GBM(Source):
         ids = [x.name for x in (_base / 'NIfTI-files/images_structural').iterdir()]
         return tuple(sorted(ids))
     
-    def _modalities():
+    def modalities():
         return ["T1", "T1GD", "T2", "FLAIR"]
     
-    def _dsc_modalities():
+    def dsc_modalities():
         return ["", "ap-rCBV", "PH", "PSR"]
     
-    def _dti_modalities():
+    def dti_modalities():
         return ["AD", "FA", "RD", "TR"]
-    
-    def modalities(_modalities):
-        return _modalities
-    
-    def dsc_modalities(_dsc_modalities):
-        return _dsc_modalities
-    
-    def dti_modalities(_dti_modalities):
-        return _dti_modalities
 
     def _mask_path(i, _base):
         p1 = _base / "NIfTI-files/images_segm"
@@ -123,32 +113,32 @@ class UPENN_GBM(Source):
             return None
         return _mask_path.parent.name == 'automated_segm'
     
-    def image(i, _base, _modalities):
+    def image(i,  modalities: Output, _base):
         path = _base / f"NIfTI-files/images_structural/{i}"
-        image_pathes = [path / f"{i}_{mod}.nii.gz" for mod in _modalities]
+        image_pathes = [path / f"{i}_{mod}.nii.gz" for mod in modalities]
         images = [np.asarray(nb.load(p).dataobj) for p in image_pathes]
         return np.stack(images)
     
-    def image_unstripped(i, _base, _modalities):
+    def image_unstripped(i, modalities: Output, _base):
         path = _base / f"NIfTI-files/images_structural_unstripped/{i}"
-        image_pathes = [path / f"{i}_{mod}_unstripped.nii.gz" for mod in _modalities]
+        image_pathes = [path / f"{i}_{mod}_unstripped.nii.gz" for mod in modalities]
         images = [np.asarray(nb.load(p).dataobj) for p in image_pathes]
         return np.stack(images)
 
-    def image_DTI(i, _base, _dti_modalities):
+    def image_DTI(i, dti_modalities: Output, _base):
         path = _base / f"NIfTI-files/images_DTI/{i}"
         if not path.exists():
             return None
-        image_pathes = [path / f"{i}_DTI_{mod}.nii.gz" for mod in _dti_modalities]
+        image_pathes = [path / f"{i}_DTI_{mod}.nii.gz" for mod in dti_modalities]
         images = [np.asarray(nb.load(p).dataobj) for p in image_pathes]
         return np.stack(images)
     
-    def image_DSC(i, _base, _dsc_modalities):
+    def image_DSC(i, dsc_modalities: Output, _base):
         path = _base / f"NIfTI-files/images_DSC/{i}"
         if not path.exists():
             return None
         image_pathes = [path / (f"{i}_DSC_{mod}.nii.gz" if mod else f"{i}_DSC.nii.gz")
-                         for mod in _dsc_modalities]
+                         for mod in dsc_modalities]
         images = [np.asarray(nb.load(p).dataobj) for p in image_pathes]
         return images
     
