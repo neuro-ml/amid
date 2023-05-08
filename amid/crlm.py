@@ -18,7 +18,8 @@ from .utils import series_from_dicom_folder
 @register(
     body_region='Abdomen',
     license=licenses.CC_BY_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=89096268#89096268412b832037484784bd78caf58e052641',
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?'
+    'pageId=89096268#89096268412b832037484784bd78caf58e052641',
     modality=('CT, SEG'),
     prep_data_size='11G',
     raw_data_size='11G',
@@ -74,7 +75,7 @@ class CRLM(Source):
 
     def _folders(i, _base) -> Tuple[Path, Path]:
         case = _base / i
-        folders = tuple(set(p.parent for p in case.glob("*/*/*/*.dcm")))
+        folders = tuple({p.parent for p in case.glob('*/*/*/*.dcm')})
         return tuple(sorted(folders, key=lambda f: len(list(f.iterdir()))))
 
     def _series(_folders):
@@ -84,7 +85,7 @@ class CRLM(Source):
         return stack_images(_series)
 
     def mask(image: Output, _series, _folders) -> Dict[str, np.ndarray]:
-        dicom_seg = highdicom.seg.segread(next(_folders[0].glob("*.dcm")))
+        dicom_seg = highdicom.seg.segread(next(_folders[0].glob('*.dcm')))
         image_sops = [s.SOPInstanceUID for s in _series]
         seg_sops = [sop_uid for _, _, sop_uid in dicom_seg.get_source_image_uids()]
 
@@ -105,10 +106,10 @@ class CRLM(Source):
         )
         masks = lmap(partial(restore_crop, box=seg_box, shape=image.shape), raw_masks)
 
-        liver_mask = {"liver": masks[0].astype(bool)}
+        liver_mask = {'liver': masks[0].astype(bool)}
         # skip liver remnant
-        veins = {"hepatic": masks[2].astype(bool), "portal": masks[3].astype(bool)}
-        tumors = {f"tumor_{i}": array.astype(bool) for i, array in enumerate(masks[4:])}
+        veins = {'hepatic': masks[2].astype(bool), 'portal': masks[3].astype(bool)}
+        tumors = {f'tumor_{i}': array.astype(bool) for i, array in enumerate(masks[4:])}
 
         return {**liver_mask, **veins, **tumors}
 

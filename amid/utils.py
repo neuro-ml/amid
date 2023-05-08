@@ -5,13 +5,11 @@ import zipfile
 from gzip import GzipFile
 from pathlib import Path
 from typing import List, Union
-from typing import List, Union
 
 import nibabel
 import numpy as np
 from dicom_csv import get_common_tag, order_series, stack_images
 from dicom_csv.exceptions import ConsistencyError, TagTypeError
-from pydicom import Dataset, dcmread
 from pydicom import Dataset, dcmread
 
 
@@ -109,4 +107,4 @@ def image_from_dicom_folder(folder: Union[str, Path]) -> np.ndarray:
 
 
 def series_from_dicom_folder(folder: Union[str, Path]) -> List[Dataset]:
-    return order_series([dcmread(p) for p in Path(folder).glob("*.dcm")])
+    return order_series([dcmread(p) for p in Path(folder).glob('*.dcm')])
