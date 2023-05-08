@@ -7,8 +7,7 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import get_orientation_matrix, get_slice_locations, get_voxel_spacing, stack_images
-from dpipe.im.shape_ops import restore_crop
-from dpipe.itertools import lmap
+from imops import restore_crop
 from more_itertools import locate
 
 from .internals import checksum, licenses, register
@@ -104,7 +103,7 @@ class CRLM(Source):
             -1,
             0,
         )
-        masks = lmap(partial(restore_crop, box=seg_box, shape=image.shape), raw_masks)
+        masks = list(map(partial(restore_crop, box=seg_box, shape=image.shape), raw_masks))
 
         liver_mask = {'liver': masks[0].astype(bool)}
         # skip liver remnant
