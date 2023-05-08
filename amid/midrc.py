@@ -2,7 +2,7 @@ import os.path
 import warnings
 from functools import lru_cache
 from pathlib import Path
-from typing import List
+from typing import Tuple
 
 import mdai
 import numpy as np
@@ -23,7 +23,6 @@ from dicom_csv import (
 from skimage.draw import polygon
 
 from .internals import checksum, licenses, register
-from .utils import deprecate
 
 
 @register(
@@ -77,38 +76,43 @@ class MIDRC(Source):
     """
 
     _root: str = None
-    _pathologies: List[str] = [
+    _pathologies: Tuple[str] = (
         'Infectious opacity',
         'Infectious TIB/micronodules',
         'Atelectasis',
         'Other noninfectious opacity',
         'Noninfectious nodule/mass',
         'Infectious cavity',
-    ]
+    )
+
+    def _base(_root: Silent):
+        if _root is None:
+            raise ValueError('Please provide the `root` argument')
+        return Path(_root)
+
+    @lru_cache(None)
+    def _joined(_base):
+        joined_path = _base / 'joined.csv'
+        if joined_path.exists():
+            return pd.read_csv(joined_path)
+        joined = join_tree(_base / 'MIDRC-RICORD-1A', verbose=1)
+        joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
+        joined.to_csv(_base / 'joined.csv')
+        return joined
 
     @meta
     def ids(_joined):
         return tuple(_joined['SeriesInstanceUID'].unique())
 
-    @lru_cache(None)
-    def _joined(_root: Silent):
-        # TODO: switch from os.path to pathlib
-        if os.path.exists(Path(_root) / 'joined.csv'):
-            return pd.read_csv(Path(_root) / 'joined.csv')
-        joined = join_tree(Path(_root) / 'MIDRC-RICORD-1A', verbose=1)
-        joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
-        joined.to_csv(Path(_root) / 'joined.csv')
-        return joined
-
-    def _annotation(_root: Silent):
+    def _annotation(_base):
         json_path = 'MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json'
         # TODO: do we really need a whole lib to parse one json??? it also generates annoying pandas warning
-        return mdai.common_utils.json_to_dataframe(Path(_root) / json_path)['annotations']
+        return mdai.common_utils.json_to_dataframe(_base / json_path)['annotations']
 
-    def _series(i, _root: Silent, _joined):
+    def _series(i, _base, _joined):
         sub = _joined[_joined.SeriesInstanceUID == i]
         series_files = sub['PathToFolder'] + os.path.sep + sub['FileName']
-        series_files = [Path(_root) / 'MIDRC-RICORD-1A' / x for x in series_files]
+        series_files = [_base / 'MIDRC-RICORD-1A' / x for x in series_files]
         series = list(map(pydicom.dcmread, series_files))
         # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
@@ -127,7 +131,7 @@ class MIDRC(Source):
         image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
-    def _image_meta(_series):
+    def image_meta(_series):
         metas = [list(dict(s).values()) for s in _series]
         result = {}
         for meta_ in metas:
@@ -142,19 +146,11 @@ class MIDRC(Source):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
-    def image_meta(_image_meta):
-        # TODO: do we really need a field duplicate?
-        return _image_meta
-
     def _study_id(i, _joined):
         study_ids = _joined[_joined.SeriesInstanceUID == i].StudyInstanceUID.unique()
         assert len(study_ids) == 1
         # series_id_to_study
         return study_ids[0]
-
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
 
     def spacing(_series):
         pixel_spacing = get_pixel_spacing(_series).tolist()
@@ -167,16 +163,16 @@ class MIDRC(Source):
         sub = _annotation[(_annotation.scope == 'STUDY') & (_annotation.StudyInstanceUID == _study_id)]
         return tuple(sub['labelName'].unique())
 
-    def mask(i, _image_meta, _annotation, _pathologies):
+    def mask(i, image_meta: Output, _annotation, _pathologies):
         # TODO: mask has 6 channels now. Consider adding different methods ot at least a docstring naming channels...
         sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == 'INSTANCE')]
-        shape = (_image_meta['Rows'], _image_meta['Columns'], len(_image_meta['SOPInstanceUID']))
+        shape = (image_meta['Rows'], image_meta['Columns'], len(image_meta['SOPInstanceUID']))
         mask = np.zeros((len(_pathologies), *shape), dtype=bool)
         if len(sub) == 0:
             return None
         for label, row in sub.iterrows():
             pathology_index = _pathologies.index(row['labelName'])
-            slice_index = _image_meta['SOPInstanceUID'].index(row['SOPInstanceUID'])
+            slice_index = image_meta['SOPInstanceUID'].index(row['SOPInstanceUID'])
             if row['data'] is None:
                 warnings.warn(f'{label} annotations for series {i} contains None for slice {slice_index}.')
                 continue

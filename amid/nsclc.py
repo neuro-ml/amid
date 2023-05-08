@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Output, Source, meta
+from connectome import Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
     drop_duplicated_instances,
@@ -22,7 +22,6 @@ from dicom_csv import (
 )
 
 from .internals import checksum, licenses, register
-from .utils import deprecate
 
 
 @register(
@@ -76,7 +75,7 @@ class NSCLC(Source):
     _root: str = None
 
     # FIXME: move to filtering via `ignore_errors=True` + filtering via Filter (if needed)
-    _INVALID_PATIENT_IDS = [
+    _INVALID_PATIENT_IDS = (
         # no dicom with cancer segmentation
         'LUNG1-128',
         'LUNG1-412',
@@ -86,31 +85,32 @@ class NSCLC(Source):
         'LUNG1-085',
         'LUNG1-014',
         'LUNG1-021',
-    ]
+    )
+
+    def _base(_root: Silent):
+        if _root is None:
+            raise ValueError('Please provide the `root` argument')
+        return Path(_root)
+
+    @lru_cache(None)
+    def _joined(_base):
+        joined_path = _base / 'joined.csv'
+        if joined_path.exists():
+            return pd.read_csv(joined_path)
+        joined = join_tree(_base / 'NSCLC-Radiomics', verbose=1)
+        joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
+        joined.to_csv(joined_path)
+        return joined
 
     @meta
     def ids(_joined):
         uid = _joined.groupby('SeriesInstanceUID').apply(len)
         return tuple(uid[uid > 1].keys())
 
-    def j(_joined):
-        # FIXME: is it used somewhere? remove?
-        return _joined
-
-    @lru_cache(None)
-    def _joined(_root: Silent):
-        # TODO: switch from os.path to pathlib
-        if os.path.exists(Path(_root) / 'joined.csv'):
-            return pd.read_csv(Path(_root) / 'joined.csv')
-        joined = join_tree(Path(_root) / 'NSCLC-Radiomics', verbose=1)
-        joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
-        joined.to_csv(Path(_root) / 'joined.csv')
-        return joined
-
-    def _series(i, _root: Silent, _joined):
+    def _series(i, _base, _joined):
         sub = _joined[_joined.SeriesInstanceUID == i]
         series_files = sub['PathToFolder'] + os.path.sep + sub['FileName']
-        series_files = [Path(_root) / 'NSCLC-Radiomics' / x for x in series_files]
+        series_files = [_base / 'NSCLC-Radiomics' / x for x in series_files]
         series = list(map(pydicom.dcmread, series_files))
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
@@ -128,7 +128,7 @@ class NSCLC(Source):
         image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
-    def _image_meta(_series):
+    def image_meta(_series):
         metas = [list(dict(s).values()) for s in _series]
         result = {}
         for meta_ in metas:
@@ -143,19 +143,11 @@ class NSCLC(Source):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
-    def image_meta(_image_meta):
-        # TODO: do we really need a field duplicate?
-        return _image_meta
-
     def _study_id(i, _joined):
         study_ids = _joined[_joined.SeriesInstanceUID == i].StudyInstanceUID.unique()
         assert len(study_ids) == 1
         # series_id_to_study
         return study_ids[0]
-
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
 
     def spacing(_series):
         pixel_spacing = get_pixel_spacing(_series).tolist()
@@ -185,14 +177,14 @@ class NSCLC(Source):
     def spinal_cord(_extract_segment_masks):
         return _extract_segment_masks.get('Spinal-Cord', None)
 
-    def _extract_segment_masks(i, _series, _joined, _root, _INVALID_PATIENT_IDS):
+    def _extract_segment_masks(i, _series, _joined, _base, _INVALID_PATIENT_IDS):
         folders = _joined[_joined.SeriesInstanceUID == i].PathToFolder.unique()
         assert len(folders) == 1, i
         patient_id = _joined[_joined.SeriesInstanceUID == i].PatientID.unique()[0]
         if patient_id in _INVALID_PATIENT_IDS:
             return {}
 
-        annotation_path = Path(_root) / 'NSCLC-Radiomics' / Path(folders[0]).parent
+        annotation_path = _base / 'NSCLC-Radiomics' / Path(folders[0]).parent
 
         found_markup = None
         for p in annotation_path.glob('*.json'):

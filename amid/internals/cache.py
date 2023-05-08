@@ -10,7 +10,7 @@ from tarn import HashKeyStorage, ReadError
 from tarn.serializers import (
     ChainSerializer,
     DictSerializer,
-    JsonSerializer,
+    JsonSerializer as BaseJsonSerializer,
     PickleSerializer,
     Serializer,
     SerializerError,
@@ -113,6 +113,15 @@ class NumpySerializer(Serializer):
             return self._load_file(storage, loader, path)
         except ValueError as e:
             raise ReadError from e
+
+
+class JsonSerializer(BaseJsonSerializer):
+    def save(self, value, folder: Path):
+        # if namedtuple
+        if isinstance(value, tuple) and hasattr(value, '_asdict') and hasattr(value, '_fields'):
+            raise SerializerError
+
+        return super().save(value, folder)
 
 
 class CleanInvalid(Serializer):
