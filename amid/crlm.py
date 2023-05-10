@@ -70,7 +70,7 @@ class CRLM(Source):
 
     @meta
     def ids(_base):
-        return sorted([d.name for d in _base.iterdir()])
+        return sorted(d.name for d in _base.iterdir())
 
     def _folders(i, _base) -> Tuple[Path, Path]:
         case = _base / i
