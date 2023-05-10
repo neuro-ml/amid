@@ -111,7 +111,7 @@ class NumpySerializer(Serializer):
 
         try:
             return self._load_file(storage, loader, path)
-        except ValueError as e:
+        except (ValueError, EOFError) as e:
             raise ReadError from e
 
 
