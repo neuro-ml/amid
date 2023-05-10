@@ -84,6 +84,7 @@ class CRLM(Source):
         return stack_images(_series)
 
     def mask(image: Output, _series, _folders) -> Dict[str, np.ndarray]:
+        """Returns dict: {'liver': ..., 'hepatic': ..., 'tumor_x': ...}"""
         dicom_seg = highdicom.seg.segread(next(_folders[0].glob('*.dcm')))
         image_sops = [s.SOPInstanceUID for s in _series]
         seg_sops = [sop_uid for _, _, sop_uid in dicom_seg.get_source_image_uids()]
