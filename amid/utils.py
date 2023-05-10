@@ -102,9 +102,9 @@ def deprecate(message=None):
     return decorator
 
 
-def image_from_folder(folder: Union[str, Path]) -> np.ndarray:
-    return stack_images(series_from_folder(folder))
+def image_from_dicom_folder(folder: Union[str, Path]) -> np.ndarray:
+    return stack_images(series_from_dicom_folder(folder))
 
 
-def series_from_folder(folder: Union[str, Path]) -> List[Dataset]:
-    return order_series([dcmread(p) for p in folder.glob('*.dcm')])
+def series_from_dicom_folder(folder: Union[str, Path]) -> List[Dataset]:
+    return order_series([dcmread(p) for p in Path(folder).glob('*.dcm')])

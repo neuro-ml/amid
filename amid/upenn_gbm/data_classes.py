@@ -1,5 +1,6 @@
 from typing import NamedTuple
 
+
 class ClinicalInfo(NamedTuple):
     gender: str
     age_at_scan_years: float
@@ -10,6 +11,7 @@ class ClinicalInfo(NamedTuple):
     gtr_over90percent: str
     time_since_baseline_preop: int
     psp_tp_score: float
+
 
 class AcquisitionInfo(NamedTuple):
     manufacturer: str
@@ -34,7 +36,7 @@ class AcquisitionInfo(NamedTuple):
     t2_echo_time: float
     t2_flip_angle: float
     t2_pixel_spacing: str
-    t2_slice_thickness: float   
+    t2_slice_thickness: float
     flair_imaging_frequency: float
     flair_repetition_time: float
     flair_echo_time: float

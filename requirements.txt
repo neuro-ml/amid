@@ -18,3 +18,4 @@ scipy
 scikit-image
 pydicom
 imops
+highdicom
