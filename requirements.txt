@@ -1,6 +1,6 @@
 connectome>=0.6.0,<1.0.0
 bev>=0.7.0,<1.0.0
-tarn>=0.4.0,<1.0.0
+tarn>=0.4.4,<1.0.0
 numpy
 nibabel
 more-itertools
@@ -18,3 +18,4 @@ scipy
 scikit-image
 pydicom
 imops
+highdicom

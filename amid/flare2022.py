@@ -16,7 +16,7 @@ from .internals import checksum, register
     license=None,
     link='https://flare22.grand-challenge.org/',
     modality='CT',
-    prep_data_size=None,
+    prep_data_size='347G',
     raw_data_size='247G',
     task='Semi-supervised abdominal organ segmentation',
 )
