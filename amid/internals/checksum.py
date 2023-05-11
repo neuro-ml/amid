@@ -16,7 +16,7 @@ from connectome.layers.cache import CacheToStorage
 from connectome.utils import AntiSet, node_to_dict
 from joblib import Parallel, delayed
 from more_itertools import zip_equal
-from tarn import ReadError
+from tarn import DeserializationError, ReadError
 from tqdm.auto import tqdm
 
 from .base import get_repo
@@ -244,7 +244,16 @@ class CheckSumEdge(StaticGraph, StaticHash):
 
             try:
                 return self._serializer.load(base, self._storage), True
-            except ReadError:
+            except ReadError as e:
+                if isinstance(e, DeserializationError):
+                    locations = {}
+                    for k, v in tree.items():
+                        try:
+                            locations[k] = self._storage.read(lambda x: x, v)
+                        except ReadError:
+                            pass
+
+                    raise DeserializationError(f'{tree}: {locations}')
                 return None, False
 
     def _serialize(self, value):
