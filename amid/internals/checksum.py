@@ -266,7 +266,7 @@ class CheckSumEdge(StaticGraph, StaticHash):
                 if file.is_dir():
                     continue
 
-                tree[str(file.relative_to(base))] = self._storage.write(file).hex()
+                tree[str(file.relative_to(base))] = self._storage.write(file, labels=['amid.checksum']).hex()
 
             return tree
 
