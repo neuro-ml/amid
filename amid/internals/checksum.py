@@ -37,6 +37,19 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
     def decorator(cls):
         class Checked(Chain):
             def __init__(self, root: str = None, version: str = Local):
+                args = self._raw(root, version)
+
+                if hasattr(cls, 'normalizer'):
+                    args.append(cls.normalizer())
+                    repository = get_repo(strict=False)
+                    if repository is not None and repository.cache is not None and repository.cache.local:
+                        args.extend(make_cache())
+
+                self._version = version
+                super().__init__(*args)
+
+            @staticmethod
+            def _raw(root: str = None, version: str = Local):
                 ds = cls(root=root)
                 args = [ds]
 
@@ -53,11 +66,12 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                                 version=version,
                             )
                         )
-                        # if repository.cache is not None and repository.cache.local:
-                        #     args.extend(make_cache())
 
-                self._version = version
-                super().__init__(*args)
+                return args
+
+            @classmethod
+            def raw(cls, root: str = None, version: str = Local):
+                return Chain(*cls._raw(root, version))
 
             def _populate(
                 self, *, ignore_errors: bool = False, cache: bool = True, fetch: bool = True, n_jobs: int = 1
