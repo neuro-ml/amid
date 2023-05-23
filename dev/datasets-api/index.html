@@ -342,6 +342,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.cl_detection.CLDetection2023" class="md-nav__link">
+    CLDetection2023
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.crlm.CRLM" class="md-nav__link">
     CRLM
   </a>
@@ -610,6 +617,13 @@
         <li class="md-nav__item">
   <a href="#amid.cc359.dataset.CC359" class="md-nav__link">
     CC359
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.cl_detection.CLDetection2023" class="md-nav__link">
+    CLDetection2023
   </a>
   
 </li>
@@ -1716,6 +1730,176 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 <h4 id="amid.cc359.dataset.CC359.wm_gm_csf" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">wm_gm_csf</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.cl_detection.CLDetection2023" class="doc doc-heading">
+        <code>amid.cl_detection.CLDetection2023</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>The data for the "Cephalometric Landmark Detection in Lateral X-ray Images" Challenge,
+held with the MICCAI-2023 conference.</p>
+<h5 id="amid.cl_detection.CLDetection2023--notes">Notes</h5>
+<p>The data can only be obtained by contacting the organizers by email.
+See the <a href="https://cl-detection2023.grand-challenge.org/">challenge home page</a> for details.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span>, optional</code>
+          </td>
+          <td><p>path to the folder containing the raw downloaded and unarchived data.
+If not provided, the cache is assumed to be already populated.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str, optional</code>
+          </td>
+          <td><p>the data version. Only has effect if the library was installed from a cloned git repository.</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">CLDetection2023</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/data/root/folder&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 400</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (2400, 1935)</span>
+</code></pre></div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cl_detection.CLDetection2023.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cl_detection.CLDetection2023.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cl_detection.CLDetection2023.points" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">points</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cl_detection.CLDetection2023.spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.cl_detection.CLDetection2023.normalizer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">normalizer</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
 
 </h4>
 
