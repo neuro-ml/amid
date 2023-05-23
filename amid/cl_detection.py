@@ -54,7 +54,7 @@ class CLDetection2023(Source):
 
     def _base(_root: Silent) -> Path:
         if _root is None:
-            raise ValueError('Please pass the locations of the zip archives')
+            raise ValueError('Please pass the path to the root folder')
         return Path(_root)
 
     @lru_cache(1)
