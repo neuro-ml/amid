@@ -31,6 +31,7 @@ class CacheToDisk(Disk):
             cache.storage,
             serializer=default_serializer(serializer),
             names=names,
+            labels=['amid.cache'],
             **kwargs,
         )
 
@@ -49,6 +50,7 @@ class CacheColumns(Columns):
             cache.storage,
             serializer=default_serializer(serializer),
             names=names,
+            labels=['amid.cache'],
             **kwargs,
         )
 

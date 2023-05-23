@@ -1,4 +1,5 @@
 meta:
   hash: blake2b
+  labels: ['amid']
   include:
     - file: '~/.config/amid/.bev.yml'
