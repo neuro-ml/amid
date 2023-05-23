@@ -1,6 +1,7 @@
 import contextlib
 import datetime
 import functools
+import itertools
 import zipfile
 from gzip import GzipFile
 from pathlib import Path
@@ -108,3 +109,23 @@ def image_from_dicom_folder(folder: Union[str, Path]) -> np.ndarray:
 
 def series_from_dicom_folder(folder: Union[str, Path]) -> List[Dataset]:
     return order_series([dcmread(p) for p in Path(folder).glob('*.dcm')])
+
+
+# TODO: stolen from dpipe for now
+def mask_to_box(mask: np.ndarray):
+    """
+    Find the smallest box that contains all true values of the ``mask``.
+    """
+    if not mask.any():
+        raise ValueError('The mask is empty.')
+
+    start, stop = [], []
+    for ax in itertools.combinations(range(mask.ndim), mask.ndim - 1):
+        nonzero = np.any(mask, axis=ax)
+        if np.any(nonzero):
+            left, right = np.where(nonzero)[0][[0, -1]]
+        else:
+            left, right = 0, 0
+        start.insert(0, left)
+        stop.insert(0, right + 1)
+    return start, stop
