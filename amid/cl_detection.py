@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 import SimpleITK
-from connectome import Source, Transform, meta
+from connectome import Apply, Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 from imops import crop_to_box
@@ -85,7 +85,8 @@ class CLDetection2023(Source):
 
     @classmethod
     def normalizer(cls):
-        return CropPadding()
+        # align the points' and image's axes
+        return Apply(points=lambda pts: {name: pt[::-1] for name, pt in pts.items()}) >> CropPadding()
 
 
 class CropPadding(Transform):
