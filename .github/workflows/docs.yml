@@ -34,7 +34,6 @@ jobs:
           
           remote:
             storage:
-              local: /fixme
               remote: 
                 nginx: $CACHE_HOST
           
