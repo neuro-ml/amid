@@ -34,8 +34,9 @@ jobs:
           
           remote:
             storage:
-              - http: $CACHE_HOST
-                optional: true
+              local: /fixme
+              remote: 
+                nginx: $CACHE_HOST
           
           meta:
             fallback: local
