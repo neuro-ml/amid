@@ -1,5 +1,4 @@
 import functools
-import tempfile
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
@@ -59,11 +58,9 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                         args.append(
                             CacheAndCheck(
                                 set(dir(ds)) - {'id', 'ids', *ignore},
-                                repository,
+                                repository.copy(version=version, fetch=True),
                                 path,
-                                fetch=True,
                                 serializer=serializer,
-                                version=version,
                             )
                         )
 
@@ -86,11 +83,9 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
 
                 ds = ds >> CacheAndCheck(
                     fields,
-                    repository,
+                    repository.copy(fetch=fetch, version=Local),
                     path,
-                    fetch=fetch,
                     serializer=serializer,
-                    version=self._version,
                     return_tree=True,
                 )
                 _loader = ds._compile(fields)
@@ -137,8 +132,6 @@ class CacheAndCheck(CacheToStorage):
         *,
         serializer=None,
         return_tree: bool = False,
-        fetch: bool = True,
-        version,
     ):
         super().__init__(names, False)
         serializer = default_serializer(serializer)
@@ -146,19 +139,19 @@ class CacheAndCheck(CacheToStorage):
         checksums = defaultdict(lambda: defaultdict(dict))
 
         with suppress(HashNotFound, ReadError):
-            for key, value in repository.load_tree(to_hash(Path(path)), version=version, fetch=fetch).items():
+            for key, value in repository.load_tree(to_hash(Path(path))).items():
                 name, identifier, relative = key.split('/', 2)
                 if name in names:
                     checksums[name][identifier][relative] = value
 
         self.checksums = dict(checksums)
         self.return_tree = return_tree
-        self.storage = repository.storage
+        self.repository = repository
         self.serializer = serializer
         self.keys = 'ids'
 
     def _get_storage(self) -> Cache:
-        return self.storage
+        return self.repository
 
     def _prepare_container(self, previous: EdgesBag) -> EdgesBag:
         if len(previous.inputs) != 1:
@@ -208,10 +201,10 @@ class CacheAndCheck(CacheToStorage):
 
 
 class CheckSumEdge(StaticGraph, StaticHash):
-    def __init__(self, tree, serializer, storage, return_tree: bool, check: bool):
+    def __init__(self, tree, serializer, repository, return_tree: bool, check: bool):
         super().__init__(arity=2)
         self.return_tree = return_tree
-        self._serializer, self._storage = serializer, storage
+        self._serializer, self._repository = serializer, repository
         self.tree = tree
         self.check = check
 
@@ -248,41 +241,28 @@ class CheckSumEdge(StaticGraph, StaticHash):
         return value
 
     def _deserialize(self, tree):
-        with tempfile.TemporaryDirectory() as base:
-            base = Path(base)
-            for k, v in tree.items():
-                k = base / k
-                k.parent.mkdir(parents=True, exist_ok=True)
-                with open(k, 'w') as file:
-                    file.write(v)
+        def read(fn, x):
+            return self._repository.storage.read(fn, x, fetch=self._repository.fetch)
 
-            try:
-                return self._serializer.load(base, self._storage), True
-            except ReadError as e:
-                if isinstance(e, DeserializationError):
-                    locations = {}
-                    for k, v in tree.items():
-                        try:
-                            locations[k] = self._storage.read(lambda x: x, v)
-                        except ReadError:
-                            pass
+        try:
+            return self._serializer.load(list(tree.items()), read), True
 
-                    raise DeserializationError(f'{tree}: {locations}')
-                return None, False
+        except ReadError as e:
+            if isinstance(e, DeserializationError):
+                locations = {}
+                for k, v in tree.items():
+                    try:
+                        locations[k] = read(lambda x: x, v)
+                    except ReadError:
+                        pass
+
+                raise DeserializationError(f'{tree}: {locations}')
+            return None, False
 
     def _serialize(self, value):
-        with tempfile.TemporaryDirectory() as base:
-            base = Path(base)
-            self._serializer.save(value, base)
-            tree = {}
-            # TODO: this is basically `mirror to storage`
-            for file in base.glob('**/*'):
-                if file.is_dir():
-                    continue
-
-                tree[str(file.relative_to(base))] = self._storage.write(file, labels=['amid.checksum']).hex()
-
-            return tree
+        return dict(
+            self._serializer.save(value, lambda v: self._repository.storage.write(v, labels=['amid.checksum']).hex())
+        )
 
 
 # source: https://stackoverflow.com/a/61027781
