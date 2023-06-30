@@ -30,8 +30,6 @@ classifiers = [
 
 [project.scripts]
 amid = "amid.internals.cli:main"
-[project.entry-points.bev_plugin]
-amid = "amid.internals.hooks"
 
 [build-system]
 requires = ["setuptools>=43.0.0", "wheel"]
