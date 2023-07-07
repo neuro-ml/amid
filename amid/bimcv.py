@@ -82,6 +82,8 @@ class BIMCVCovid19(Source):
     _root: str
 
     def _base(_root: Silent):
+        if _root is None:
+            raise ValueError('Please pass the path to the root folder to the `root` argument')
         return Path(_root)
 
     @lru_cache(None)
@@ -304,7 +306,8 @@ def unpack(root: Path, archive: str, relative: str):
     if unpacked.exists():
         yield unpacked, True
     else:
-        with tarfile.open(root / archive) as part_file:
+        # we use a buffer of 128mb to speed everything up
+        with tarfile.open(root / archive, bufsize=128 * 1024**2) as part_file:
             yield part_file.extractfile(relative), False
 
 
