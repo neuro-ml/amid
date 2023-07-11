@@ -73,7 +73,7 @@ class DeepLesion(Source):
         return tuple(sorted([file.name.replace(".nii.gz", "") for file in (_base / "Images_nifti").glob("*.nii.gz")]))
 
     def _image_file(i, _base):
-        return nibabel.load(_base / "Images_nifti" / "{i}.nii.gz")
+        return nibabel.load(_base / "Images_nifti" / f"{i}.nii.gz")
     
     def patient_id(i):
         ...
