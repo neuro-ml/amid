@@ -198,10 +198,11 @@ class BIMCVCovid19(Source):
         else:
             return {}
     
-    def age(subject_info: Output):
+    def age(subject_info: Output) -> int:
+        """Minimum of (possibly two) available ages. The maximum difference between max and min age for every patient is 1 year."""
         return min(json.loads(subject_info.get('age')))
 
-    def sex(subject_info: Output):
+    def sex(subject_info: Output) -> str:
         return subject_info.get('gender')
 
     def session_info(_meta, _current_root) -> dict:
