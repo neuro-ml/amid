@@ -1,11 +1,4 @@
-# TODO:
-# 1. Add base class to access nifti files
-# 2. Add series metadata from DL_info.csv, such as gender, age, etc
-# 3. Add id info from DL_info.csv 
-# 4. Add annotation info from DL_info.csv
-# 5. Commit to amid, test 1
-# 6. Test 4
-
+# TODO: Add annotation info from DL_info.csv
 
 from pathlib import Path
 
