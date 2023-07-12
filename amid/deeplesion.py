@@ -10,10 +10,12 @@
 from pathlib import Path
 
 import nibabel
+import deli
 import numpy as np
+
+from functools import lru_cache
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
-from deli import load
 
 from .internals import checksum, register
 
@@ -75,23 +77,35 @@ class DeepLesion(Source):
     def _image_file(i, _base):
         return nibabel.load(_base / "Images_nifti" / f"{i}.nii.gz")
     
+    @lru_cache
+    def _metadata(_base):
+        return deli.load(_base / "DL_info.csv")
+    
+    def _row(i, _metadata):
+        patient, study, series = map(int, i.split("_")[:3])
+        return _metadata.query("Patient_index==@patient").query("Study_index==@study").query("Series_ID==@series")
+         
     def patient_id(i):
-        ...
+        patient, study, series = map(int, i.split("_")[:3])
+        return patient
 
     def study_id(i):
-        ...
+        patient, study, series = map(int, i.split("_")[:3])
+        return study
 
     def series_id(i):
-        ...
+        patient, study, series = map(int, i.split("_")[:3])
+        return series
 
-    def sex(i):
-        ...
+    def sex(_row):
+        return _row.Patient_gender[0]
 
-    def age(i):
-        ...
-
-    def ct_window(i):
-        ...
+    def age(_row):
+        """Patient Age might be different for different studies (dataset contains longitudinal records)."""
+        return _row.Patient_age[0]
+        
+    def ct_window(_row):
+        return _row.DICOM_windows[0]
 
     def affine(_image_file):
         return _image_file.affine
@@ -101,3 +115,6 @@ class DeepLesion(Source):
 
     def image(_image_file):
         return np.asarray(_image_file.dataobj)
+    
+    def train_val_fold(_row):
+        return int(_row.Train_Val_Test[0])
