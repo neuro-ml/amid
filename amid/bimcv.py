@@ -26,7 +26,10 @@ from .internals import checksum, licenses, register
     raw_data_size='859G',
     task='Segmentation',
 )
-@checksum('bimcv_covid19')
+@checksum(
+    'bimcv_covid19',
+    columns=['affine', 'is_positive', 'label_info', 'session_id', 'session_info', 'subject_id', 'subject_info', 'tags'],
+)
 class BIMCVCovid19(Source):
     """
     BIMCV COVID-19 Dataset, CT-images only

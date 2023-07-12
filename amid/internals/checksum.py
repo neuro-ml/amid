@@ -2,7 +2,9 @@ import functools
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
+from typing import BinaryIO, Optional
 
+import numpy as np
 from bev import Local, Repository
 from bev.exceptions import HashNotFound
 from bev.hash import to_hash
@@ -25,50 +27,63 @@ from .cache import CacheColumns, CacheToDisk, default_serializer
 # TODO: add possibility to check the entire tree without the need to pull anything from remote
 
 
-def checksum(path: str, *, ignore=(), cache_columns=()):
-    def make_cache():
-        yield CacheToDisk(AntiSet(('id', *cache_columns)), serializer=serializer)
-        if cache_columns:
-            yield CacheColumns(cache_columns, serializer=serializer, verbose=True)
+def checksum(path: str, *, ignore=(), columns=()):
+    def _disk_cache():
+        repository = get_repo(strict=False)
+        if repository is not None and repository.cache is not None and repository.cache.local:
+            yield CacheToDisk(AntiSet(('id', *columns)), serializer=serializer)
+
+    def _columns_cache():
+        repository = get_repo(strict=False)
+        if repository is not None and repository.cache is not None and repository.cache.local:
+            yield CacheColumns(columns, serializer=serializer, verbose=True, shard_size=500)
+
+    def _checker(ds, version):
+        if version is not None:
+            repository = get_repo(strict=False)
+            if repository is not None:
+                yield CacheAndCheck(
+                    set(dir(ds)) - {'id', 'ids', *ignore},
+                    repository.copy(version=version, fetch=True),
+                    path,
+                    serializer=serializer,
+                )
 
     serializer = default_serializer(None)
 
     def decorator(cls):
         class Checked(Chain):
-            def __init__(self, root: str = None, version: str = Local):
-                args = self._raw(root, version)
+            def __init__(self, root: Optional[str] = None, version: str = Local):
+                ds = cls(root=root)
 
                 if hasattr(cls, 'normalizer'):
-                    args.append(cls.normalizer())
-                    repository = get_repo(strict=False)
-                    if repository is not None and repository.cache is not None and repository.cache.local:
-                        args.extend(make_cache())
+                    args = [
+                        ds,
+                        *_checker(ds, version),
+                        cls.normalizer(),
+                        *_disk_cache(),
+                        *_columns_cache(),
+                    ]
+                else:
+                    args = [
+                        ds,
+                        *_disk_cache(),
+                        *_checker(ds, version),
+                        *_columns_cache(),
+                    ]
 
                 self._version = version
                 super().__init__(*args)
 
-            @staticmethod
-            def _raw(root: str = None, version: str = Local):
-                ds = cls(root=root)
-                args = [ds]
-
-                if version is not None:
-                    repository = get_repo(strict=False)
-                    if repository is not None:
-                        args.append(
-                            CacheAndCheck(
-                                set(dir(ds)) - {'id', 'ids', *ignore},
-                                repository.copy(version=version, fetch=True),
-                                path,
-                                serializer=serializer,
-                            )
-                        )
-
-                return args
-
             @classmethod
             def raw(cls, root: str = None, version: str = Local):
-                return Chain(*cls._raw(root, version))
+                ds = cls(root=root)
+                return Chain(
+                    ds,
+                    *_disk_cache(),
+                    *_checker(ds, version),
+                    *_columns_cache(),
+                )
 
             def _populate(
                 self, *, ignore_errors: bool = False, cache: bool = True, fetch: bool = True, n_jobs: int = 1
@@ -78,7 +93,7 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                 fields = sorted(set(dir(ds)) - {'ids', 'id', *ignore})
 
                 if cache:
-                    ds = Chain(ds, *make_cache())
+                    ds = Chain(ds, *_disk_cache())
                 ids = ds.ids
 
                 ds = ds >> CacheAndCheck(
@@ -103,6 +118,7 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
 
                 checksums = {}
                 successes = errors = 0
+                hashes = defaultdict(list)
                 with ProgressParallel(n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids))) as bar:
                     for i, trees in tqdm(bar(map(delayed(loader), ids)), 'Saving the checksums'):
                         if trees is None:
@@ -112,9 +128,32 @@ def checksum(path: str, *, ignore=(), cache_columns=()):
                         successes += 1
                         for name, tree in zip_equal(fields, trees):
                             for k, v in tree.items():
+                                hashes[name].append(v)
                                 checksums['/'.join((name, i, k))] = v
 
                 save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
+                # we allow to cache to mem all fields that take <500mb
+                sizes = {}
+                for name, vs in tqdm(hashes.items(), 'Analyzing the fields'):
+                    max_count = 15
+                    mul = 1
+                    if len(vs) > max_count:
+                        mul = len(vs) / max_count
+                        vs = np.random.choice(vs, max_count, replace=False)
+
+                    sizes[name] = (
+                        sum(repository.storage.read(lambda x: get_value_size(x) / 1024**2, v) for v in vs) * mul
+                    )
+
+                add = {k for k, v in sizes.items() if v <= 500} - set(columns)
+                remove = {k for k, v in sizes.items() if v > 500} & set(columns)
+                if add or remove:
+                    print(
+                        f'It is recommended to add these fields to columns cache: {list(add)!r}, '
+                        f'also, remove these fields: {list(remove)!r}, like so:\n'
+                        f'@checksum(..., columns={sorted(add | set(columns))!r})'
+                    )
+
                 return successes, errors
 
         functools.update_wrapper(Checked, cls, updated=())
@@ -263,6 +302,18 @@ class CheckSumEdge(StaticGraph, StaticHash):
         return dict(
             self._serializer.save(value, lambda v: self._repository.storage.write(v, labels=['amid.checksum']).hex())
         )
+
+
+def get_value_size(x):
+    if isinstance(x, (Path, str)):
+        return Path(x).stat().st_size
+    assert isinstance(x, BinaryIO)
+    chunk_size, size = 2**16, 0
+    value = x.read(chunk_size)
+    while len(value) > 0:
+        size += len(value)
+        value = x.read(chunk_size)
+    return size
 
 
 # source: https://stackoverflow.com/a/61027781

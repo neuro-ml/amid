@@ -21,7 +21,7 @@ from .utils import add_csv_fields, fields, unpack
     prep_data_size='294G',
     task='Breast cancer classification',
 )
-@checksum('rsna-breast-cancer', cache_columns=tuple(fields))
+@checksum('rsna-breast-cancer', columns=tuple(fields))
 class RSNABreastCancer(Source):
     _root: PathOrStr
 
