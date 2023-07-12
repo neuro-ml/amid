@@ -10,7 +10,7 @@ import nibabel as nb
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, Transform, meta
+from connectome import Source, Transform, Output, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
@@ -198,8 +198,11 @@ class BIMCVCovid19(Source):
         else:
             return {}
     
-    # def age(subject_info):
-    #     return min(json.loads(subject_info.get('age')))
+    def age(subject_info: Output):
+        return min(json.loads(subject_info.get('age')))
+
+    def sex(subject_info: Output):
+        return subject_info.get('gender')
 
     def session_info(_meta, _current_root) -> dict:
         """
