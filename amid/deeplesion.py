@@ -98,14 +98,14 @@ class DeepLesion(Source):
         return series
 
     def sex(_row):
-        return _row.Patient_gender[0]
+        return _row.Patient_gender.iloc[0]
 
     def age(_row):
         """Patient Age might be different for different studies (dataset contains longitudinal records)."""
-        return _row.Patient_age[0]
+        return _row.Patient_age.iloc[0]
         
     def ct_window(_row):
-        return _row.DICOM_windows[0]
+        return _row.DICOM_windows.iloc[0]
 
     def affine(_image_file):
         return _image_file.affine
@@ -117,4 +117,4 @@ class DeepLesion(Source):
         return np.asarray(_image_file.dataobj)
     
     def train_val_fold(_row):
-        return int(_row.Train_Val_Test[0])
+        return int(_row.Train_Val_Test.iloc[0])
