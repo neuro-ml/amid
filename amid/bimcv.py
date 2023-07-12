@@ -1,6 +1,7 @@
 import contextlib
 import gzip
 import tarfile
+import json
 import typing as tp
 from functools import lru_cache
 from pathlib import Path
@@ -196,6 +197,9 @@ class BIMCVCovid19(Source):
             return dict(_subject_df.loc[subject_id])
         else:
             return {}
+    
+    # def age(subject_info):
+    #     return min(json.loads(subject_info.get('age')))
 
     def session_info(_meta, _current_root) -> dict:
         """
