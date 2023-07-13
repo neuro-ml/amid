@@ -1,8 +1,8 @@
 import json
-import os.path
 import warnings
 from functools import lru_cache
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -107,11 +107,14 @@ class NSCLC(Source):
         uid = _joined.groupby('SeriesInstanceUID').apply(len)
         return tuple(uid[uid > 1].keys())
 
-    def _series(i, _base, _joined):
-        sub = _joined[_joined.SeriesInstanceUID == i]
-        series_files = sub['PathToFolder'] + os.path.sep + sub['FileName']
-        series_files = [_base / 'NSCLC-Radiomics' / x for x in series_files]
-        series = list(map(pydicom.dcmread, series_files))
+    def _sub(i, _joined):
+        return _joined[_joined.SeriesInstanceUID == i]
+
+    def _series(_sub, _base):
+        series = [
+            pydicom.dcmread(_base / 'NSCLC-Radiomics' / file.PathToFolder / file.FileName)
+            for _, file in _sub.iterrows()
+        ]
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
 
@@ -121,8 +124,7 @@ class NSCLC(Source):
             if len(series) < _original_num_slices:
                 warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
-        series = order_series(series, decreasing=False)
-        return series
+        return order_series(series, decreasing=False)
 
     def image(_series):
         image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
@@ -142,6 +144,15 @@ class NSCLC(Source):
         # turn elements that are the same across the series back from array
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
+
+    def sex(_sub) -> str:
+        return _sub['PatientSex'].iloc[0]
+
+    def age(_sub) -> Union[int, None]:
+        age = _sub['PatientAge'].iloc[0]
+        if age is not None:
+            return int(age.removesuffix('Y'))
+        return age
 
     def _study_id(i, _joined):
         study_ids = _joined[_joined.SeriesInstanceUID == i].StudyInstanceUID.unique()
