@@ -370,6 +370,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.deeplesion.DeepLesion" class="md-nav__link">
+    DeepLesion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.egd.EGD" class="md-nav__link">
     EGD
   </a>
@@ -645,6 +652,13 @@
         <li class="md-nav__item">
   <a href="#amid.crossmoda.CrossMoDA" class="md-nav__link">
     CrossMoDA
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.deeplesion.DeepLesion" class="md-nav__link">
+    DeepLesion
   </a>
   
 </li>
@@ -1186,6 +1200,41 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
   <div class="doc doc-contents ">
   
       <p>modality_dicom (=[CT]), body_parts(=[chest]), age, gender</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.age" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Minimum of (possibly two) available ages.
+The maximum difference between max and min age for every patient is 1 year.</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.bimcv.BIMCVCovid19.sex" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sex</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
 
   </div>
 
@@ -2347,7 +2396,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 
 <h4 id="amid.ct_ich.CT_ICH.age" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span></code>
 
 </h4>
 
@@ -2362,8 +2411,8 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 
 
-<h4 id="amid.ct_ich.CT_ICH.gender" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">gender</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+<h4 id="amid.ct_ich.CT_ICH.sex" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sex</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
 
 </h4>
 
@@ -2776,6 +2825,271 @@ If not provided, the cache is assumed to be already populated.</p>
   <div class="doc doc-contents ">
   
       <p>VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative)</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="amid.deeplesion.DeepLesion" class="doc doc-heading">
+        <code>amid.deeplesion.DeepLesion</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>DeepLesion is composed of 33,688 bookmarked radiology images from
+10,825 studies of 4,477 unique patients. For every bookmarked image, a bound-
+ing box is created to cover the target lesion based on its measured diameters [1].</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>str, <span title="pathlib.Path">Path</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>path to the folder containing <code>DL_info.csv</code> file and a subfolder <code>Images_nifti</code> with 20094 nii.gz files.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.deeplesion.DeepLesion--notes">Notes</h5>
+<p>Dataset is available at https://nihcc.app.box.com/v/DeepLesion</p>
+<p>To download the data we recommend using a Python script provided by the authors <code>batch_download_zips.py</code>.
+Once you download the data and unarchive all 56 zip archives, you should run <code>DL_save_nifti.py</code>
+provided by the authors to convert 2D PNGs into 20094 nii.gz files.</p>
+<h5 id="amid.deeplesion.DeepLesion--example">Example</h5>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>ds = DeepLesion(root='/path/to/folder')
+print(len(ds.ids))</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h4 id="amid.deeplesion.DeepLesion--20094">20094</h4>
+<h5 id="amid.deeplesion.DeepLesion--references">References</h5>
+<p>.. [1] Yan, Ke, Xiaosong Wang, Le Lu, and Ronald M. Summers. "Deeplesion: Automated deep mining,
+  categorization and detection of significant radiology image findings using large-scale clinical
+  lesion annotations." arXiv preprint arXiv:1710.01766 (2017).</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.ids" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.patient_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">patient_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.study_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">study_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.series_id" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">series_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.sex" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sex</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.age" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Patient Age might be different for different studies (dataset contains longitudinal records).</p>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.ct_window" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">ct_window</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.affine" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.spacing" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">spacing</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.image" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.train_val_fold" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">train_val_fold</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
 
   </div>
 
@@ -5845,6 +6159,38 @@ If not provided, the cache is assumed to be already populated.</p>
 
 <h4 id="amid.nsclc.NSCLC.image_meta" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">image_meta</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.sex" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">sex</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.nsclc.NSCLC.age" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">age</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></code>
 
 </h4>
 
