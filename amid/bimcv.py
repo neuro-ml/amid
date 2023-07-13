@@ -1,7 +1,7 @@
 import contextlib
 import gzip
-import tarfile
 import json
+import tarfile
 import typing as tp
 from functools import lru_cache
 from pathlib import Path
@@ -10,7 +10,7 @@ import nibabel as nb
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, Transform, Output, meta
+from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
@@ -197,9 +197,10 @@ class BIMCVCovid19(Source):
             return dict(_subject_df.loc[subject_id])
         else:
             return {}
-    
+
     def age(subject_info: Output) -> int:
-        """Minimum of (possibly two) available ages. The maximum difference between max and min age for every patient is 1 year."""
+        """Minimum of (possibly two) available ages.
+        The maximum difference between max and min age for every patient is 1 year."""
         return min(json.loads(subject_info.get('age')))
 
     def sex(subject_info: Output) -> str:
