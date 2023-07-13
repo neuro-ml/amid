@@ -69,7 +69,7 @@ class DeepLesion(Source):
     def _image_file(i, _base):
         return nibabel.load(_base / 'Images_nifti' / f'{i}.nii.gz')
 
-    @lru_cache
+    @lru_cache(None)
     def _metadata(_base):
         return deli.load(_base / 'DL_info.csv')
 
