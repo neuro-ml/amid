@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, meta
+from connectome import Source, Output, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
     drop_duplicated_instances,
@@ -142,6 +142,15 @@ class NSCLC(Source):
         # turn elements that are the same across the series back from array
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
+    
+    def sex(image_meta: Output) -> str:
+        return image_meta['PatientSex']
+
+    def age(image_meta: Output) -> int | None:
+        age = image_meta.get('PatientAge')
+        if age is not None:
+            return int(age.removesuffix('Y'))
+        return age
 
     def _study_id(i, _joined):
         study_ids = _joined[_joined.SeriesInstanceUID == i].StudyInstanceUID.unique()
