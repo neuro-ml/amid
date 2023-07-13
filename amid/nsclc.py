@@ -1,5 +1,4 @@
 import json
-import os.path
 import warnings
 from functools import lru_cache
 from pathlib import Path
@@ -7,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, Output, meta
+from connectome import Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
     drop_duplicated_instances,
@@ -106,13 +105,15 @@ class NSCLC(Source):
     def ids(_joined):
         uid = _joined.groupby('SeriesInstanceUID').apply(len)
         return tuple(uid[uid > 1].keys())
-    
+
     def _sub(i, _joined):
         return _joined[_joined.SeriesInstanceUID == i]
 
     def _series(_sub, _base):
-        series = [pydicom.dcmread(_base / 'NSCLC-Radiomics' / file.PathToFolder / file.FileName)
-                   for _, file in _sub.iterrows()]
+        series = [
+            pydicom.dcmread(_base / 'NSCLC-Radiomics' / file.PathToFolder / file.FileName)
+            for _, file in _sub.iterrows()
+        ]
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
 
@@ -142,7 +143,7 @@ class NSCLC(Source):
         # turn elements that are the same across the series back from array
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
-    
+
     def sex(_sub) -> str:
         return _sub['PatientSex'].iloc[0]
 
