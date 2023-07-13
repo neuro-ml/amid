@@ -2,6 +2,7 @@ import json
 import warnings
 from functools import lru_cache
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -147,7 +148,7 @@ class NSCLC(Source):
     def sex(_sub) -> str:
         return _sub['PatientSex'].iloc[0]
 
-    def age(_sub) -> int | None:
+    def age(_sub) -> Union(int, None):
         age = _sub['PatientAge'].iloc[0]
         if age is not None:
             return int(age.removesuffix('Y'))
