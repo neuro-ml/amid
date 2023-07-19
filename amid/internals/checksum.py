@@ -2,7 +2,7 @@ import functools
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
-from typing import BinaryIO, Optional
+from typing import Any, BinaryIO, Optional, Tuple
 
 import numpy as np
 from bev import Local, Repository
@@ -28,15 +28,12 @@ from .cache import CacheColumns, CacheToDisk, default_serializer
 
 
 def checksum(path: str, *, ignore=(), columns=()):
-    def _disk_cache():
+    def _cache(cols = False):
         repository = get_repo(strict=False)
         if repository is not None and repository.cache is not None and repository.cache.local:
             yield CacheToDisk(AntiSet(('id', *columns)), serializer=serializer)
-
-    def _columns_cache():
-        repository = get_repo(strict=False)
-        if repository is not None and repository.cache is not None and repository.cache.local:
-            yield CacheColumns(columns, serializer=serializer, verbose=True, shard_size=500)
+            if cols:
+                yield CacheColumns(columns, serializer=serializer, verbose=True, shard_size=500)
 
     def _checker(ds, version):
         if version is not None:
@@ -61,49 +58,52 @@ def checksum(path: str, *, ignore=(), columns=()):
                         ds,
                         *_checker(ds, version),
                         cls.normalizer(),
-                        *_disk_cache(),
-                        *_columns_cache(),
+                        *_cache(),
                     ]
                 else:
                     args = [
                         ds,
-                        *_disk_cache(),
+                        *_cache(),
                         *_checker(ds, version),
-                        *_columns_cache(),
                     ]
 
                 self._version = version
                 super().__init__(*args)
 
             @classmethod
-            def raw(cls, root: str = None, version: str = Local):
+            def raw(cls, root: Optional[str] = None, version: str = Local):
                 ds = cls(root=root)
                 return Chain(
                     ds,
-                    *_disk_cache(),
+                    *_cache(),
                     *_checker(ds, version),
-                    *_columns_cache(),
                 )
 
             def _populate(
-                self, *, ignore_errors: bool = False, cache: bool = True, fetch: bool = True, n_jobs: int = 1
+                self,
+                *,
+                ignore_errors: bool = False,
+                cache: bool = True,
+                fetch: bool = True,
+                n_jobs: int = 1,
+                analyze_fields: bool = False,
             ):
-                repository = get_repo()
+                repository = get_repo().copy(fetch=fetch, version=Local)
                 ds = self[0]
                 fields = sorted(set(dir(ds)) - {'ids', 'id', *ignore})
 
                 if cache:
-                    ds = Chain(ds, *_disk_cache())
-                ids = ds.ids
+                    ds = Chain(ds, *_cache(False))
+                ids = sorted(ds.ids)
 
-                ds = ds >> CacheAndCheck(
+                checked = ds >> CacheAndCheck(
                     fields,
-                    repository.copy(fetch=fetch, version=Local),
+                    repository,
                     path,
                     serializer=serializer,
                     return_tree=True,
                 )
-                _loader = ds._compile(fields)
+                _loader = checked._compile(fields)
 
                 def loader(key):
                     try:
@@ -117,44 +117,69 @@ def checksum(path: str, *, ignore=(), columns=()):
                 print(f'Populating the cache with {len(fields)} fields for {len(ids)} ids')
 
                 checksums = {}
-                successes = errors = 0
+                successes, errors = [], []
                 hashes = defaultdict(list)
-                with ProgressParallel(n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids))) as bar:
-                    for i, trees in tqdm(bar(map(delayed(loader), ids)), 'Saving the checksums'):
+                with ProgressParallel(
+                    n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids), desc='Populating checksums')
+                ) as bar:
+                    for i, trees in bar(map(delayed(loader), ids)):
                         if trees is None:
-                            errors += 1
+                            errors.append(i)
                             continue
 
-                        successes += 1
+                        successes.append(i)
                         for name, tree in zip_equal(fields, trees):
                             for k, v in tree.items():
                                 hashes[name].append(v)
                                 checksums['/'.join((name, i, k))] = v
 
+                # we save the checksums 2 times to make sure the work isn't lost
                 save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
-                # we allow to cache to mem all fields that take <500mb
-                sizes = {}
-                for name, vs in tqdm(hashes.items(), 'Analyzing the fields'):
-                    max_count = 15
-                    mul = 1
-                    if len(vs) > max_count:
-                        mul = len(vs) / max_count
-                        vs = np.random.choice(vs, max_count, replace=False)
 
-                    sizes[name] = (
-                        sum(repository.storage.read(lambda x: get_value_size(x) / 1024**2, v) for v in vs) * mul
-                    )
+                # check the columns and give recommendations
+                if analyze_fields:
+                    #   we allow to cache to mem all fields that take <500mb
+                    sizes = {}
+                    for name, vs in tqdm(hashes.items(), 'Analyzing the fields'):
+                        max_count = 50
+                        mul = 1
+                        if len(vs) > max_count:
+                            mul = len(vs) / max_count
+                            vs = np.random.choice(vs, max_count, replace=False)
 
-                add = {k for k, v in sizes.items() if v <= 500} - set(columns)
-                remove = {k for k, v in sizes.items() if v > 500} & set(columns)
-                if add or remove:
-                    print(
-                        f'It is recommended to add these fields to columns cache: {list(add)!r}, '
-                        f'also, remove these fields: {list(remove)!r}, like so:\n'
-                        f'@checksum(..., columns={sorted(add | set(columns))!r})'
-                    )
+                        sizes[name] = (
+                            sum(repository.storage.read(lambda x: get_value_size(x) / 1024**2, v) for v in vs) * mul
+                        )
 
-                return successes, errors
+                    add = {k for k, v in sizes.items() if v <= 500} - set(columns)
+                    remove = {k for k, v in sizes.items() if v > 500} & set(columns)
+                    if add or remove:
+                        print(
+                            f'It is recommended to add these fields to columns cache: {list(add)!r}, '
+                            f'also, remove these fields: {list(remove)!r}, like so:\n'
+                            f'@checksum(..., columns={sorted(add | set(columns))!r})'
+                        )
+
+                # build columns cache
+                if columns:
+                    values = defaultdict(list)
+                    checked = Chain(ds, *_checker(ds, Local))
+                    new_ids = sorted(checked.ids)
+                    with ProgressParallel(
+                        n_jobs=n_jobs,
+                        backend='threading',
+                        tqdm_kwargs=dict(total=len(new_ids), desc='Populating lightweight columns'),
+                    ) as bar:
+                        for vals in bar(map(delayed(checked._compile(columns)), new_ids)):
+                            for k, v in zip_equal(columns, vals):
+                                values[k].append(v)
+
+                    for name, vals in values.items():
+                        for k, v in serialize(vals, serializer, repository).items():
+                            checksums['/'.join((f'_{name}', k))] = v
+
+                    save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
+                return len(successes), len(errors)
 
         functools.update_wrapper(Checked, cls, updated=())
         return Checked
@@ -176,14 +201,21 @@ class CacheAndCheck(CacheToStorage):
         serializer = default_serializer(serializer)
         # name -> identifier -> tree
         checksums = defaultdict(lambda: defaultdict(dict))
+        columns = defaultdict(dict)
 
         with suppress(HashNotFound, ReadError):
             for key, value in repository.load_tree(to_hash(Path(path))).items():
-                name, identifier, relative = key.split('/', 2)
-                if name in names:
-                    checksums[name][identifier][relative] = value
+                name, relative = key.split('/', 1)
+                if name.startswith('_'):
+                    columns[name[1:]][relative] = value
+
+                else:
+                    identifier, relative = relative.split('/', 1)
+                    if name in names:
+                        checksums[name][identifier][relative] = value
 
         self.checksums = dict(checksums)
+        self.columns = dict(columns)
         self.return_tree = return_tree
         self.repository = repository
         self.serializer = serializer
@@ -209,6 +241,8 @@ class CacheAndCheck(CacheToStorage):
             outputs.append(keys)
             # TODO: what if the ids differ in checksum?
             edges.append(ConstantEdge(tuple(sorted(list(self.checksums.values())[0]))).bind((), keys))
+        else:
+            keys = forward_outputs[self.keys]
 
         for name in forward_outputs:
             if name in self.names:
@@ -217,16 +251,25 @@ class CacheAndCheck(CacheToStorage):
 
                 inp, out = Node(name, details), Node(name, details)
                 inputs.append(inp)
-                outputs.append(out)
                 edges.append(
                     CheckSumEdge(
                         self.checksums.get(name, {}),
                         self.serializer,
-                        self._get_storage(),
+                        self.repository,
                         self.return_tree,
                         False,
                     ).bind([inp, key], out)
                 )
+                if not self.return_tree and name in self.columns:
+                    cached = Node(name, details)
+                    edges.append(
+                        CheckSumColumn(self.columns[name], self.serializer, self.repository).bind(
+                            [out, key, keys], cached
+                        )
+                    )
+                    outputs.append(cached)
+                else:
+                    outputs.append(out)
 
         return EdgesBag(
             inputs,
@@ -261,7 +304,7 @@ class CheckSumEdge(StaticGraph, StaticHash):
             if self.return_tree:
                 return expected
 
-            value, exists = self._deserialize(expected)
+            value, exists = deserialize(expected, self._serializer, self._repository)
             if exists:
                 return value
 
@@ -271,7 +314,7 @@ class CheckSumEdge(StaticGraph, StaticHash):
         # check consistency
         if (expected is not None and self.check) or self.return_tree:
             # TODO: `check` is not the same as save to storage
-            tree = self._serialize(value)
+            tree = serialize(value, self._serializer, self._repository)
             if expected is not None and self.check and tree != expected:
                 raise ValueError(f'Checksum failed for {identifier}. Actual: {tree}, expected: {expected}')
             if self.return_tree:
@@ -279,29 +322,57 @@ class CheckSumEdge(StaticGraph, StaticHash):
 
         return value
 
-    def _deserialize(self, tree):
-        def read(fn, x):
-            return self._repository.storage.read(fn, x, fetch=self._repository.fetch)
 
-        try:
-            return self._serializer.load(list(tree.items()), read), True
+class CheckSumColumn(StaticGraph, StaticHash):
+    def __init__(self, tree, serializer, repository):
+        super().__init__(arity=3)
+        self._serializer, self._repository = serializer, repository
+        self.tree = tree
+        # FIXME
+        self._cache = None
 
-        except ReadError as e:
-            if isinstance(e, DeserializationError):
-                locations = {}
-                for k, v in tree.items():
-                    try:
-                        locations[k] = read(lambda x: x, v)
-                    except ReadError:
-                        pass
+    def _make_hash(self, inputs):
+        return inputs[0]
 
-                raise DeserializationError(f'{tree}: {locations}')
-            return None, False
+    def evaluate(self):
+        if self._cache is None:
+            keys = yield Command.ParentValue, 2
+            values, success = deserialize(self.tree, self._serializer, self._repository)
+            if success:
+                self._cache = dict(zip_equal(keys, values))
+            else:
+                self._cache = {}
 
-    def _serialize(self, value):
-        return dict(
-            self._serializer.save(value, lambda v: self._repository.storage.write(v, labels=['amid.checksum']).hex())
-        )
+        key = yield Command.ParentValue, 1
+        if key in self._cache:
+            return self._cache[key]
+
+        value = yield Command.ParentValue, 0
+        return value
+
+
+def deserialize(tree, serializer, repository) -> Tuple[Any, bool]:
+    def read(fn, x):
+        return repository.storage.read(fn, x, fetch=repository.fetch)
+
+    try:
+        return serializer.load(list(tree.items()), read), True
+
+    except ReadError as e:
+        if isinstance(e, DeserializationError):
+            locations = {}
+            for k, v in tree.items():
+                try:
+                    locations[k] = read(lambda x: x, v)
+                except ReadError:
+                    pass
+
+            raise DeserializationError(f'{tree}: {locations}')
+        return None, False
+
+
+def serialize(value, serializer, repository):
+    return dict(serializer.save(value, lambda v: repository.storage.write(v, labels=['amid.checksum']).hex()))
 
 
 def get_value_size(x):

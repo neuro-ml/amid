@@ -47,11 +47,14 @@ def populate(
     ),
     n_jobs: int = typer.Option(1, help='How many threads to use for population'),
     fetch: bool = typer.Option(False, help='Whether to fetch the missing data from remote locations, if any'),
+    analyze_fields: bool = typer.Option(False, help='Whether to find and cache lightweight fields'),
 ):
     try:
         cls = gather_datasets()[dataset][0]
         ds = cls(root=root)
-        success, errors = ds._populate(n_jobs=n_jobs, fetch=fetch, ignore_errors=ignore_errors)
+        success, errors = ds._populate(
+            n_jobs=n_jobs, fetch=fetch, ignore_errors=ignore_errors, analyze_fields=analyze_fields
+        )
         print(f'Total added: {success} entries, and encountered {errors} errors')
     except KeyboardInterrupt as e:
         raise RuntimeError from e
