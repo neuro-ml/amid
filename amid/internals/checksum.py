@@ -131,7 +131,7 @@ class CacheAndCheck(CacheToStorage):
         path,
         *,
         serializer=None,
-        return_tree: bool=False,
+        return_tree: bool = False,
     ):
         super().__init__(names, False)
         serializer = default_serializer(serializer)
