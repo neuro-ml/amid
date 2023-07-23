@@ -28,7 +28,7 @@ from .cache import CacheColumns, CacheToDisk, default_serializer
 
 
 def checksum(path: str, *, ignore=(), columns=()):
-    def _cache(cols = False):
+    def _cache(cols=False):
         repository = get_repo(strict=False)
         if repository is not None and repository.cache is not None and repository.cache.local:
             yield CacheToDisk(AntiSet(('id', *columns)), serializer=serializer)
