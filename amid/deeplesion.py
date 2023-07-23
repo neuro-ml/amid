@@ -86,6 +86,8 @@ class DeepLesion(Source):
     def _row(i, _metadata):
         patient, study, series = map(int, i.split('_')[:3])
         slice_range = ', '.join(map(str, list(map(int, i.split('_')[-1].split('-')))))
+        # for linter, funny story, f-string does not work for pandas.query, @ syntax does not work for linter
+        slice_range = slice_range
         return (
             _metadata.query('Patient_index==@patient')
             .query('Study_index==@study')
@@ -123,6 +125,7 @@ class DeepLesion(Source):
         return tuple(_image_file.header['pixdim'][1:4])
 
     def image(_image_file):
+        """Some 3D volumes are stored as separate subvolumes, e.g. ds.ids[15000] and ds.ids[15001]."""
         return np.asarray(_image_file.dataobj)
 
     def train_val_fold(_row):
