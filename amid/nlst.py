@@ -32,7 +32,22 @@ from .utils import get_series_date
     raw_data_size=None,  # TODO: should be measured...
     task=None,
 )
-@checksum('nlst')
+@checksum(
+    'nlst',
+    columns=[
+        'accession_number',
+        'conv_kernel',
+        'kvp',
+        'orientation_matrix',
+        'patient_id',
+        'pixel_spacing',
+        'series_uid',
+        'slice_locations',
+        'sop_uids',
+        'study_date',
+        'study_uid',
+    ],
+)
 class NLST(Source):
     """
 

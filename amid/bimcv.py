@@ -27,7 +27,10 @@ from .internals import checksum, licenses, register
     raw_data_size='859G',
     task='Segmentation',
 )
-@checksum('bimcv_covid19')
+@checksum(
+    'bimcv_covid19',
+    columns=['affine', 'is_positive', 'label_info', 'session_id', 'session_info', 'subject_id', 'subject_info', 'tags'],
+)
 class BIMCVCovid19(Source):
     """
     BIMCV COVID-19 Dataset, CT-images only
@@ -83,6 +86,8 @@ class BIMCVCovid19(Source):
     _root: str
 
     def _base(_root: Silent):
+        if _root is None:
+            raise ValueError('Please pass the path to the root folder to the `root` argument')
         return Path(_root)
 
     @lru_cache(None)
@@ -313,7 +318,8 @@ def unpack(root: Path, archive: str, relative: str):
     if unpacked.exists():
         yield unpacked, True
     else:
-        with tarfile.open(root / archive) as part_file:
+        # we use a buffer of 128mb to speed everything up
+        with tarfile.open(root / archive, bufsize=128 * 1024**2) as part_file:
             yield part_file.extractfile(relative), False
 
 
