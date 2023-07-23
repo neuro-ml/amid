@@ -1,5 +1,3 @@
-# TODO: Add annotation info from DL_info.csv
-
 from functools import lru_cache
 from pathlib import Path
 
@@ -71,7 +69,19 @@ class DeepLesion(Source):
 
     @lru_cache(None)
     def _metadata(_base):
-        return deli.load(_base / 'DL_info.csv')
+        df = deli.load(_base / 'DL_info.csv')
+
+        cols_to_transform = [
+            'Measurement_coordinates',
+            'Bounding_boxes',
+            'Lesion_diameters_Pixel_',
+            'Normalized_lesion_location',
+        ]
+        for col in cols_to_transform:
+            df[col] = df[col].apply(lambda x: list(map(float, x.split(','))))
+
+        df['Slice_range'] = df['Slice_range'].apply(lambda x: list(map(int, x.split(','))))
+        return df
 
     def _row(i, _metadata):
         patient, study, series = map(int, i.split('_')[:3])
@@ -97,6 +107,7 @@ class DeepLesion(Source):
         return _row.Patient_age.iloc[0]
 
     def ct_window(_row):
+        """CT window extracted from DICOMs. Recall, that it is min-max values for windowing, not width-level."""
         return _row.DICOM_windows.iloc[0]
 
     def affine(_image_file):
@@ -110,3 +121,18 @@ class DeepLesion(Source):
 
     def train_val_fold(_row):
         return int(_row.Train_Val_Test.iloc[0])
+
+    def lesion_position(_row):
+        """Lesion measurements as it appear in DL_info.csv, for details see https://nihcc.app.box.com/v/DeepLesion/file/306056134060 ."""
+        position = _row[
+            [
+                'Slice_range',
+                'Key_slice_index',
+                'Measurement_coordinates',
+                'Bounding_boxes',
+                'Lesion_diameters_Pixel_',
+                'Normalized_lesion_location',
+            ]
+        ].to_dict('list')
+        position['Slice_range'] = position['Slice_range'][0]
+        return position
