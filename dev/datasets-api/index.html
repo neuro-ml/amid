@@ -17,7 +17,7 @@
         <link rel="next" href="../datasets/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.18">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.19">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.26e3688c.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.eebd395e.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ecc896b0.min.css">
@@ -815,7 +815,7 @@
 
 
 <h3 id="amid.amos.dataset.AMOS" class="doc doc-heading">
-        <code>amid.amos.dataset.AMOS</code>
+          <code>amid.amos.dataset.AMOS</code>
 
 
 </h3>
@@ -827,6 +827,8 @@
       <p>AMOS provides 500 CT and 100 MRI scans collected from multi-center, multi-vendor, multi-modality, multi-phase,
 multi-disease patients, each with voxel-level annotations of 15 abdominal organs, providing challenging examples
 and test-bed for studying robust segmentation algorithms under diverse targets and scenarios. [1]</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -842,7 +844,7 @@ and test-bed for studying robust segmentation algorithms under diverse targets a
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -859,6 +861,8 @@ If not provided, the cache is assumed to be already populated.</p>
       <h5 id="amid.amos.dataset.AMOS--notes">Notes</h5>
 <p>Download link: https://zenodo.org/record/7262581/files/amos22.zip</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Download the archive and meta to any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">AMOS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/the/downloaded/files&#39;</span><span class="p">)</span>
@@ -874,10 +878,10 @@ If not provided, the cache is assumed to be already populated.</p>
 versatile medical image segmentation [Data set]. Zenodo. https://doi.org/10.5281/zenodo.7262581</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -903,6 +907,7 @@ versatile medical image segmentation [Data set]. Zenodo. https://doi.org/10.5281
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -918,6 +923,7 @@ versatile medical image segmentation [Data set]. Zenodo. https://doi.org/10.5281
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -936,6 +942,7 @@ versatile medical image segmentation [Data set]. Zenodo. https://doi.org/10.5281
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -966,7 +973,7 @@ versatile medical image segmentation [Data set]. Zenodo. https://doi.org/10.5281
 
 
 <h3 id="amid.bimcv.BIMCVCovid19" class="doc doc-heading">
-        <code>amid.bimcv.BIMCVCovid19</code>
+          <code>amid.bimcv.BIMCVCovid19</code>
 
 
 </h3>
@@ -982,6 +989,8 @@ and negative partion
 <p>PCR tests are not used</p>
 <p>GitHub page: https://github.com/BIMCV-CSUSP/BIMCV-COVID-19</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -996,7 +1005,7 @@ and negative partion
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1013,6 +1022,8 @@ and negative partion
 <p>Dataset has 2 partitions: bimcv-covid19-positive and bimcv-covid19-positive
 Each partition is spread over the 81 different tgz archives. The archives includes metadata about
 subject, sessions, and labels. Also there are some tgz archives for nifty images in nii.gz format</p>
+
+
 
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
@@ -1042,10 +1053,10 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
         Available at: https://dx.doi.org/10.21227/m4j2-ap59.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1071,6 +1082,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1086,6 +1098,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1103,6 +1116,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1118,6 +1132,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1135,6 +1150,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1150,6 +1166,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1169,6 +1186,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1187,6 +1205,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1204,6 +1223,7 @@ subject, sessions, and labels. Also there are some tgz archives for nifty images
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1224,6 +1244,7 @@ The maximum difference between max and min age for every patient is 1 year.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1239,6 +1260,7 @@ The maximum difference between max and min age for every patient is 1 year.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1271,7 +1293,7 @@ The maximum difference between max and min age for every patient is 1 year.</p>
 
 
 <h3 id="amid.brats2021.BraTS2021" class="doc doc-heading">
-        <code>amid.brats2021.BraTS2021</code>
+          <code>amid.brats2021.BraTS2021</code>
 
 
 </h3>
@@ -1280,6 +1302,8 @@ The maximum difference between max and min age for every patient is 1 year.</p>
   <div class="doc doc-contents first">
 
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1295,7 +1319,7 @@ The maximum difference between max and min age for every patient is 1 year.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1327,6 +1351,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Download links:
 2021: http://www.braintumorsegmentation.org/</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">BraTS2021</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
@@ -1338,10 +1364,10 @@ If not provided, the cache is assumed to be already populated.</p>
       <h5 id="amid.brats2021.BraTS2021--references">References</h5>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1367,6 +1393,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1382,6 +1409,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1399,6 +1427,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1414,6 +1443,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1431,6 +1461,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1447,6 +1478,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1462,6 +1494,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1480,6 +1513,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1512,7 +1546,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 <h3 id="amid.cc359.dataset.CC359" class="doc doc-heading">
-        <code>amid.cc359.dataset.CC359</code>
+          <code>amid.cc359.dataset.CC359</code>
 
 
 </h3>
@@ -1524,6 +1558,8 @@ If not provided, the cache is assumed to be already populated.</p>
       <p>A (C)algary-(C)ampinas public brain MR dataset with (359) volumetric images [1]_.</p>
 <p>There are three segmentation tasks on this dataset: (i) brain, (ii) hippocampus, and
 (iii) White-Matter (WM), Gray-Matter (WM), and Cerebrospinal Fluid (CSF) segmentation.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1539,7 +1575,7 @@ If not provided, the cache is assumed to be already populated.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1587,6 +1623,8 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
         &lt;...&gt;/WM-GM-CSF/CC0324_ge_3_56_M.nii.gz
         ...</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cc359</span> <span class="o">=</span> <span class="n">CC359</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -1604,10 +1642,10 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
        https://www.sciencedirect.com/science/article/pii/S1053811917306687</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1633,6 +1671,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1648,6 +1687,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1665,6 +1705,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1680,6 +1721,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1697,6 +1739,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1712,6 +1755,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1731,6 +1775,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1746,6 +1791,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1765,6 +1811,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1781,6 +1828,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1796,6 +1844,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1826,7 +1875,7 @@ https://drive.google.com/drive/u/0/folders/0BxLb0NB2MjVZNm9JY1pWNFp6WTA?resource
 
 
 <h3 id="amid.cl_detection.CLDetection2023" class="doc doc-heading">
-        <code>amid.cl_detection.CLDetection2023</code>
+          <code>amid.cl_detection.CLDetection2023</code>
 
 
 </h3>
@@ -1840,6 +1889,8 @@ held with the MICCAI-2023 conference.</p>
 <h5 id="amid.cl_detection.CLDetection2023--notes">Notes</h5>
 <p>The data can only be obtained by contacting the organizers by email.
 See the <a href="https://cl-detection2023.grand-challenge.org/">challenge home page</a> for details.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1855,7 +1906,7 @@ See the <a href="https://cl-detection2023.grand-challenge.org/">challenge home p
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1884,6 +1935,8 @@ If not provided, the cache is assumed to be already populated.</p>
     </tbody>
   </table>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">CLDetection2023</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/data/root/folder&#39;</span><span class="p">)</span>
@@ -1894,10 +1947,10 @@ If not provided, the cache is assumed to be already populated.</p>
 </code></pre></div>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1923,6 +1976,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1938,6 +1992,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1955,6 +2010,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1970,6 +2026,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2004,7 +2061,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 <h3 id="amid.crlm.CRLM" class="doc doc-heading">
-        <code>amid.crlm.CRLM</code>
+          <code>amid.crlm.CRLM</code>
 
 
 </h3>
@@ -2013,6 +2070,8 @@ If not provided, the cache is assumed to be already populated.</p>
   <div class="doc doc-contents first">
 
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2028,7 +2087,7 @@ If not provided, the cache is assumed to be already populated.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2067,6 +2126,8 @@ The segmentations include 'Liver', 'Liver_Remnant'
 'Hepatic' and 'Portal' veins,
 and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">CRLM</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
@@ -2078,10 +2139,10 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
       <h5 id="amid.crlm.CRLM--references">References</h5>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -2107,6 +2168,7 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2122,6 +2184,7 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2141,6 +2204,7 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2159,6 +2223,7 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2174,6 +2239,7 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2206,7 +2272,7 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
 
 
 <h3 id="amid.ct_ich.CT_ICH" class="doc doc-heading">
-        <code>amid.ct_ich.CT_ICH</code>
+          <code>amid.ct_ich.CT_ICH</code>
 
 
 </h3>
@@ -2219,6 +2285,8 @@ and 'Tumor_x', where 'x' denotes the various tumor occurrences in the case</p>
 <p>This dataset contains 75 head CT scans including 36 scans for patients diagnosed with
 intracranial hemorrhage with the following types:
 Intraventricular, Intraparenchymal, Subarachnoid, Epidural and Subdural.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2234,7 +2302,7 @@ Intraventricular, Intraparenchymal, Subarachnoid, Epidural and Subdural.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2266,6 +2334,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Data can be downloaded here: https://physionet.org/content/ct-ich/1.3.1/.
 Then, the folder with raw downloaded data should contain folders <code>ct_scans</code> and <code>masks</code> along with other files.</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">CT_ICH</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -2278,10 +2348,10 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 </code></pre></div>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -2307,6 +2377,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2323,6 +2394,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2338,6 +2410,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2357,6 +2430,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2372,6 +2446,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2391,6 +2466,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2407,6 +2483,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2422,6 +2499,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2441,6 +2519,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2458,6 +2537,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2477,6 +2557,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2494,6 +2575,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2513,6 +2595,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2531,6 +2614,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2548,6 +2632,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2578,7 +2663,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
 
 
 <h3 id="amid.crossmoda.CrossMoDA" class="doc doc-heading">
-        <code>amid.crossmoda.CrossMoDA</code>
+          <code>amid.crossmoda.CrossMoDA</code>
 
 
 </h3>
@@ -2587,6 +2672,8 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
   <div class="doc doc-contents first">
 
   
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2602,7 +2689,7 @@ Then, the folder with raw downloaded data should contain folders <code>ct_scans<
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2634,6 +2721,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Download links:
 2021 &amp; 2022: https://zenodo.org/record/6504722#.YsgwnNJByV4</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">CrossMoDA</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
@@ -2645,10 +2734,10 @@ If not provided, the cache is assumed to be already populated.</p>
       <h5 id="amid.crossmoda.CrossMoDA--references">References</h5>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -2674,6 +2763,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2689,6 +2779,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2706,6 +2797,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2721,6 +2813,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2740,6 +2833,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2757,6 +2851,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2776,6 +2871,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2794,6 +2890,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2811,6 +2908,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2843,7 +2941,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 <h3 id="amid.deeplesion.DeepLesion" class="doc doc-heading">
-        <code>amid.deeplesion.DeepLesion</code>
+          <code>amid.deeplesion.DeepLesion</code>
 
 
 </h3>
@@ -2855,6 +2953,8 @@ If not provided, the cache is assumed to be already populated.</p>
       <p>DeepLesion is composed of 33,688 bookmarked radiology images from
 10,825 studies of 4,477 unique patients. For every bookmarked image, a bound-
 ing box is created to cover the target lesion based on its measured diameters [1].</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2870,7 +2970,7 @@ ing box is created to cover the target lesion based on its measured diameters [1
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2904,10 +3004,10 @@ print(len(ds.ids))</p>
   lesion annotations." arXiv preprint arXiv:1710.01766 (2017).</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -2933,6 +3033,7 @@ print(len(ds.ids))</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2948,6 +3049,7 @@ print(len(ds.ids))</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2965,6 +3067,7 @@ print(len(ds.ids))</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2981,6 +3084,7 @@ print(len(ds.ids))</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2996,6 +3100,7 @@ print(len(ds.ids))</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3015,6 +3120,7 @@ print(len(ds.ids))</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3030,6 +3136,7 @@ print(len(ds.ids))</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3047,6 +3154,7 @@ print(len(ds.ids))</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3063,6 +3171,7 @@ print(len(ds.ids))</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3078,6 +3187,7 @@ print(len(ds.ids))</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3108,7 +3218,7 @@ print(len(ds.ids))</p>
 
 
 <h3 id="amid.egd.EGD" class="doc doc-heading">
-        <code>amid.egd.EGD</code>
+          <code>amid.egd.EGD</code>
 
 
 </h3>
@@ -3119,6 +3229,8 @@ print(len(ds.ids))</p>
   
       <p>The Erasmus Glioma Database (EGD): Structural MRI scans, WHO 2016 subtypes,
 and segmentations of 774 patients with glioma [1]_.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -3134,7 +3246,7 @@ and segmentations of 774 patients with glioma [1]_.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -3168,6 +3280,8 @@ If not provided, the cache is assumed to be already populated.</p>
 egd-downloader script [https://zenodo.org/record/4761089#.YtZpLtJBxhF].
 Please, refer to its README for further information.</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">egd</span> <span class="o">=</span> <span class="n">EGD</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -3185,10 +3299,10 @@ Please, refer to its README for further information.</p>
        https://www.sciencedirect.com/science/article/pii/S2352340921004753</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -3214,6 +3328,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3229,6 +3344,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3246,6 +3362,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3261,6 +3378,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3278,6 +3396,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3293,6 +3412,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3310,6 +3430,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3325,6 +3446,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3342,6 +3464,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3357,6 +3480,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3374,6 +3498,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3389,6 +3514,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3406,6 +3532,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3421,6 +3548,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3438,6 +3566,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3453,6 +3582,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3470,6 +3600,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3486,6 +3617,7 @@ Please, refer to its README for further information.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3501,6 +3633,7 @@ Please, refer to its README for further information.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3531,7 +3664,7 @@ Please, refer to its README for further information.</p>
 
 
 <h3 id="amid.flare2022.FLARE2022" class="doc doc-heading">
-        <code>amid.flare2022.FLARE2022</code>
+          <code>amid.flare2022.FLARE2022</code>
 
 
 </h3>
@@ -3542,6 +3675,8 @@ Please, refer to its README for further information.</p>
   
       <p>An abdominal organ segmentation dataset for semi-supervised learning [1]_.</p>
 <p>The dataset was used at the MICCAI FLARE 2022 challenge.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -3557,7 +3692,7 @@ Please, refer to its README for further information.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -3575,6 +3710,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Download link: https://flare22.grand-challenge.org/Dataset/</p>
 <p>The <code>root</code> folder should contain the two downloaded folders, namely: "Training" and "Validation".</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded folders in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">FLARE2022</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -3590,10 +3727,10 @@ If not provided, the cache is assumed to be already populated.</p>
 Medical Image Analysis 82 (2022): 102616.</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -3619,6 +3756,7 @@ Medical Image Analysis 82 (2022): 102616.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3634,6 +3772,7 @@ Medical Image Analysis 82 (2022): 102616.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3652,6 +3791,7 @@ Medical Image Analysis 82 (2022): 102616.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3682,7 +3822,7 @@ Medical Image Analysis 82 (2022): 102616.</p>
 
 
 <h3 id="amid.lidc.dataset.LIDC" class="doc doc-heading">
-        <code>amid.lidc.dataset.LIDC</code>
+          <code>amid.lidc.dataset.LIDC</code>
 
 
 </h3>
@@ -3696,6 +3836,8 @@ consists of diagnostic and lung cancer screening thoracic computed tomography (C
 with marked-up annotated lesions and lung nodules segmentation task.
 Scans contains multiple expert annotations.</p>
 <p>Number of CT scans: 1018.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -3711,7 +3853,7 @@ Scans contains multiple expert annotations.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, Path</code>
+                <code>(str, Path)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -3744,6 +3886,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Then, the folder with raw downloaded data should contain folder <code>LIDC-IDRI</code>,
 which contains folders <code>LIDC-IDRI-*</code>.</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">LIDC</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -3761,10 +3905,10 @@ Medical physics 38(2) (2011): 915–931.
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -3790,6 +3934,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3805,6 +3950,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3822,6 +3968,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3837,6 +3984,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3854,6 +4002,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3869,6 +4018,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3886,6 +4036,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3901,6 +4052,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3919,6 +4071,7 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3950,6 +4103,7 @@ Therefore, we consider their impact negligible.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3967,6 +4121,7 @@ Therefore, we consider their impact negligible.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3987,6 +4142,7 @@ part of the initial 399 release.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4002,6 +4158,7 @@ part of the initial 399 release.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4019,6 +4176,7 @@ part of the initial 399 release.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4034,6 +4192,7 @@ part of the initial 399 release.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4051,6 +4210,7 @@ part of the initial 399 release.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4066,6 +4226,7 @@ part of the initial 399 release.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4083,6 +4244,7 @@ part of the initial 399 release.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4098,6 +4260,7 @@ part of the initial 399 release.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4128,7 +4291,7 @@ part of the initial 399 release.</p>
 
 
 <h3 id="amid.lits.dataset.LiTS" class="doc doc-heading">
-        <code>amid.lits.dataset.LiTS</code>
+          <code>amid.lits.dataset.LiTS</code>
 
 
 </h3>
@@ -4139,6 +4302,8 @@ part of the initial 399 release.</p>
   
       <p>A (Li)ver (T)umor (S)egmentation dataset [1]<em> from Medical Segmentation Decathlon [2]</em></p>
 <p>There are two segmentation tasks on this dataset: liver and liver tumor segmentation.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -4154,7 +4319,7 @@ part of the initial 399 release.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4194,6 +4359,8 @@ and a folder with the test data
     ...</p>
 <p>P.S. Organs boxes are also provided from a separate source https://github.com/superxuang/caffe_3d_faster_rcnn.</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">LiTS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -4211,10 +4378,10 @@ and a folder with the test data
        arXiv preprint arXiv:2106.05735 (2021).</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -4240,6 +4407,7 @@ and a folder with the test data
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4256,6 +4424,7 @@ and a folder with the test data
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4271,6 +4440,7 @@ and a folder with the test data
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4290,6 +4460,7 @@ and a folder with the test data
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4305,6 +4476,7 @@ and a folder with the test data
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4323,6 +4495,7 @@ and a folder with the test data
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4353,7 +4526,7 @@ and a folder with the test data
 
 
 <h3 id="amid.liver_medseg.LiverMedseg" class="doc doc-heading">
-        <code>amid.liver_medseg.LiverMedseg</code>
+          <code>amid.liver_medseg.LiverMedseg</code>
 
 
 </h3>
@@ -4365,6 +4538,8 @@ and a folder with the test data
       <p>LiverMedseg is a public CT segmentation dataset with 50 annotated images.
 Case collection of 50 livers with their segments.
 Images obtained from Decathlon Medical Segmentation competition</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -4380,7 +4555,7 @@ Images obtained from Decathlon Medical Segmentation competition</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4412,6 +4587,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Download links:
 https://www.medseg.ai/database/liver-segments-50-cases</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">LiverMedseg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
@@ -4423,10 +4600,10 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
       <h5 id="amid.liver_medseg.LiverMedseg--references">References</h5>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -4452,6 +4629,7 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4467,6 +4645,7 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4486,6 +4665,7 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4502,6 +4682,7 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4517,6 +4698,7 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4547,7 +4729,7 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
 
 
 <h3 id="amid.midrc.MIDRC" class="doc doc-heading">
-        <code>amid.midrc.MIDRC</code>
+          <code>amid.midrc.MIDRC</code>
 
 
 </h3>
@@ -4558,6 +4740,8 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
   
       <div class="highlight"><pre><span></span><code>MIDRC-RICORD dataset 1a is a public COVID-19 CT segmentation dataset with 120 scans.
 </code></pre></div>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -4573,7 +4757,7 @@ https://www.medseg.ai/database/liver-segments-50-cases</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4609,6 +4793,8 @@ Download both Images and Annotations to the same folder</p>
     &lt;...&gt;/<MIDRC-root>/MIDRC-RICORD-1A
     &lt;...&gt;/<MIDRC-root>/MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MIDRC</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -4622,10 +4808,10 @@ Download both Images and Annotations to the same folder</p>
       <h5 id="amid.midrc.MIDRC--references">References</h5>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -4651,6 +4837,7 @@ Download both Images and Annotations to the same folder</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4666,6 +4853,7 @@ Download both Images and Annotations to the same folder</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4683,6 +4871,7 @@ Download both Images and Annotations to the same folder</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4699,6 +4888,7 @@ Download both Images and Annotations to the same folder</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4714,6 +4904,7 @@ Download both Images and Annotations to the same folder</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4744,7 +4935,7 @@ Download both Images and Annotations to the same folder</p>
 
 
 <h3 id="amid.mood.MOOD" class="doc doc-heading">
-        <code>amid.mood.MOOD</code>
+          <code>amid.mood.MOOD</code>
 
 
 </h3>
@@ -4760,6 +4951,8 @@ Download both Images and Annotations to the same folder</p>
 - Abdominal: 550 scans ( 512 x 512 x 512 )</p>
 <p>For each setup there are 4 toy test samples with OOD cases.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -4774,7 +4967,7 @@ Download both Images and Annotations to the same folder</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4807,6 +5000,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Then, the folder with raw downloaded data should contain four zip archives with data
 (<code>abdom_toy.zip</code>, <code>abdom_train.zip</code>, <code>brain_toy.zip</code> and <code>brain_train.zip</code>).</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MOOD</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -4822,10 +5017,10 @@ If not provided, the cache is assumed to be already populated.</p>
        doi: 10.5281/zenodo.6362313 (2022).</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -4851,6 +5046,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4868,6 +5064,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4887,6 +5084,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4902,6 +5100,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4921,6 +5120,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4936,6 +5136,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4955,6 +5156,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4973,6 +5175,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5006,7 +5209,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 <h3 id="amid.medseg9.Medseg9" class="doc doc-heading">
-        <code>amid.medseg9.Medseg9</code>
+          <code>amid.medseg9.Medseg9</code>
 
 
 </h3>
@@ -5016,6 +5219,8 @@ If not provided, the cache is assumed to be already populated.</p>
 
   
       <p>Medseg9 is a public COVID-19 CT segmentation dataset with 9 annotated images.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -5031,7 +5236,7 @@ If not provided, the cache is assumed to be already populated.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -5064,6 +5269,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Then, the folder with raw downloaded data should contain three zip archives with data and masks
 (<code>rp_im.zip</code>, <code>rp_lung_msk.zip</code>, <code>rp_msk.zip</code>).</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">Medseg9</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -5076,10 +5283,10 @@ If not provided, the cache is assumed to be already populated.</p>
 </code></pre></div>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -5105,6 +5312,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5120,6 +5328,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5139,6 +5348,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5154,6 +5364,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5173,6 +5384,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5188,6 +5400,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5221,7 +5434,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 <h3 id="amid.cancer_500.dataset.MoscowCancer500" class="doc doc-heading">
-        <code>amid.cancer_500.dataset.MoscowCancer500</code>
+          <code>amid.cancer_500.dataset.MoscowCancer500</code>
 
 
 </h3>
@@ -5231,6 +5444,8 @@ If not provided, the cache is assumed to be already populated.</p>
 
   
       <p>The Moscow Radiology Cancer-500 dataset.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -5246,7 +5461,7 @@ If not provided, the cache is assumed to be already populated.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -5280,6 +5495,8 @@ https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/
 After pressing the <code>download</code> button you will have to provide an email address to which further instructions
 will be sent.</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded files in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MoscowCancer500</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/files/root&#39;</span><span class="p">)</span>
@@ -5290,10 +5507,10 @@ will be sent.</p>
 </code></pre></div>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -5319,6 +5536,7 @@ will be sent.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5334,6 +5552,7 @@ will be sent.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5351,6 +5570,7 @@ will be sent.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5366,6 +5586,7 @@ will be sent.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5383,6 +5604,7 @@ will be sent.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5398,6 +5620,7 @@ will be sent.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5415,6 +5638,7 @@ will be sent.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5430,6 +5654,7 @@ will be sent.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5447,6 +5672,7 @@ will be sent.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5462,6 +5688,7 @@ will be sent.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5479,6 +5706,7 @@ will be sent.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5494,6 +5722,7 @@ will be sent.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5511,6 +5740,7 @@ will be sent.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5526,6 +5756,7 @@ will be sent.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5556,7 +5787,7 @@ will be sent.</p>
 
 
 <h3 id="amid.covid_1110.MoscowCovid1110" class="doc doc-heading">
-        <code>amid.covid_1110.MoscowCovid1110</code>
+          <code>amid.covid_1110.MoscowCovid1110</code>
 
 
 </h3>
@@ -5566,6 +5797,8 @@ will be sent.</p>
 
   
       <p>The Moscow Radiology COVID-19 dataset.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -5581,7 +5814,7 @@ will be sent.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -5613,6 +5846,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>Download links:
 https://mosmed.ai/en/datasets/covid191110/</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded files in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">MoscowCovid1110</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/files/root&#39;</span><span class="p">)</span>
@@ -5623,10 +5858,10 @@ https://mosmed.ai/en/datasets/covid191110/</p>
 </code></pre></div>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -5652,6 +5887,7 @@ https://mosmed.ai/en/datasets/covid191110/</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5667,6 +5903,7 @@ https://mosmed.ai/en/datasets/covid191110/</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5684,6 +5921,7 @@ https://mosmed.ai/en/datasets/covid191110/</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5699,6 +5937,7 @@ https://mosmed.ai/en/datasets/covid191110/</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5729,7 +5968,7 @@ https://mosmed.ai/en/datasets/covid191110/</p>
 
 
 <h3 id="amid.nlst.NLST" class="doc doc-heading">
-        <code>amid.nlst.NLST</code>
+          <code>amid.nlst.NLST</code>
 
 
 </h3>
@@ -5740,6 +5979,8 @@ https://mosmed.ai/en/datasets/covid191110/</p>
   
       <div class="highlight"><pre><span></span><code>Dataset with low-dose CT scans of 26,254 patients acquired during National Lung Screening Trial.
 </code></pre></div>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -5755,7 +5996,7 @@ https://mosmed.ai/en/datasets/covid191110/</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -5789,6 +6030,8 @@ https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial
 The dicoms should be placed under the following folders' structure:
     &lt;...&gt;/<NLST-root>/<patiend_id>/<study_uid>/<date>/<series_uid>/*.dcm</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">NLST</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/NLST/&#39;</span><span class="p">)</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
@@ -5801,10 +6044,10 @@ The dicoms should be placed under the following folders' structure:
       <h5 id="amid.nlst.NLST--references">References</h5>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -5830,6 +6073,7 @@ The dicoms should be placed under the following folders' structure:
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5845,6 +6089,7 @@ The dicoms should be placed under the following folders' structure:
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5862,6 +6107,7 @@ The dicoms should be placed under the following folders' structure:
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5877,6 +6123,7 @@ The dicoms should be placed under the following folders' structure:
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5894,6 +6141,7 @@ The dicoms should be placed under the following folders' structure:
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5909,6 +6157,7 @@ The dicoms should be placed under the following folders' structure:
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5926,6 +6175,7 @@ The dicoms should be placed under the following folders' structure:
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5941,6 +6191,7 @@ The dicoms should be placed under the following folders' structure:
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5958,6 +6209,7 @@ The dicoms should be placed under the following folders' structure:
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -5973,6 +6225,7 @@ The dicoms should be placed under the following folders' structure:
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -5990,6 +6243,7 @@ The dicoms should be placed under the following folders' structure:
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6005,6 +6259,7 @@ The dicoms should be placed under the following folders' structure:
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6035,7 +6290,7 @@ The dicoms should be placed under the following folders' structure:
 
 
 <h3 id="amid.nsclc.NSCLC" class="doc doc-heading">
-        <code>amid.nsclc.NSCLC</code>
+          <code>amid.nsclc.NSCLC</code>
 
 
 </h3>
@@ -6046,6 +6301,8 @@ The dicoms should be placed under the following folders' structure:
   
       <div class="highlight"><pre><span></span><code>NSCLC-Radiomics is a public cell lung cancer segmentation dataset with 422 patients.
 </code></pre></div>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -6061,7 +6318,7 @@ The dicoms should be placed under the following folders' structure:
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -6095,6 +6352,8 @@ If not provided, the cache is assumed to be already populated.</p>
 <p>The folder should have this structure:
     &lt;...&gt;/<NSCLC-root>/NSCLC-Radiomics/LUNG1-XXX</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">NSCLC</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -6108,10 +6367,10 @@ If not provided, the cache is assumed to be already populated.</p>
       <h5 id="amid.nsclc.NSCLC--references">References</h5>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -6137,6 +6396,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6152,6 +6412,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6169,6 +6430,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6184,6 +6446,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6201,6 +6464,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6216,6 +6480,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6233,6 +6498,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6248,6 +6514,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6265,6 +6532,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6280,6 +6548,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6297,6 +6566,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6312,6 +6582,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6342,7 +6613,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 <h3 id="amid.rsna_bc.dataset.RSNABreastCancer" class="doc doc-heading">
-        <code>amid.rsna_bc.dataset.RSNABreastCancer</code>
+          <code>amid.rsna_bc.dataset.RSNABreastCancer</code>
 
 
 </h3>
@@ -6352,10 +6623,10 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -6381,6 +6652,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6397,6 +6669,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6412,6 +6685,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6442,7 +6716,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 
 <h3 id="amid.stanford_coca.StanfordCoCa" class="doc doc-heading">
-        <code>amid.stanford_coca.StanfordCoCa</code>
+          <code>amid.stanford_coca.StanfordCoCa</code>
 
 
 </h3>
@@ -6452,6 +6726,8 @@ If not provided, the cache is assumed to be already populated.</p>
 
   
       <p>A Stanford AIMI's Co(ronary) Ca(lcium) dataset.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -6467,7 +6743,7 @@ If not provided, the cache is assumed to be already populated.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -6512,6 +6788,8 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
     ./deidentified_nongated/0/folder-with-dcms/
     ...</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">StanfordCoCa</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -6522,10 +6800,10 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
 </code></pre></div>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -6551,6 +6829,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6566,6 +6845,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6583,6 +6863,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6598,6 +6879,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6615,6 +6897,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6631,6 +6914,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6646,6 +6930,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6664,6 +6949,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6694,7 +6980,7 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
 
 
 <h3 id="amid.totalsegmentator.dataset.Totalsegmentator" class="doc doc-heading">
-        <code>amid.totalsegmentator.dataset.Totalsegmentator</code>
+          <code>amid.totalsegmentator.dataset.Totalsegmentator</code>
 
 
 </h3>
@@ -6708,6 +6994,8 @@ covering a majority of relevant classes for most use cases.</p>
 <p>The CT images were randomly sampled from clinical routine, thus representing a real world dataset which
 generalizes to clinical application.</p>
 <p>The dataset contains a wide range of different pathologies, scanners, sequences and institutions. [1]</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -6723,7 +7011,7 @@ generalizes to clinical application.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -6740,6 +7028,8 @@ If not provided, the cache is assumed to be already populated.</p>
       <h5 id="amid.totalsegmentator.dataset.Totalsegmentator--notes">Notes</h5>
 <p>Download link: https://zenodo.org/record/6802614/files/Totalsegmentator_dataset.zip</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Download the archive to any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">Totalsegmentator</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/the/downloaded/archive&#39;</span><span class="p">)</span>
@@ -6755,10 +7045,10 @@ If not provided, the cache is assumed to be already populated.</p>
 Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -6784,6 +7074,7 @@ Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6799,6 +7090,7 @@ Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6831,7 +7123,7 @@ Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8</p>
 
 
 <h3 id="amid.upenn_gbm.upenn_gbm.UPENN_GBM" class="doc doc-heading">
-        <code>amid.upenn_gbm.upenn_gbm.UPENN_GBM</code>
+          <code>amid.upenn_gbm.upenn_gbm.UPENN_GBM</code>
 
 
 </h3>
@@ -6845,6 +7137,8 @@ Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8</p>
 Dataset contains 630 patients.</p>
 <p>All samples are registered to a common atlas (SRI)
     using a uniform preprocessing and the segmentation are aligned with them.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -6860,7 +7154,7 @@ Dataset contains 630 patients.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -6882,6 +7176,8 @@ Download to the root folder nifti images and metadata. Organise folder as folows
 <p>&lt;...&gt;/<UPENN-root>/UPENN-GBM_clinical_info_v1.0.csv
 &lt;...&gt;/<UPENN-root>/UPENN-GBM_acquisition.csv</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">UPENN_GBM</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -6902,10 +7198,10 @@ Glioblastoma (GBM) patients from the University of Pennsylvania Health System (U
 https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -6931,6 +7227,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6946,6 +7243,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6963,6 +7261,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -6978,6 +7277,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -6995,6 +7295,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7010,6 +7311,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7027,6 +7329,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7042,6 +7345,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7059,6 +7363,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7074,6 +7379,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7091,6 +7397,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7106,6 +7413,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7123,6 +7431,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7138,6 +7447,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7168,7 +7478,7 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
 
 
 <h3 id="amid.vs_seg.dataset.VSSEG" class="doc doc-heading">
-        <code>amid.vs_seg.dataset.VSSEG</code>
+          <code>amid.vs_seg.dataset.VSSEG</code>
 
 
 </h3>
@@ -7180,6 +7490,8 @@ https://doi.org/10.7937/TCIA.709X-DN49</p>
       <p>Segmentation of vestibular schwannoma from MRI, an open annotated dataset ... (VS-SEG) [1]_.</p>
 <p>The dataset contains 250 pairs of T1c and T2 images of the brain with the
 vestibular schwannoma segmentation task.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -7195,7 +7507,7 @@ vestibular schwannoma segmentation task.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -7242,6 +7554,8 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
     &lt;...&gt;/contours/
     &lt;...&gt;/registration_matrices/</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">VSSEG</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/downloaded/data/folder/&#39;</span><span class="p">)</span>
@@ -7259,10 +7573,10 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
        https://www.nature.com/articles/s41597-021-01064-w</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -7288,6 +7602,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7303,6 +7618,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7320,6 +7636,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7335,6 +7652,7 @@ https://github.com/ygidtu/NBIA_data_retriever_CLI.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7355,6 +7673,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7370,6 +7689,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7387,6 +7707,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7402,6 +7723,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7419,6 +7741,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7435,6 +7758,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7450,6 +7774,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7480,7 +7805,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
 
 
 <h3 id="amid.verse.VerSe" class="doc doc-heading">
-        <code>amid.verse.VerSe</code>
+          <code>amid.verse.VerSe</code>
 
 
 </h3>
@@ -7491,6 +7816,8 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
   
       <p>A Vertebral Segmentation Dataset with Fracture Grading [1]_</p>
 <p>The dataset was used in the MICCAI-2019 and MICCAI-2020 Vertebrae Segmentation Challenges.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -7506,7 +7833,7 @@ so we allow ourselves to use the common spacing for the whole 3D image.</p>
         <tr>
           <td><code>root</code></td>
           <td>
-                <code>str, <span title="pathlib.Path">Path</span></code>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -7539,6 +7866,8 @@ If not provided, the cache is assumed to be already populated.</p>
     2019: https://osf.io/jtfa5/
     2020: https://osf.io/4skx2/</p>
 
+
+
 <p><strong>Examples:</strong></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded archives in any folder and pass the path to the constructor:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">VerSe</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/archives/root&#39;</span><span class="p">)</span>
@@ -7552,10 +7881,10 @@ If not provided, the cache is assumed to be already populated.</p>
    Radiol Artif Intell. 2020;2(4):e190138. Published 2020 Jul 29. doi:10.1148/ryai.2020190138</p>
 
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -7581,6 +7910,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7596,6 +7926,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7615,6 +7946,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7632,6 +7964,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -7651,6 +7984,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7669,6 +8003,7 @@ If not provided, the cache is assumed to be already populated.</p>
 
 </div>
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -7686,6 +8021,7 @@ If not provided, the cache is assumed to be already populated.</p>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
