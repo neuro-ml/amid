@@ -4,7 +4,7 @@ from pathlib import Path
 import deli
 import nibabel
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, register
@@ -80,12 +80,18 @@ class DeepLesion(Source):
         for col in cols_to_transform:
             df[col] = df[col].apply(lambda x: list(map(float, x.split(','))))
 
-        df['Slice_range'] = df['Slice_range'].apply(lambda x: list(map(int, x.split(','))))
+        df['Slice_range_list'] = df['Slice_range'].apply(lambda x: list(map(int, x.split(','))))
         return df
 
     def _row(i, _metadata):
         patient, study, series = map(int, i.split('_')[:3])
-        return _metadata.query('Patient_index==@patient').query('Study_index==@study').query('Series_ID==@series')
+        slice_range = ', '.join(map(str, list(map(int, i.split('_')[-1].split('-')))))
+        return (
+            _metadata.query('Patient_index==@patient')
+            .query('Study_index==@study')
+            .query('Series_ID==@series')
+            .query('Slice_range==@slice_range')
+        )
 
     def patient_id(i):
         patient, study, series = map(int, i.split('_')[:3])
@@ -123,10 +129,11 @@ class DeepLesion(Source):
         return int(_row.Train_Val_Test.iloc[0])
 
     def lesion_position(_row):
-        """Lesion measurements as it appear in DL_info.csv, for details see https://nihcc.app.box.com/v/DeepLesion/file/306056134060 ."""
+        """Lesion measurements as it appear in DL_info.csv, for details see
+        https://nihcc.app.box.com/v/DeepLesion/file/306056134060 ."""
         position = _row[
             [
-                'Slice_range',
+                'Slice_range_list',
                 'Key_slice_index',
                 'Measurement_coordinates',
                 'Bounding_boxes',
@@ -134,5 +141,21 @@ class DeepLesion(Source):
                 'Normalized_lesion_location',
             ]
         ].to_dict('list')
-        position['Slice_range'] = position['Slice_range'][0]
+        position['Slice_range_list'] = position['Slice_range_list'][0]
         return position
+
+    def mask(image: Output, lesion_position: Output):
+        """Mask of provided bounding boxes. Recall that bboxes annotation
+        is very coarse, it only covers a single 2D slice."""
+        mask = np.zeros_like(image)
+        print(mask.shape)
+        min_index = lesion_position['Slice_range_list'][0]
+        for i, slice_index in enumerate(lesion_position['Key_slice_index']):
+            image_index = slice_index - min_index
+            top_left_x, top_left_y, bot_right_x, bot_right_y = lesion_position['Bounding_boxes'][i]
+            mask[
+                int(np.floor(top_left_y)) : int(np.ceil(bot_right_y)),
+                int(np.floor(top_left_x)) : int(np.ceil(bot_right_x)),
+                image_index,
+            ] = 1
+        return mask
