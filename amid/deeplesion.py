@@ -151,7 +151,6 @@ class DeepLesion(Source):
         """Mask of provided bounding boxes. Recall that bboxes annotation
         is very coarse, it only covers a single 2D slice."""
         mask = np.zeros_like(image)
-        print(mask.shape)
         min_index = lesion_position['Slice_range_list'][0]
         for i, slice_index in enumerate(lesion_position['Key_slice_index']):
             image_index = slice_index - min_index
