@@ -3132,6 +3132,8 @@ print(len(ds.ids))</p>
 
 
   <div class="doc doc-contents ">
+  
+      <p>CT window extracted from DICOMs. Recall, that it is min-max values for windowing, not width-level.</p>
 
   </div>
 
@@ -3183,6 +3185,8 @@ print(len(ds.ids))</p>
 
 
   <div class="doc doc-contents ">
+  
+      <p>Some 3D volumes are stored as separate subvolumes, e.g. ds.ids[15000] and ds.ids[15001].</p>
 
   </div>
 
@@ -3200,6 +3204,46 @@ print(len(ds.ids))</p>
 
 
   <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.lesion_position" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">lesion_position</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Lesion measurements as it appear in DL_info.csv, for details see
+https://nihcc.app.box.com/v/DeepLesion/file/306056134060 .</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="amid.deeplesion.DeepLesion.mask" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Mask of provided bounding boxes. Recall that bboxes annotation
+is very coarse, it only covers a single 2D slice.</p>
 
   </div>
 
