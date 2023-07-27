@@ -1,12 +1,10 @@
-# TODO: Add annotation info from DL_info.csv
-
 from functools import lru_cache
 from pathlib import Path
 
 import deli
 import nibabel
 import numpy as np
-from connectome import Source, meta
+from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, register
@@ -71,11 +69,32 @@ class DeepLesion(Source):
 
     @lru_cache(None)
     def _metadata(_base):
-        return deli.load(_base / 'DL_info.csv')
+        df = deli.load(_base / 'DL_info.csv')
+
+        cols_to_transform = [
+            'Measurement_coordinates',
+            'Bounding_boxes',
+            'Lesion_diameters_Pixel_',
+            'Normalized_lesion_location',
+        ]
+        for col in cols_to_transform:
+            df[col] = df[col].apply(lambda x: list(map(float, x.split(','))))
+
+        df['Slice_range_list'] = df['Slice_range'].apply(lambda x: list(map(int, x.split(','))))
+
+        def get_ids(x):
+            patient_study_series = '_'.join(x.File_name.split('_')[:3])
+            slice_range_list = list(map(str, x.Slice_range_list))
+            slice_range_list = [num.zfill(3) for num in slice_range_list]
+            slice_range_list = '-'.join(slice_range_list)
+            return f'{patient_study_series}_{slice_range_list}'
+
+        df['ids'] = df.apply(get_ids, axis=1)
+        return df
 
     def _row(i, _metadata):
-        patient, study, series = map(int, i.split('_')[:3])
-        return _metadata.query('Patient_index==@patient').query('Study_index==@study').query('Series_ID==@series')
+        # funny story, f-string does not work for pandas.query, @ syntax does not work for linter
+        return _metadata.query('ids==@i')
 
     def patient_id(i):
         patient, study, series = map(int, i.split('_')[:3])
@@ -97,6 +116,7 @@ class DeepLesion(Source):
         return _row.Patient_age.iloc[0]
 
     def ct_window(_row):
+        """CT window extracted from DICOMs. Recall, that it is min-max values for windowing, not width-level."""
         return _row.DICOM_windows.iloc[0]
 
     def affine(_image_file):
@@ -106,7 +126,41 @@ class DeepLesion(Source):
         return tuple(_image_file.header['pixdim'][1:4])
 
     def image(_image_file):
+        """Some 3D volumes are stored as separate subvolumes, e.g. ds.ids[15000] and ds.ids[15001]."""
         return np.asarray(_image_file.dataobj)
 
     def train_val_fold(_row):
+        """Authors' defined randomly generated patient-level data split, train=1, validation=2, test=3, 
+        70/15/15 ratio."""
         return int(_row.Train_Val_Test.iloc[0])
+
+    def lesion_position(_row):
+        """Lesion measurements as it appear in DL_info.csv, for details see
+        https://nihcc.app.box.com/v/DeepLesion/file/306056134060 ."""
+        position = _row[
+            [
+                'Slice_range_list',
+                'Key_slice_index',
+                'Measurement_coordinates',
+                'Bounding_boxes',
+                'Lesion_diameters_Pixel_',
+                'Normalized_lesion_location',
+            ]
+        ].to_dict('list')
+        position['Slice_range_list'] = position['Slice_range_list'][0]
+        return position
+
+    def mask(image: Output, lesion_position: Output):
+        """Mask of provided bounding boxes. Recall that bboxes annotation
+        is very coarse, it only covers a single 2D slice."""
+        mask = np.zeros_like(image)
+        min_index = lesion_position['Slice_range_list'][0]
+        for i, slice_index in enumerate(lesion_position['Key_slice_index']):
+            image_index = slice_index - min_index
+            top_left_x, top_left_y, bot_right_x, bot_right_y = lesion_position['Bounding_boxes'][i]
+            mask[
+                int(np.floor(top_left_y)) : int(np.ceil(bot_right_y)),
+                int(np.floor(top_left_x)) : int(np.ceil(bot_right_x)),
+                image_index,
+            ] = 1
+        return mask
