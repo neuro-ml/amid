@@ -146,11 +146,13 @@ class NSCLC(Source):
         return result
 
     def sex(_sub) -> str:
-        return _sub['PatientSex'].iloc[0]
+        """Sex of the patient."""
+        return _sub['PatientSex'].iloc[1]
 
     def age(_sub) -> Union[int, None]:
-        age = _sub['PatientAge'].iloc[0]
-        if age is not None:
+        """Age of the patient, dataset contains 97 patients with unknown Age."""
+        age = _sub['PatientAge'].iloc[1]
+        if isinstance(age, str):
             return int(age.removesuffix('Y'))
         return age
 
