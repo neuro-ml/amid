@@ -3,6 +3,7 @@ from pathlib import Path
 import nibabel as nb
 import numpy as np
 import pandas as pd
+import warnings
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
@@ -101,6 +102,10 @@ class CT_ICH(Source):
 
     def sex(_row) -> str:
         return _row['Gender']
+    
+    def gender(sex: Output) -> str:
+        warnings.warn("Method gender will be depricated, use sex instead.")
+        return sex
 
     def intraventricular_hemorrhage(i, _patient_metadata):
         """Returns True if hemorrhage exists and its type is intraventricular."""
