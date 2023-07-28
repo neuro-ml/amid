@@ -81,6 +81,7 @@ class DeepLesion(Source):
             df[col] = df[col].apply(lambda x: list(map(float, x.split(','))))
 
         df['Slice_range_list'] = df['Slice_range'].apply(lambda x: list(map(int, x.split(','))))
+<<<<<<< HEAD
 
         def get_ids(x):
             patient_study_series = '_'.join(x.File_name.split('_')[:3])
@@ -95,6 +96,21 @@ class DeepLesion(Source):
     def _row(i, _metadata):
         # funny story, f-string does not work for pandas.query, @ syntax does not work for linter
         return _metadata.query('ids==@i')
+=======
+        return df
+
+    def _row(i, _metadata):
+        patient, study, series = map(int, i.split('_')[:3])
+        slice_range = ', '.join(map(str, list(map(int, i.split('_')[-1].split('-')))))
+        # for linter, funny story, f-string does not work for pandas.query, @ syntax does not work for linter
+        slice_range = slice_range
+        return (
+            _metadata.query('Patient_index==@patient')
+            .query('Study_index==@study')
+            .query('Series_ID==@series')
+            .query('Slice_range==@slice_range')
+        )
+>>>>>>> d72ca4b1852e3a8c857b05a9ea9236c9a8975df3
 
     def patient_id(i):
         patient, study, series = map(int, i.split('_')[:3])
