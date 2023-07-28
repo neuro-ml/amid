@@ -3,7 +3,7 @@ from pathlib import Path
 import nibabel as nb
 import numpy as np
 import pandas as pd
-from connectome import Output, Source, meta
+from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
@@ -92,13 +92,15 @@ class CT_ICH(Source):
     def _diagnosis_metadata(_root: Silent):
         return pd.read_csv(Path(_root) / 'hemorrhage_diagnosis_raw_ct.csv')
 
-    def age(i, _patient_metadata):
-        num_id = int(i.split('_')[-1])
-        _patient_metadata['Age\n(years)'].loc[num_id]
+    def _row(i, _patient_metadata):
+        patient_id = int(i.split('_')[-1])
+        return _patient_metadata.loc[patient_id]
 
-    def gender(i, _patient_metadata):
-        num_id = int(i.split('_')[-1])
-        _patient_metadata['Gender'].loc[num_id]
+    def age(_row) -> float:
+        return _row['Age\n(years)']
+
+    def sex(_row) -> str:
+        return _row['Gender']
 
     def intraventricular_hemorrhage(i, _patient_metadata):
         """Returns True if hemorrhage exists and its type is intraventricular."""
@@ -139,3 +141,7 @@ class CT_ICH(Source):
     def hemorrhage_diagnosis_raw_metadata(i, _diagnosis_metadata):
         num_id = int(i.split('_')[-1])
         return _diagnosis_metadata[_diagnosis_metadata['PatientNumber'] == num_id]
+
+    @classmethod
+    def normalizer(cls):
+        return Transform(__inherit__=True, gender=lambda sex: sex)
