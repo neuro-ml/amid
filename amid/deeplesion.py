@@ -93,7 +93,8 @@ class DeepLesion(Source):
         return df
 
     def _row(i, _metadata):
-        # funny story, f-string does not work for pandas.query, @ syntax does not work for linter
+        # funny story, f-string does not work for pandas.query,
+        # @ syntax does not work for linter, use # noqa
         return _metadata.query('ids==@i')
 
     def patient_id(i):
@@ -129,8 +130,8 @@ class DeepLesion(Source):
         """Some 3D volumes are stored as separate subvolumes, e.g. ds.ids[15000] and ds.ids[15001]."""
         return np.asarray(_image_file.dataobj)
 
-    def train_val_fold(_row):
-        """Authors' defined randomly generated patient-level data split, train=1, validation=2, test=3, 
+    def train_val_test(_row):
+        """Authors' defined randomly generated patient-level data split, train=1, validation=2, test=3,
         70/15/15 ratio."""
         return int(_row.Train_Val_Test.iloc[0])
 
