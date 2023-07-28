@@ -1,0 +1,10 @@
+mkdocs
+mkdocs-material
+mkdocstrings[python]
+mkdocs-jupyter
+mkdocs-exclude
+mkdocs-autorefs
+mike
+pandas
+tabulate
+ipython-genutils
