@@ -10,7 +10,7 @@ import nibabel as nb
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Output, Source, Transform, meta
+from connectome import Apply, Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
@@ -83,7 +83,7 @@ class BIMCVCovid19(Source):
             Available at: https://dx.doi.org/10.21227/m4j2-ap59.
     """
 
-    _root: str
+    _root: str = None
 
     def _base(_root: Silent):
         if _root is None:
@@ -303,6 +303,10 @@ class BIMCVCovid19(Source):
 
     def _meta(key, _series2metainfo):
         return _series2metainfo[key]
+    
+    @classmethod
+    def normalizer(cls):
+        return SpacingFromAffine()
 
 
 class SpacingFromAffine(Transform):
