@@ -5,7 +5,7 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
+from connectome import Transform, Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, licenses, register
@@ -125,3 +125,13 @@ class AMOS(Source):
 
         with unpack(_base, file) as (unpacked, _):
             return pd.read_csv(unpacked)
+        
+    @classmethod
+    def normalizer(cls):
+        return SpacingFromAffine()
+
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nibabel.affines.voxel_sizes(affine)
