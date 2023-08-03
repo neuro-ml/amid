@@ -1,8 +1,13 @@
-import numpy as np
+import json
 import os.path
+import warnings
+from functools import lru_cache
+from pathlib import Path
+from typing import Tuple
+
+import numpy as np
 import pandas as pd
 import pydicom
-import warnings
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 from dicom_csv import (
@@ -15,17 +20,16 @@ from dicom_csv import (
     order_series,
     stack_images,
 )
-from functools import lru_cache
-from pathlib import Path
 from skimage.draw import polygon
-from typing import Tuple
 
 from .internals import checksum, licenses, register
 
 
 # TODO: simplify
-def json_to_dataframe(json_file, datasets=[]):
-    with open(json_file, "r", encoding="utf-8") as f:
+def json_to_dataframe(json_file, datasets=None):
+    if datasets is None:
+        datasets = []
+    with open(json_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     a = pd.DataFrame([])
@@ -33,97 +37,95 @@ def json_to_dataframe(json_file, datasets=[]):
     labels = None
 
     # Gets annotations for all datasets
-    for d in data["datasets"]:
-        if d["id"] in datasets or len(datasets) == 0:
-            study = pd.DataFrame(d["studies"])
-            study["dataset"] = d["name"]
-            study["datasetId"] = d["id"]
+    for d in data['datasets']:
+        if d['id'] in datasets or len(datasets) == 0:
+            study = pd.DataFrame(d['studies'])
+            study['dataset'] = d['name']
+            study['datasetId'] = d['id']
             studies = pd.concat([studies, study], ignore_index=True, sort=False)
 
-            annots = pd.DataFrame(d["annotations"])
-            annots["dataset"] = d["name"]
+            annots = pd.DataFrame(d['annotations'])
+            annots['dataset'] = d['name']
             a = pd.concat([a, annots], ignore_index=True, sort=False)
 
     if len(studies) > 0:
-        studies = studies[["StudyInstanceUID", "dataset", "datasetId", "number"]]
-    g = pd.DataFrame(data["labelGroups"])
+        studies = studies[['StudyInstanceUID', 'dataset', 'datasetId', 'number']]
+    g = pd.DataFrame(data['labelGroups'])
     # unpack arrays
     result = pd.DataFrame([(d, tup.id, tup.name) for tup in g.itertuples() for d in tup.labels])
     if len(result) > 0:
-        result.columns = ["labels", "labelGroupId", "labelGroupName"]
+        result.columns = ['labels', 'labelGroupId', 'labelGroupName']
 
         def unpack_dictionary(df, column):
             ret = None
-            ret = pd.concat(
-                [df, pd.DataFrame((d for idx, d in df[column].items()))], axis=1, sort=False
-            )
+            ret = pd.concat([df, pd.DataFrame((d for idx, d in df[column].items()))], axis=1, sort=False)
             del ret[column]
             return ret
 
-        labels = unpack_dictionary(result, "labels")
-        if "parentId" in labels.columns:
+        labels = unpack_dictionary(result, 'labels')
+        if 'parentId' in labels.columns:
             labels = labels[
                 [
-                    "labelGroupId",
-                    "labelGroupName",
-                    "annotationMode",
-                    "color",
-                    "description",
-                    "id",
-                    "name",
-                    "radlexTagIds",
-                    "scope",
-                    "parentId",
+                    'labelGroupId',
+                    'labelGroupName',
+                    'annotationMode',
+                    'color',
+                    'description',
+                    'id',
+                    'name',
+                    'radlexTagIds',
+                    'scope',
+                    'parentId',
                 ]
             ]
             labels.columns = [
-                "labelGroupId",
-                "labelGroupName",
-                "annotationMode",
-                "color",
-                "description",
-                "labelId",
-                "labelName",
-                "radlexTagIdsLabel",
-                "scope",
-                "parentLabelId",
+                'labelGroupId',
+                'labelGroupName',
+                'annotationMode',
+                'color',
+                'description',
+                'labelId',
+                'labelName',
+                'radlexTagIdsLabel',
+                'scope',
+                'parentLabelId',
             ]
         else:
             labels = labels[
                 [
-                    "labelGroupId",
-                    "labelGroupName",
-                    "annotationMode",
-                    "color",
-                    "description",
-                    "id",
-                    "name",
-                    "radlexTagIds",
-                    "scope",
+                    'labelGroupId',
+                    'labelGroupName',
+                    'annotationMode',
+                    'color',
+                    'description',
+                    'id',
+                    'name',
+                    'radlexTagIds',
+                    'scope',
                 ]
             ]
             labels.columns = [
-                "labelGroupId",
-                "labelGroupName",
-                "annotationMode",
-                "color",
-                "description",
-                "labelId",
-                "labelName",
-                "radlexTagIdsLabel",
-                "scope",
+                'labelGroupId',
+                'labelGroupName',
+                'annotationMode',
+                'color',
+                'description',
+                'labelId',
+                'labelName',
+                'radlexTagIdsLabel',
+                'scope',
             ]
 
         if len(a) > 0:
-            a = a.merge(labels, on=["labelId"], sort=False)
+            a = a.merge(labels, on=['labelId'], sort=False)
     if len(studies) > 0 and len(a) > 0:
-        a = a.merge(studies, on=["StudyInstanceUID", "dataset"], sort=False)
+        a = a.merge(studies, on=['StudyInstanceUID', 'dataset'], sort=False)
         # Format data
         studies.number = studies.number.astype(int)
         a.number = a.number.astype(int)
         a.loc.createdAt = pd.to_datetime(a.createdAt)
         a.loc.updatedAt = pd.to_datetime(a.updatedAt)
-    return {"annotations": a, "studies": studies, "labels": labels}
+    return {'annotations': a, 'studies': studies, 'labels': labels}
 
 
 @register(
@@ -207,7 +209,6 @@ class MIDRC(Source):
 
     def _annotation(_base):
         json_path = 'MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json'
-        # TODO: do we really need a whole lib to parse one json??? it also generates annoying pandas warning
         return json_to_dataframe(_base / json_path)['annotations']
 
     def _series(i, _base, _joined):
