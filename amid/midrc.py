@@ -25,109 +25,6 @@ from skimage.draw import polygon
 from .internals import checksum, licenses, register
 
 
-# TODO: simplify
-def json_to_dataframe(json_file, datasets=None):
-    if datasets is None:
-        datasets = []
-    with open(json_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-
-    a = pd.DataFrame([])
-    studies = pd.DataFrame([])
-    labels = None
-
-    # Gets annotations for all datasets
-    for d in data['datasets']:
-        if d['id'] in datasets or len(datasets) == 0:
-            study = pd.DataFrame(d['studies'])
-            study['dataset'] = d['name']
-            study['datasetId'] = d['id']
-            studies = pd.concat([studies, study], ignore_index=True, sort=False)
-
-            annots = pd.DataFrame(d['annotations'])
-            annots['dataset'] = d['name']
-            a = pd.concat([a, annots], ignore_index=True, sort=False)
-
-    if len(studies) > 0:
-        studies = studies[['StudyInstanceUID', 'dataset', 'datasetId', 'number']]
-    g = pd.DataFrame(data['labelGroups'])
-    # unpack arrays
-    result = pd.DataFrame([(d, tup.id, tup.name) for tup in g.itertuples() for d in tup.labels])
-    if len(result) > 0:
-        result.columns = ['labels', 'labelGroupId', 'labelGroupName']
-
-        def unpack_dictionary(df, column):
-            ret = None
-            ret = pd.concat([df, pd.DataFrame((d for idx, d in df[column].items()))], axis=1, sort=False)
-            del ret[column]
-            return ret
-
-        labels = unpack_dictionary(result, 'labels')
-        if 'parentId' in labels.columns:
-            labels = labels[
-                [
-                    'labelGroupId',
-                    'labelGroupName',
-                    'annotationMode',
-                    'color',
-                    'description',
-                    'id',
-                    'name',
-                    'radlexTagIds',
-                    'scope',
-                    'parentId',
-                ]
-            ]
-            labels.columns = [
-                'labelGroupId',
-                'labelGroupName',
-                'annotationMode',
-                'color',
-                'description',
-                'labelId',
-                'labelName',
-                'radlexTagIdsLabel',
-                'scope',
-                'parentLabelId',
-            ]
-        else:
-            labels = labels[
-                [
-                    'labelGroupId',
-                    'labelGroupName',
-                    'annotationMode',
-                    'color',
-                    'description',
-                    'id',
-                    'name',
-                    'radlexTagIds',
-                    'scope',
-                ]
-            ]
-            labels.columns = [
-                'labelGroupId',
-                'labelGroupName',
-                'annotationMode',
-                'color',
-                'description',
-                'labelId',
-                'labelName',
-                'radlexTagIdsLabel',
-                'scope',
-            ]
-
-        if len(a) > 0:
-            a = a.merge(labels, on=['labelId'], sort=False)
-    if len(studies) > 0 and len(a) > 0:
-        a = a.merge(studies, on=['StudyInstanceUID', 'dataset'], sort=False)
-        # Format data
-        studies.number = studies.number.astype(int)
-        a.number = a.number.astype(int)
-        a.loc.createdAt = pd.to_datetime(a.createdAt)
-        a.loc.updatedAt = pd.to_datetime(a.updatedAt)
-    return {'annotations': a, 'studies': studies, 'labels': labels}
-
-
 @register(
     body_region='Thorax',
     license=licenses.CC_BYNC_40,
@@ -281,3 +178,106 @@ class MIDRC(Source):
             ys, xs = np.array(row['data']['vertices']).T
             mask[(pathology_index, *polygon(ys, xs, shape[:2]), slice_index)] = True
         return mask
+
+
+# TODO: simplify
+def json_to_dataframe(json_file, datasets=None):
+    if datasets is None:
+        datasets = []
+    with open(json_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    a = pd.DataFrame([])
+    studies = pd.DataFrame([])
+    labels = None
+
+    # Gets annotations for all datasets
+    for d in data['datasets']:
+        if d['id'] in datasets or len(datasets) == 0:
+            study = pd.DataFrame(d['studies'])
+            study['dataset'] = d['name']
+            study['datasetId'] = d['id']
+            studies = pd.concat([studies, study], ignore_index=True, sort=False)
+
+            annots = pd.DataFrame(d['annotations'])
+            annots['dataset'] = d['name']
+            a = pd.concat([a, annots], ignore_index=True, sort=False)
+
+    if len(studies) > 0:
+        studies = studies[['StudyInstanceUID', 'dataset', 'datasetId', 'number']]
+    g = pd.DataFrame(data['labelGroups'])
+    # unpack arrays
+    result = pd.DataFrame([(d, tup.id, tup.name) for tup in g.itertuples() for d in tup.labels])
+    if len(result) > 0:
+        result.columns = ['labels', 'labelGroupId', 'labelGroupName']
+
+        def unpack_dictionary(df, column):
+            ret = None
+            ret = pd.concat([df, pd.DataFrame((d for idx, d in df[column].items()))], axis=1, sort=False)
+            del ret[column]
+            return ret
+
+        labels = unpack_dictionary(result, 'labels')
+        if 'parentId' in labels.columns:
+            labels = labels[
+                [
+                    'labelGroupId',
+                    'labelGroupName',
+                    'annotationMode',
+                    'color',
+                    'description',
+                    'id',
+                    'name',
+                    'radlexTagIds',
+                    'scope',
+                    'parentId',
+                ]
+            ]
+            labels.columns = [
+                'labelGroupId',
+                'labelGroupName',
+                'annotationMode',
+                'color',
+                'description',
+                'labelId',
+                'labelName',
+                'radlexTagIdsLabel',
+                'scope',
+                'parentLabelId',
+            ]
+        else:
+            labels = labels[
+                [
+                    'labelGroupId',
+                    'labelGroupName',
+                    'annotationMode',
+                    'color',
+                    'description',
+                    'id',
+                    'name',
+                    'radlexTagIds',
+                    'scope',
+                ]
+            ]
+            labels.columns = [
+                'labelGroupId',
+                'labelGroupName',
+                'annotationMode',
+                'color',
+                'description',
+                'labelId',
+                'labelName',
+                'radlexTagIdsLabel',
+                'scope',
+            ]
+
+        if len(a) > 0:
+            a = a.merge(labels, on=['labelId'], sort=False)
+    if len(studies) > 0 and len(a) > 0:
+        a = a.merge(studies, on=['StudyInstanceUID', 'dataset'], sort=False)
+        # Format data
+        studies.number = studies.number.astype(int)
+        a.number = a.number.astype(int)
+        a.loc.createdAt = pd.to_datetime(a.createdAt)
+        a.loc.updatedAt = pd.to_datetime(a.updatedAt)
+    return {'annotations': a, 'studies': studies, 'labels': labels}
