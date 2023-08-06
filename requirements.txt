@@ -10,7 +10,6 @@ pandas
 pylidc
 pyyaml
 requests
-mdai
 joblib
 deli<1.0.0
 typer<1.0.0
