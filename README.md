@@ -34,7 +34,7 @@ print(entry.split, entry.patient)
 
 | Name                                                                                                                               |   Entries | Body region                         | Modality                                          |
 |:-----------------------------------------------------------------------------------------------------------------------------------|----------:|:------------------------------------|:--------------------------------------------------|
-| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.amos.dataset.AMOS">AMOS</a>                                     |       360 | Abdomen                             | CT, MRI                                           |
+| <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.amos.dataset.AMOS">AMOS</a>                                     |       600 | Abdomen                             | CT, MRI                                           |
 | <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.bimcv.BIMCVCovid19">BIMCVCovid19</a>                            |     16335 | Chest                               | CT                                                |
 | <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.brats2021.BraTS2021">BraTS2021</a>                              |      5880 | Head                                | MRI T1, MRI T1Gd, MRI T2, MRI T2-FLAIR            |
 | <a href="https://neuro-ml.github.io/amid/latest/datasets-api/#amid.cc359.dataset.CC359">CC359</a>                                  |       359 | Head                                | MRI T1                                            |
