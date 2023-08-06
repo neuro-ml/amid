@@ -163,7 +163,7 @@ class LIDC(Source):
 
     def sex(_series):
         return get_common_tag(_series, 'PatientSex', default=None)
-    
+
     def age(_series):
         return get_common_tag(_series, 'PatientAge', default=None)
 

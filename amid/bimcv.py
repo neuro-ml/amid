@@ -303,7 +303,7 @@ class BIMCVCovid19(Source):
 
     def _meta(key, _series2metainfo):
         return _series2metainfo[key]
-    
+
     @classmethod
     def normalizer(cls):
         return SpacingFromAffine()
