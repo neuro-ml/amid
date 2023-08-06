@@ -10,7 +10,7 @@ import nibabel as nb
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Apply, Output, Source, Transform, meta
+from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
