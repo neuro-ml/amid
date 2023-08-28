@@ -64,7 +64,17 @@ class Task03Liver(Source):
         if "train" in i: return "train"
         else: return "test"
 
+    def image_modality(i) -> str:
+        None
 
+    def task(i) -> str:
+        None
+
+    def segmentation_labels(i) -> dict:
+        """Returns segmentation labels for the task
+        """
+        return 
+    
     def _file(i, _root: Silent):
         num_id = i.split('_')[-1]
         if 'train' in i:
@@ -101,8 +111,6 @@ def open_nii_gz_file(file):
         with gzip.GzipFile(fileobj=opened) as nii:
             nii = nb.FileHolder(fileobj=nii)
             yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-
-
 
 
 class SpacingFromAffine(Transform):
