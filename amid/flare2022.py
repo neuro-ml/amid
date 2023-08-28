@@ -5,7 +5,7 @@ from zipfile import ZipFile
 
 import nibabel
 import numpy as np
-from connectome import Source, meta
+from connectome import Transform, Source, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, register
@@ -141,3 +141,14 @@ class FLARE2022(Source):
                             nii = nibabel.FileHolder(fileobj=nii)
                             mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                             return np.asarray(mask.dataobj)
+                        
+    @classmethod
+    def normalizer(cls):
+        return SpacingFromAffine()
+    
+                        
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nibabel.affines.voxel_sizes(affine)
