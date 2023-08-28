@@ -1,3 +1,12 @@
+# TODO:
+# 1. all todos
+# 2. check every field for every `id`
+# for i in ds.ids:
+#     for field in [dir(ds)]:
+#         ds.get(field, i)
+# 3. run ./lint.sh
+
+
 import contextlib
 import tarfile
 from pathlib import Path
@@ -42,21 +51,24 @@ class Task03Liver(Source):
 
     _root: str = None
 
+#TODO adopt for all datasets in MSD
     @meta
     def ids(_root: Silent):
         result = set()
+        tasks = ("Task03_Liver.tar", ...)
+        for task in tasks:
 
-        with tarfile.open(Path(_root) / 'Task03_Liver.tar') as tf:
-            for tarinfo in tf.getmembers():
-                if tarinfo.isdir():
-                    continue
-                fold = 'train_'
-                if 'Ts' in tarinfo.path:
-                    fold = 'test_'
-                file_stem = Path(tarinfo.path).stem
-                if file_stem.startswith('.') or not file_stem.endswith('.nii'):
-                    continue
-                result.add(fold + file_stem.split('.nii')[0])
+            with tarfile.open(Path(_root) / task) as tf:
+                for tarinfo in tf.getmembers():
+                    if tarinfo.isdir():
+                        continue
+                    fold = 'train_'
+                    if 'Ts' in tarinfo.path:
+                        fold = 'test_'
+                    file_stem = Path(tarinfo.path).stem
+                    if file_stem.startswith('.') or not file_stem.endswith('.nii'):
+                        continue
+                    result.add(fold + file_stem.split('.nii')[0])
 
         return tuple(sorted(result))
     
@@ -64,21 +76,31 @@ class Task03Liver(Source):
         if "train" in i: return "train"
         else: return "test"
 
+#TODO from json
     def image_modality(i) -> str:
         None
 
+# TODO
     def task(i) -> str:
-        None
+        task_dict = {'liver':"Task03_Liver",
+         'spleen':....}
+        
+        for key,value in task_dict.items():
+            if key in i:
+                return  value
+            
 
+#TODO from json
     def segmentation_labels(i) -> dict:
         """Returns segmentation labels for the task
         """
         return 
-    
-    def _file(i, _root: Silent):
+
+#TODO use self.task instead of hardcoded  'Task03_Liver'
+    def _file(i, task, _root: Silent):
         num_id = i.split('_')[-1]
         if 'train' in i:
-            return Path(_root) / 'Task03_Liver'/ 'imagesTr'/ f'liver_{num_id}.nii.gz'
+            return Path(_root) / task / 'imagesTr'/ f'liver_{num_id}.nii.gz'
         else:
             return Path(_root) / 'Task03_Liver'/ 'imagesTs'/ f'liver_{num_id}.nii.gz'
 
