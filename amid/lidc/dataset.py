@@ -161,6 +161,12 @@ class LIDC(Source):
     def orientation_matrix(_series):
         return get_orientation_matrix(_series)
 
+    def sex(_series):
+        return get_common_tag(_series, 'PatientSex', default=None)
+
+    def age(_series):
+        return get_common_tag(_series, 'PatientAge', default=None)
+
     def conv_kernel(_series):
         return get_common_tag(_series, 'ConvolutionKernel', default=None)
 

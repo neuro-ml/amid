@@ -6,7 +6,7 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Transform, Output, Source, meta
+from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import checksum, licenses, register
@@ -154,7 +154,7 @@ class CC359(Source):
             if file.name.startswith(i):
                 with open_nii_gz_file(file) as nii_image:
                     return np.uint8(nii_image.get_fdata())
-                
+
     @classmethod
     def normalizer(cls):
         return Transform(__inherit__=True, gender=lambda sex: sex)
