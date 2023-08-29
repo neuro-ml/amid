@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 
 from amid.internals import get_repo
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument('root')
 root = parser.parse_args().root
