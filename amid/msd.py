@@ -44,7 +44,7 @@ class MSD(Source):
     _root: str = None
     _task_to_name: dict = {
         'Task01_BrainTumour': 'BRATS',
-        'Task02_Heart': 'heart',
+        'Task02_Heart': 'la',
         'Task03_Liver': 'liver',
         'Task04_Hippocampus': 'hippocampus',
         'Task05_Prostate': 'prostate',
