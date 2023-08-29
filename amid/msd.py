@@ -56,7 +56,7 @@ class MSD(Source):
     }
 
     @meta
-    def ids(_root: Silent) -> tuple:  # _tasks):
+    def ids(_root: Silent) -> tuple:
         result = set()
 
         tar_files = [os.path.join(_root, f) for f in os.listdir(_root) if f.endswith('.tar')]
