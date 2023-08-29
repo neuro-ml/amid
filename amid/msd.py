@@ -15,11 +15,11 @@ from .internals import checksum, licenses, register
 
 @register(
     body_region=('Chest', 'Abdominal', 'Head'),
-    license=licenses.CC_BYSA_40,
+    license=licenses.CC_BYSA_40, # check all datasets
     link='http://medicaldecathlon.com/',
     modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
     raw_data_size='97.8G',
-    task='Medical Segmentation Decathlon',
+    task='Image segmentation',
 )
 @checksum('msd')
 class MSD(Source):
