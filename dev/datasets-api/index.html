@@ -454,6 +454,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.msd.MSD" class="md-nav__link">
+    MSD
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.medseg9.Medseg9" class="md-nav__link">
     Medseg9
   </a>
@@ -752,6 +759,13 @@
         <li class="md-nav__item">
   <a href="#amid.mood.MOOD" class="md-nav__link">
     MOOD
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.msd.MSD" class="md-nav__link">
+    MSD
   </a>
   
 </li>
@@ -5603,6 +5617,265 @@ If not provided, the cache is assumed to be already populated.</p>
   
       <p>Returns voxel-level OOD scores for toy examples and None otherwise.
 0 indicates no abnormality and 1 indicates abnormal input.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h3 id="amid.msd.MSD" class="doc doc-heading">
+          <code>amid.msd.MSD</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>MSD is a Medical Segmentaton Decathlon Challenge with 10 tasks.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>path to the folder containing the raw downloaded archives.
+If not provided, the cache is assumed to be already populated.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the data version. Only has effect if the library was installed from a cloned git repository.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.msd.MSD--notes">Notes</h5>
+<p>Data can be downloaded here:http://medicaldecathlon.com/
+or here: https://msd-for-monai.s3-us-west-2.amazonaws.com/
+or here: https://drive.google.com/drive/folders/1HqEgzS8BV2c7xYNrZdEAnrHk7osJJ--2/
+Then, the folder with raw downloaded data should contain tar archive with data and masks
+(<code>Task03_Liver.tar</code>).</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.ids" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">ids</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">tuple</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.train_test" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">train_test</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.task" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">task</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.image" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.mask" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.affine" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.image_modality" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">image_modality</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.segmentation_labels" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">segmentation_labels</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Returns segmentation labels for the task</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.msd.MSD.normalizer" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">normalizer</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
 
   </div>
 
