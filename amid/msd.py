@@ -1,13 +1,13 @@
 import contextlib
+import gzip
+import json
+import os
 import tarfile
 from pathlib import Path
-import gzip
-import os
-import json
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, meta, Transform
+from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
@@ -21,7 +21,6 @@ from .internals import checksum, licenses, register
     raw_data_size='97.8G',
     task='Medical Segmentation Decathlon',
 )
-
 @checksum('msd')
 class MSD(Source):
     """
@@ -43,20 +42,20 @@ class MSD(Source):
 
     _root: str = None
     _task_to_name: dict = {
-        "Task01_BrainTumour": "BRATS",
-        "Task02_Heart": "heart",
-        "Task03_Liver": "liver",
-        "Task04_Hippocampus": "hippocampus",
-        "Task05_Prostate": "prostate",
-        "Task06_Lung": "lung",
-        "Task07_Pancreas": "pancreas",
-        "Task08_HepaticVessel": "hepaticvessel",
-        "Task09_Spleen": "spleen",
-        "Task10_Colon": "colon"
-        }
+        'Task01_BrainTumour': 'BRATS',
+        'Task02_Heart': 'heart',
+        'Task03_Liver': 'liver',
+        'Task04_Hippocampus': 'hippocampus',
+        'Task05_Prostate': 'prostate',
+        'Task06_Lung': 'lung',
+        'Task07_Pancreas': 'pancreas',
+        'Task08_HepaticVessel': 'hepaticvessel',
+        'Task09_Spleen': 'spleen',
+        'Task10_Colon': 'colon',
+    }
 
     @meta
-    def ids(_root: Silent) -> tuple: # _tasks):
+    def ids(_root: Silent) -> tuple:  # _tasks):
         result = set()
 
         tar_files = [os.path.join(_root, f) for f in os.listdir(_root) if f.endswith('.tar')]
@@ -82,12 +81,12 @@ class MSD(Source):
         return fold
 
     def task(i) -> str:
-        return "_".join(i.split("_")[:2])
-    
+        return '_'.join(i.split('_')[:2])
+
     def _file(i, task: Output, _root: Silent, _task_to_name):
         name = _task_to_name[task]
         num_id = i.split('_')[-1]
-        tar_path =  Path(_root) / f'{task}.tar'
+        tar_path = Path(_root) / f'{task}.tar'
         file_path = Path(task) / ('imagesTr' if 'train' in i else 'imagesTs') / f'{name}_{num_id}.nii.gz'
         return tar_path, str(file_path)
 
@@ -96,7 +95,7 @@ class MSD(Source):
         with open_nii_gz_from_tar(tar_path, file_path) as nii_image:
             # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return np.int16(nii_image.get_fdata())
-        
+
     def mask(_file):
         tar_path, file_path = _file
         if 'imagesTs' not in file_path:
@@ -111,23 +110,24 @@ class MSD(Source):
             return nii_image.affine
 
     def image_modality(i, _root: Silent) -> str:
-        task = "_".join(i.split("_")[:2])
-        with tarfile.open(Path(_root) / f"{task}.tar") as tf:
-            member = tf.getmember(f"{task}/dataset.json")
+        task = '_'.join(i.split('_')[:2])
+        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+            member = tf.getmember(f'{task}/dataset.json')
             file = tf.extractfile(member)
-            return json.loads(file.read())["modality"]
+            return json.loads(file.read())['modality']
 
     def segmentation_labels(i, _root: Silent) -> dict:
         """Returns segmentation labels for the task"""
-        task = "_".join(i.split("_")[:2])
-        with tarfile.open(Path(_root) / f"{task}.tar") as tf:
-            member = tf.getmember(f"{task}/dataset.json")
+        task = '_'.join(i.split('_')[:2])
+        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+            member = tf.getmember(f'{task}/dataset.json')
             file = tf.extractfile(member)
-            return json.loads(file.read())["labels"]
+            return json.loads(file.read())['labels']
 
     @classmethod
     def normalizer(cls):
         return SpacingFromAffine()
+
 
 @contextlib.contextmanager
 def open_nii_gz_from_tar(tar_path, nii_gz_path):
@@ -145,6 +145,7 @@ def open_nii_gz_from_tar(tar_path, nii_gz_path):
             with gzip.GzipFile(fileobj=extracted) as nii_gz:
                 nii = nb.FileHolder(fileobj=nii_gz)
                 yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
