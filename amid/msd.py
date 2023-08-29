@@ -1,12 +1,3 @@
-# TODO:
-# 1. all todos
-# 2. check every field for every `id`
-# for i in ds.ids:
-#     for field in [dir(ds)]:
-#         ds.get(field, i)
-# 3. run ./lint.sh
-
-
 import contextlib
 import tarfile
 from pathlib import Path
@@ -25,9 +16,8 @@ from .internals import checksum, licenses, register
 @register(
     body_region=('Chest', 'Abdominal', 'Head'),
     license=licenses.CC_BYSA_40,
-    # There is a link to AWS, I don't know which is better
     link='https://drive.google.com/drive/folders/1HqEgzS8BV2c7xYNrZdEAnrHk7osJJ--2',
-    modality=('CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
+    modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
     raw_data_size='97.8G',
     task='Medical Segmentation Decathlon',
 )
@@ -52,17 +42,18 @@ class MSD(Source):
     """
 
     _root: str = None
-    _task_to_name: dict = {"Task01_BrainTumour": "BRATS",
-                            "Task02_Heart": "heart",
-                            "Task03_Liver": "liver",
-                            "Task04_Hippocampus": "hippocampus",
-                            "Task05_Prostate": "prostate",
-                            "Task06_Lung": "lung",
-                            "Task07_Pancreas": "pancreas",
-                            "Task08_HepaticVessel": "hepaticvessel",
-                            "Task09_Spleen": "spleen",
-                            "Task10_Colon": "colon",
-                            }
+    _task_to_name: dict = {
+        "Task01_BrainTumour": "BRATS",
+        "Task02_Heart": "heart",
+        "Task03_Liver": "liver",
+        "Task04_Hippocampus": "hippocampus",
+        "Task05_Prostate": "prostate",
+        "Task06_Lung": "lung",
+        "Task07_Pancreas": "pancreas",
+        "Task08_HepaticVessel": "hepaticvessel",
+        "Task09_Spleen": "spleen",
+        "Task10_Colon": "colon"
+        }
 
     @meta
     def ids(_root: Silent) -> tuple: # _tasks):
@@ -72,10 +63,6 @@ class MSD(Source):
         for tar_file in tar_files:
             task = str(tar_file).split('/')[-1].split('.')[0]
             with tarfile.open(tar_file, 'r') as tf:
-
-        # for task in _tasks.keys():
-        #     with tarfile.open(Path(_root) / f"{task}.tar") as tf:
-
                 for tarinfo in tf.getmembers():
                     if tarinfo.isdir():
                         continue
@@ -90,38 +77,41 @@ class MSD(Source):
 
         return tuple(sorted(result, key=lambda x: (x.split('_')[0], int(x.split('_')[-1]))))
 
-
     def train_test(i) -> str:
-        if "train" in i: return "train"
-        else: return "test"
+        if "train" in i: 
+            fold = "train"
+        else: 
+            fold = "test"
+        return fold
 
     def task(i) -> str:
         return "_".join(i.split("_")[:2])
     
-    # def _file(i, task, _root: Silent, _task_to_name): swears at it
-    def _file(i, _root: Silent, _task_to_name):
-        task = "_".join(i.split("_")[:2])
+    def _file(i, task: Output, _root: Silent, _task_to_name):
         name = _task_to_name[task]
         num_id = i.split('_')[-1]
-        return Path(_root) / task / ('imagesTr' if 'train' in i else 'imagesTs') / f'{name}_{num_id}.nii.gz'
+        tar_path =  Path(_root) / f'{task}.tar'
+        file_path = Path(task) / ('imagesTr' if 'train' in i else 'imagesTs') / f'{name}_{num_id}.nii.gz'
+        return tar_path, str(file_path)
 
     def image(_file):
-        with open_nii_gz_file(_file) as nii_image:
+        tar_path, file_path = _file
+        with open_nii_gz_from_tar(tar_path, file_path) as nii_image:
             # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return np.int16(nii_image.get_fdata())
         
     def mask(_file):
-        if 'Ts' not in str(_file.parent):
-            with open_nii_gz_file(Path(str(_file).replace('images', 'labels'))) as nii_image:
+        tar_path, file_path = _file
+        if 'imagesTs' not in file_path:
+            with open_nii_gz_from_tar(tar_path, file_path.replace('images', 'labels')) as nii_image:
                 return np.uint8(nii_image.get_fdata())
-        else:
-            return None
+        return
 
     def affine(_file):
         """The 4x4 matrix that gives the image's spatial orientation."""
-        with open_nii_gz_file(_file) as nii_image:
+        tar_path, file_path = _file
+        with open_nii_gz_from_tar(tar_path, file_path) as nii_image:
             return nii_image.affine
-        
 
     def image_modality(i, _root: Silent) -> str:
         task = "_".join(i.split("_")[:2])
@@ -142,14 +132,22 @@ class MSD(Source):
     def normalizer(cls):
         return SpacingFromAffine()
 
-
 @contextlib.contextmanager
-def open_nii_gz_file(file):
-    with file.open('rb') as opened:
-        with gzip.GzipFile(fileobj=opened) as nii:
-            nii = nb.FileHolder(fileobj=nii)
-            yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
+def open_nii_gz_from_tar(tar_path, nii_gz_path):
+    """Opens a .nii.gz file from inside a .tar archive.
 
+    Parameters:
+    - tar_path: path to the .tar archive.
+    - nii_gz_path: path to the .nii.gz file inside the .tar archive.
+
+    Yields:
+    - nibabel.Nifti1Image object.
+    """
+    with tarfile.open(tar_path, 'r') as tar:
+        with tar.extractfile(nii_gz_path) as extracted:
+            with gzip.GzipFile(fileobj=extracted) as nii_gz:
+                nii = nb.FileHolder(fileobj=nii_gz)
+                yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
