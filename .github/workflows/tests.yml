@@ -53,6 +53,8 @@ jobs:
         if: "! github.event.pull_request.head.repo.fork "
         env:
           CACHE_HOST: ${{ secrets.CACHE_HOST }}
+          CACHE_HOST_KEY: ${{ secrets.CACHE_HOST_KEY }}
+          CACHE_HOST_USER: ${{ secrets.CACHE_HOST_USER }}
         run: |
           mkdir -p ~/.config/amid ~/.ssh
           cat >~/.config/amid/.bev.yml <<EOL
@@ -75,7 +77,7 @@ jobs:
             User $CACHE_HOST_USER
             IdentityFile ~/.ssh/amid
           EOL
-          echo $CACHE_HOST_KEY ~/.ssh/amid
+          echo $CACHE_HOST_KEY > ~/.ssh/amid
 
       - name: Check readme generation
         if: "! github.event.pull_request.head.repo.fork "
