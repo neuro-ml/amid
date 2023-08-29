@@ -51,6 +51,8 @@ jobs:
             IdentityFile ~/.ssh/amid
           EOL
           echo $CACHE_HOST_KEY > ~/.ssh/amid
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/amid
 
       # release
       - id: get_version
