@@ -78,10 +78,7 @@ class MSD(Source):
         return tuple(sorted(result, key=lambda x: (x.split('_')[0], int(x.split('_')[-1]))))
 
     def train_test(i) -> str:
-        if "train" in i: 
-            fold = "train"
-        else: 
-            fold = "test"
+        fold = 'train' if 'train' in i else 'test'
         return fold
 
     def task(i) -> str:
