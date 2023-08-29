@@ -16,7 +16,7 @@ from .internals import checksum, licenses, register
 @register(
     body_region=('Chest', 'Abdominal', 'Head'),
     license=licenses.CC_BYSA_40,
-    link='https://drive.google.com/drive/folders/1HqEgzS8BV2c7xYNrZdEAnrHk7osJJ--2',
+    link='http://medicaldecathlon.com/',
     modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
     raw_data_size='97.8G',
     task='Medical Segmentation Decathlon',
@@ -34,7 +34,8 @@ class MSD(Source):
         the data version. Only has effect if the library was installed from a cloned git repository.
     Notes
     -----
-    Data can be downloaded here: https://msd-for-monai.s3-us-west-2.amazonaws.com/
+    Data can be downloaded here:http://medicaldecathlon.com/
+    or here: https://msd-for-monai.s3-us-west-2.amazonaws.com/
     or here: https://drive.google.com/drive/folders/1HqEgzS8BV2c7xYNrZdEAnrHk7osJJ--2/
     Then, the folder with raw downloaded data should contain tar archive with data and masks
     (`Task03_Liver.tar`).
