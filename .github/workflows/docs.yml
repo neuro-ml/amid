@@ -26,7 +26,7 @@ jobs:
         env:
           CACHE_HOST: ${{ secrets.CACHE_HOST }}
         run: |
-          mkdir -p ~/.config/amid
+          mkdir -p ~/.config/amid ~/.ssh
           cat >~/.config/amid/.bev.yml <<EOL
           local:
             storage: '/home/runner/work/amid/amid/storage'
@@ -35,12 +35,19 @@ jobs:
           remote:
             storage:
               remote: 
-                nginx: $CACHE_HOST
+                scp: amid:bucket
           
           meta:
             fallback: local
           EOL
           amid init
+          cat >~/.ssh/config <<EOL
+          Host amid
+            HostName $CACHE_HOST
+            User $CACHE_HOST_USER
+            IdentityFile ~/.ssh/amid
+          EOL
+          echo $CACHE_HOST_KEY ~/.ssh/amid
 
       # release
       - id: get_version
