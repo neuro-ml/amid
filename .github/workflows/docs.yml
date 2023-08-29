@@ -38,7 +38,7 @@ jobs:
           remote:
             storage:
               remote: 
-                amid.internals.locations.SFTPConfig: amid:bucket
+                amid.internals.locations.SFTPConfig: 'amid:bucket'
           
           meta:
             fallback: local
@@ -50,7 +50,7 @@ jobs:
             User $CACHE_HOST_USER
             IdentityFile ~/.ssh/amid
           EOL
-          echo $CACHE_HOST_KEY > ~/.ssh/amid
+          echo "$CACHE_HOST_KEY" > ~/.ssh/amid
           chmod 700 ~/.ssh
           chmod 600 ~/.ssh/amid
 
