@@ -12,6 +12,18 @@ from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
 
+TASK_TO_NAME: dict = {
+    'Task01_BrainTumour': 'BRATS',
+    'Task02_Heart': 'la',
+    'Task03_Liver': 'liver',
+    'Task04_Hippocampus': 'hippocampus',
+    'Task05_Prostate': 'prostate',
+    'Task06_Lung': 'lung',
+    'Task07_Pancreas': 'pancreas',
+    'Task08_HepaticVessel': 'hepaticvessel',
+    'Task09_Spleen': 'spleen',
+    'Task10_Colon': 'colon',
+}
 
 @register(
     body_region=('Chest', 'Abdominal', 'Head'),
@@ -42,18 +54,6 @@ class MSD(Source):
     """
 
     _root: str = None
-    _task_to_name: dict = {
-        'Task01_BrainTumour': 'BRATS',
-        'Task02_Heart': 'la',
-        'Task03_Liver': 'liver',
-        'Task04_Hippocampus': 'hippocampus',
-        'Task05_Prostate': 'prostate',
-        'Task06_Lung': 'lung',
-        'Task07_Pancreas': 'pancreas',
-        'Task08_HepaticVessel': 'hepaticvessel',
-        'Task09_Spleen': 'spleen',
-        'Task10_Colon': 'colon',
-    }
 
     @meta
     def ids(_root: Silent) -> tuple:
@@ -84,54 +84,53 @@ class MSD(Source):
     def task(i) -> str:
         return '_'.join(i.split('_')[:2])
 
-    def _file(i, task: Output, _root: Silent, _task_to_name):
-        name = _task_to_name[task]
+    def _relative(i, task: Output):
+        name = TASK_TO_NAME[task]
         num_id = i.split('_')[-1]
-        tar_path = Path(_root) / f'{task}.tar'
         file_path = Path(task) / ('imagesTr' if 'train' in i else 'imagesTs') / f'{name}_{num_id}.nii.gz'
-        return tar_path, str(file_path)
+        return str(file_path)
 
-    def image(_file):
-        tar_path, file_path = _file
-        with open_nii_gz_from_tar(tar_path, file_path) as nii_image:
-            # most CT/MRI scans are integer-valued, this will help us improve compression rates
-            return np.int16(nii_image.get_fdata())
+    def image_new(_relative, _root: Silent):
+        with unpack(_relative, _root) as file:
+            return file
+        # with open_nii_gz_from_tar() as nii_image:
+        #     # most CT/MRI scans are integer-valued, this will help us improve compression rates
+        #     return np.int16(nii_image.get_fdata())
 
-    def mask(_file):
-        tar_path, file_path = _file
-        if 'imagesTs' not in file_path:
-            with open_nii_gz_from_tar(tar_path, file_path.replace('images', 'labels')) as nii_image:
-                return np.uint8(nii_image.get_fdata())
-        return
+    # def mask(_file):
+    #     tar_path, file_path = _file
+    #     if 'imagesTs' not in file_path:
+    #         with open_nii_gz_from_tar(tar_path, file_path.replace('images', 'labels')) as nii_image:
+    #             return np.uint8(nii_image.get_fdata())
 
-    def affine(_file):
-        """The 4x4 matrix that gives the image's spatial orientation."""
-        tar_path, file_path = _file
-        with open_nii_gz_from_tar(tar_path, file_path) as nii_image:
-            return nii_image.affine
+    # def affine(_file):
+    #     """The 4x4 matrix that gives the image's spatial orientation."""
+    #     tar_path, file_path = _file
+    #     with open_nii_gz_from_tar(tar_path, file_path) as nii_image:
+    #         return nii_image.affine
 
-    def image_modality(i, _root: Silent) -> str:
-        task = '_'.join(i.split('_')[:2])
-        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
-            member = tf.getmember(f'{task}/dataset.json')
-            file = tf.extractfile(member)
-            return json.loads(file.read())['modality']
+    # def image_modality(i, _root: Silent) -> str:
+    #     task = '_'.join(i.split('_')[:2])
+    #     with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+    #         member = tf.getmember(f'{task}/dataset.json')
+    #         file = tf.extractfile(member)
+    #         return json.loads(file.read())['modality']
 
-    def segmentation_labels(i, _root: Silent) -> dict:
-        """Returns segmentation labels for the task"""
-        task = '_'.join(i.split('_')[:2])
-        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
-            member = tf.getmember(f'{task}/dataset.json')
-            file = tf.extractfile(member)
-            return json.loads(file.read())['labels']
+    # def segmentation_labels(i, _root: Silent) -> dict:
+    #     """Returns segmentation labels for the task"""
+    #     task = '_'.join(i.split('_')[:2])
+    #     with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+    #         member = tf.getmember(f'{task}/dataset.json')
+    #         file = tf.extractfile(member)
+    #         return json.loads(file.read())['labels']
 
-    @classmethod
-    def normalizer(cls):
-        return SpacingFromAffine()
+    # @classmethod
+    # def normalizer(cls):
+    #     return SpacingFromAffine()
 
 
 @contextlib.contextmanager
-def open_nii_gz_from_tar(tar_path, nii_gz_path):
+def open_nii_gz(tar_path, nii_gz_path):
     """Opens a .nii.gz file from inside a .tar archive.
 
     Parameters:
@@ -153,3 +152,22 @@ class SpacingFromAffine(Transform):
 
     def spacing(affine):
         return nb.affines.voxel_sizes(affine)
+
+
+@contextlib.contextmanager
+def unpack(_relative: str, _root: Silent):
+    unpacked = Path(_root) / _relative
+
+    print(unpacked)
+
+    if unpacked.exists():
+        print("00000000000000000000000")
+        with unpacked.open('rb') as opened:
+            yield opened
+    else:
+        task=_relative.split('/')[0]
+        tar_path = Path(_root) / f'{task}.tar'
+        with tarfile.open(tar_path, 'r') as tar:
+            print("11111111111111111111111")
+            with tar.extractfile(_relative) as extracted:
+                yield extracted
