@@ -57,25 +57,14 @@ class MSD(Source):
 
     @meta
     def ids(_root: Silent) -> tuple:
-        result = set()
-
-        tar_files = [os.path.join(_root, f) for f in os.listdir(_root) if f.endswith('.tar')]
-        for tar_file in tar_files:
-            task = str(tar_file).split('/')[-1].split('.')[0]
-            with tarfile.open(tar_file, 'r') as tf:
-                for tarinfo in tf.getmembers():
-                    if tarinfo.isdir():
-                        continue
-                    fold = '_train_'
-                    if 'Ts' in tarinfo.path:
-                        fold = '_test_'
-                    file_stem = Path(tarinfo.path).stem
-                    if file_stem.startswith('.') or not file_stem.endswith('.nii'):
-                        continue
-
-                    result.add(task + fold + file_stem.split('_')[1].split('.')[0])
-
-        return tuple(sorted(result, key=lambda x: (x.split('_')[0], int(x.split('_')[-1]))))
+        ids_all = []
+        for folder in Path(_root).glob('*'):
+            if folder.name.endswith('.tar'):
+                ids_folder = ids_from_tar(folder)
+            else:
+                ids_folder = ids_from_folder(folder)
+            ids_all.extend(ids_folder)
+        return tuple(ids_all)
 
     def train_test(i) -> str:
         fold = 'train' if 'train' in i else 'test'
@@ -171,3 +160,28 @@ def unpack(_relative: str, _root: Silent):
             print("11111111111111111111111")
             with tar.extractfile(_relative) as extracted:
                 yield extracted
+
+def get_id(filename: Path):
+    fold ='test' if 'imagesTs' in str(filename) else 'train'
+    name = filename.name.removesuffix(".nii.gz")
+    return '_'.join([fold, name])
+
+def ids_from_tar(tar_folder: Path):
+    ids = []
+    with tarfile.open(tar_folder, 'r') as tf:
+        for file in tf.getmembers():
+            filename = Path(file.name)
+            if (not filename.name.startswith('._') and
+                filename.suffix == '.gz' and
+                'images' in filename.parent.name):
+                ids.append(get_id(filename))
+    return sorted(ids)
+    
+def ids_from_folder(folder: Path):
+    ids = []
+    for filename in folder.rglob('*.nii.gz'):
+        if (not filename.name.startswith('._') and
+            filename.suffix == '.gz' and
+            'images' in filename.parent.name):
+                ids.append(get_id(filename))
+    return sorted(ids)
