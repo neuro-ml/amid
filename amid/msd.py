@@ -25,6 +25,8 @@ TASK_TO_NAME: dict = {
     'Task10_Colon': 'colon',
 }
 
+NAME_TO_TASK = dict(zip(TASK_TO_NAME.values(), TASK_TO_NAME.keys()))
+
 @register(
     body_region=('Chest', 'Abdominal', 'Head'),
     license=licenses.CC_BYSA_40,  # check all datasets
@@ -71,20 +73,21 @@ class MSD(Source):
         return fold
 
     def task(i) -> str:
-        return '_'.join(i.split('_')[:2])
-
+        return NAME_TO_TASK[i.split('_')[1]]
+    
     def _relative(i, task: Output):
-        name = TASK_TO_NAME[task]
-        num_id = i.split('_')[-1]
-        file_path = Path(task) / ('imagesTr' if 'train' in i else 'imagesTs') / f'{name}_{num_id}.nii.gz'
-        return str(file_path)
+        name = i.removeprefix('train_').removeprefix('test_')
+        return Path(task), Path('imagesTr' if 'train' in i else 'imagesTs') / f'{name}.nii.gz' 
 
-    def image_new(_relative, _root: Silent):
-        with unpack(_relative, _root) as file:
-            return file
-        # with open_nii_gz_from_tar() as nii_image:
-        #     # most CT/MRI scans are integer-valued, this will help us improve compression rates
-        #     return np.int16(nii_image.get_fdata())
+    def image(_relative, _root: Silent):
+        with open_nii_gz(Path(_root), _relative) as (file, unpacked):
+            if unpacked:
+                return np.int16(nb.load(file).get_fdata())
+            else:
+                with gzip.GzipFile(fileobj=file) as nii_gz:
+                    nii = nb.FileHolder(fileobj=nii_gz)
+                    return np.int16(nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).get_fdata())
+
 
     # def mask(_file):
     #     tar_path, file_path = _file
@@ -119,22 +122,22 @@ class MSD(Source):
 
 
 @contextlib.contextmanager
-def open_nii_gz(tar_path, nii_gz_path):
+def open_nii_gz(path, nii_gz_path):
     """Opens a .nii.gz file from inside a .tar archive.
 
     Parameters:
-    - tar_path: path to the .tar archive.
+    - path: path to the .tar archive or folder
     - nii_gz_path: path to the .nii.gz file inside the .tar archive.
 
     Yields:
     - nibabel.Nifti1Image object.
     """
-    with tarfile.open(tar_path, 'r') as tar:
-        with tar.extractfile(nii_gz_path) as extracted:
-            with gzip.GzipFile(fileobj=extracted) as nii_gz:
-                nii = nb.FileHolder(fileobj=nii_gz)
-                yield nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-
+    task, relative = nii_gz_path
+    if (path / task / relative).exists():
+        yield path / task / relative, True
+    else:
+        with tarfile.open(path / f"{task}.tar", 'r') as tar:
+            yield tar.extractfile(str(task / relative)), False
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
@@ -143,23 +146,23 @@ class SpacingFromAffine(Transform):
         return nb.affines.voxel_sizes(affine)
 
 
-@contextlib.contextmanager
-def unpack(_relative: str, _root: Silent):
-    unpacked = Path(_root) / _relative
+# @contextlib.contextmanager
+# def unpack(_relative: str, _root: Silent):
+#     unpacked = Path(_root) / _relative
 
-    print(unpacked)
+#     print(unpacked)
 
-    if unpacked.exists():
-        print("00000000000000000000000")
-        with unpacked.open('rb') as opened:
-            yield opened
-    else:
-        task=_relative.split('/')[0]
-        tar_path = Path(_root) / f'{task}.tar'
-        with tarfile.open(tar_path, 'r') as tar:
-            print("11111111111111111111111")
-            with tar.extractfile(_relative) as extracted:
-                yield extracted
+#     if unpacked.exists():
+#         print("00000000000000000000000")
+#         with unpacked.open('rb') as opened:
+#             yield opened
+#     else:
+#         task=_relative.split('/')[0]
+#         tar_path = Path(_root) / f'{task}.tar'
+#         with tarfile.open(tar_path, 'r') as tar:
+#             print("11111111111111111111111")
+#             with tar.extractfile(_relative) as extracted:
+#                 yield extracted
 
 def get_id(filename: Path):
     fold ='test' if 'imagesTs' in str(filename) else 'train'
