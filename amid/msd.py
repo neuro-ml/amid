@@ -78,7 +78,7 @@ class MSD(Source):
     def _relative(i, task: Output):
         name = i.removeprefix('train_').removeprefix('test_')
         return Path(task), Path('imagesTr' if 'train' in i else 'imagesTs') / f'{name}.nii.gz' 
-
+    
     def image(_relative, _root: Silent):
         with open_nii_gz(Path(_root), _relative) as (file, unpacked):
             if unpacked:
@@ -88,38 +88,51 @@ class MSD(Source):
                     nii = nb.FileHolder(fileobj=nii_gz)
                     return np.int16(nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).get_fdata())
 
+    def affine(_relative, _root):
+        """The 4x4 matrix that gives the image's spatial orientation."""
+        with open_nii_gz(Path(_root), _relative) as (file, unpacked):
+            if unpacked:
+                return nb.load(file).affine
+            else:
+                with gzip.GzipFile(fileobj=file) as nii_gz:
+                    nii = nb.FileHolder(fileobj=nii_gz)
+                    return nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).affine
+    
+    def image_modality(i, task: Output, _root: Silent) -> str:
+        if (Path(_root) / task). is_dir():
+            with open(Path(_root) / task / 'dataset.json', 'r') as file:
+                return json.loads(file.read())['modality']
 
-    # def mask(_file):
-    #     tar_path, file_path = _file
-    #     if 'imagesTs' not in file_path:
-    #         with open_nii_gz_from_tar(tar_path, file_path.replace('images', 'labels')) as nii_image:
-    #             return np.uint8(nii_image.get_fdata())
+        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+            member = tf.getmember(f'{task}/dataset.json')
+            file = tf.extractfile(member)
+            return json.loads(file.read())['modality']
 
-    # def affine(_file):
-    #     """The 4x4 matrix that gives the image's spatial orientation."""
-    #     tar_path, file_path = _file
-    #     with open_nii_gz_from_tar(tar_path, file_path) as nii_image:
-    #         return nii_image.affine
+    def segmentation_labels(i, task: Output, _root: Silent) -> dict:
+        """Returns segmentation labels for the task"""
+        if (Path(_root) / task). is_dir():
+            with open(Path(_root) / task / 'dataset.json', 'r') as file:
+                return json.loads(file.read())['labels']
 
-    # def image_modality(i, _root: Silent) -> str:
-    #     task = '_'.join(i.split('_')[:2])
-    #     with tarfile.open(Path(_root) / f'{task}.tar') as tf:
-    #         member = tf.getmember(f'{task}/dataset.json')
-    #         file = tf.extractfile(member)
-    #         return json.loads(file.read())['modality']
+        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+            member = tf.getmember(f'{task}/dataset.json')
+            file = tf.extractfile(member)
+            return json.loads(file.read())['labels']
+        
+    @classmethod
+    def normalizer(cls):
+        return SpacingFromAffine()
 
-    # def segmentation_labels(i, _root: Silent) -> dict:
-    #     """Returns segmentation labels for the task"""
-    #     task = '_'.join(i.split('_')[:2])
-    #     with tarfile.open(Path(_root) / f'{task}.tar') as tf:
-    #         member = tf.getmember(f'{task}/dataset.json')
-    #         file = tf.extractfile(member)
-    #         return json.loads(file.read())['labels']
-
-    # @classmethod
-    # def normalizer(cls):
-    #     return SpacingFromAffine()
-
+    def mask(_relative, _root: Silent):
+        task, relative = _relative 
+        if 'imagesTs' not in str(relative):
+            with open_nii_gz(Path(_root), (task, str(relative).replace('images', 'labels'))) as (file, unpacked):
+                if unpacked:
+                    return np.uint8(nb.load(file).get_fdata())
+                else:
+                    with gzip.GzipFile(fileobj=file) as nii_gz:
+                        nii = nb.FileHolder(fileobj=nii_gz)
+                        return np.uint8(nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).get_fdata())
 
 @contextlib.contextmanager
 def open_nii_gz(path, nii_gz_path):
@@ -144,25 +157,6 @@ class SpacingFromAffine(Transform):
 
     def spacing(affine):
         return nb.affines.voxel_sizes(affine)
-
-
-# @contextlib.contextmanager
-# def unpack(_relative: str, _root: Silent):
-#     unpacked = Path(_root) / _relative
-
-#     print(unpacked)
-
-#     if unpacked.exists():
-#         print("00000000000000000000000")
-#         with unpacked.open('rb') as opened:
-#             yield opened
-#     else:
-#         task=_relative.split('/')[0]
-#         tar_path = Path(_root) / f'{task}.tar'
-#         with tarfile.open(tar_path, 'r') as tar:
-#             print("11111111111111111111111")
-#             with tar.extractfile(_relative) as extracted:
-#                 yield extracted
 
 def get_id(filename: Path):
     fold ='test' if 'imagesTs' in str(filename) else 'train'
