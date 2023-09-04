@@ -1,7 +1,6 @@
 import contextlib
 import gzip
 import json
-import os
 import tarfile
 from pathlib import Path
 
