@@ -12,6 +12,7 @@ from connectome.interface.nodes import Silent
 
 from .internals import checksum, licenses, register
 
+
 TASK_TO_NAME: dict = {
     'Task01_BrainTumour': 'BRATS',
     'Task02_Heart': 'la',
@@ -26,6 +27,7 @@ TASK_TO_NAME: dict = {
 }
 
 NAME_TO_TASK = dict(zip(TASK_TO_NAME.values(), TASK_TO_NAME.keys()))
+
 
 @register(
     body_region=('Chest', 'Abdominal', 'Head'),
@@ -74,11 +76,11 @@ class MSD(Source):
 
     def task(i) -> str:
         return NAME_TO_TASK[i.split('_')[1]]
-    
+
     def _relative(i, task: Output):
         name = i.removeprefix('train_').removeprefix('test_')
-        return Path(task), Path('imagesTr' if 'train' in i else 'imagesTs') / f'{name}.nii.gz' 
-    
+        return Path(task), Path('imagesTr' if 'train' in i else 'imagesTs') / f'{name}.nii.gz'
+
     def image(_relative, _root: Silent):
         with open_nii_gz(Path(_root), _relative) as (file, unpacked):
             if unpacked:
@@ -97,9 +99,9 @@ class MSD(Source):
                 with gzip.GzipFile(fileobj=file) as nii_gz:
                     nii = nb.FileHolder(fileobj=nii_gz)
                     return nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).affine
-    
+
     def image_modality(i, task: Output, _root: Silent) -> str:
-        if (Path(_root) / task). is_dir():
+        if (Path(_root) / task).is_dir():
             with open(Path(_root) / task / 'dataset.json', 'r') as file:
                 return json.loads(file.read())['modality']
 
@@ -110,7 +112,7 @@ class MSD(Source):
 
     def segmentation_labels(i, task: Output, _root: Silent) -> dict:
         """Returns segmentation labels for the task"""
-        if (Path(_root) / task). is_dir():
+        if (Path(_root) / task).is_dir():
             with open(Path(_root) / task / 'dataset.json', 'r') as file:
                 return json.loads(file.read())['labels']
 
@@ -118,13 +120,13 @@ class MSD(Source):
             member = tf.getmember(f'{task}/dataset.json')
             file = tf.extractfile(member)
             return json.loads(file.read())['labels']
-        
+
     @classmethod
     def normalizer(cls):
         return SpacingFromAffine()
 
     def mask(_relative, _root: Silent):
-        task, relative = _relative 
+        task, relative = _relative
         if 'imagesTs' not in str(relative):
             with open_nii_gz(Path(_root), (task, str(relative).replace('images', 'labels'))) as (file, unpacked):
                 if unpacked:
@@ -133,6 +135,7 @@ class MSD(Source):
                     with gzip.GzipFile(fileobj=file) as nii_gz:
                         nii = nb.FileHolder(fileobj=nii_gz)
                         return np.uint8(nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).get_fdata())
+
 
 @contextlib.contextmanager
 def open_nii_gz(path, nii_gz_path):
@@ -149,8 +152,9 @@ def open_nii_gz(path, nii_gz_path):
     if (path / task / relative).exists():
         yield path / task / relative, True
     else:
-        with tarfile.open(path / f"{task}.tar", 'r') as tar:
+        with tarfile.open(path / f'{task}.tar', 'r') as tar:
             yield tar.extractfile(str(task / relative)), False
+
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
@@ -158,27 +162,26 @@ class SpacingFromAffine(Transform):
     def spacing(affine):
         return nb.affines.voxel_sizes(affine)
 
+
 def get_id(filename: Path):
-    fold ='test' if 'imagesTs' in str(filename) else 'train'
-    name = filename.name.removesuffix(".nii.gz")
+    fold = 'test' if 'imagesTs' in str(filename) else 'train'
+    name = filename.name.removesuffix('.nii.gz')
     return '_'.join([fold, name])
+
 
 def ids_from_tar(tar_folder: Path):
     ids = []
     with tarfile.open(tar_folder, 'r') as tf:
         for file in tf.getmembers():
             filename = Path(file.name)
-            if (not filename.name.startswith('._') and
-                filename.suffix == '.gz' and
-                'images' in filename.parent.name):
+            if not filename.name.startswith('._') and filename.suffix == '.gz' and 'images' in filename.parent.name:
                 ids.append(get_id(filename))
     return sorted(ids)
-    
+
+
 def ids_from_folder(folder: Path):
     ids = []
     for filename in folder.rglob('*.nii.gz'):
-        if (not filename.name.startswith('._') and
-            filename.suffix == '.gz' and
-            'images' in filename.parent.name):
-                ids.append(get_id(filename))
+        if not filename.name.startswith('._') and filename.suffix == '.gz' and 'images' in filename.parent.name:
+            ids.append(get_id(filename))
     return sorted(ids)
