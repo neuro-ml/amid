@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import nibabel
 import numpy as np
@@ -51,50 +51,56 @@ class RibFrac(Source):
     Segmentation and Classification
     """
 
-    _root: str = None
+    _root: str
+
+    def _base(_root: Silent):
+        if _root is None:
+            raise ValueError('Please pass the path to the root folder to the `root` argument')
+        return Path(_root)
 
     @meta
     def ids(_root: Silent):
         result = set()
         for folder in ['Part1', 'Part2', 'ribfrac-val-images', 'ribfrac-test-images']:
-            result |= {v.split('-')[0] for v in os.listdir(os.path.join(_root, folder))}
+            result |= {v.name.split('-')[0] for v in (Path(_root) / folder).iterdir()}
 
         return tuple(sorted(result))
 
     def _id2folder(_root: Silent):
-        folders = [item for item in os.listdir(_root) if os.path.isdir(os.path.join(_root, item))]
+        folders = [item for item in Path(_root).iterdir() if item.is_dir()]
         result_dict = {}
         for folder in folders:
-            p = os.path.join(_root, folder)
-            folder_ids = [v.split('-')[0] for v in os.listdir(p)]
+            p = _root / folder
+            folder_ids = [v.name.split('-')[0] for v in p.iterdir()]
             folder_dict = {_id: p for _id in folder_ids}
             result_dict = {**result_dict, **folder_dict}
 
         return result_dict
 
     def image(i, _id2folder):
-        image_path = os.path.join(_id2folder[i], f'{i}-image.nii.gz')
+        image_path = _id2folder[i] / f'{i}-image.nii.gz'
         image = load(image_path)
         image = np.swapaxes(image, 0, 1)[:, :, ::-1]
         return image.astype(np.int16)
 
     def label(i, _id2folder):
-        folder = os.path.basename(_id2folder[i])
+        folder_path = Path(_id2folder[i])
+        folder = folder_path.name
         if folder != 'ribfrac-test-images':
             if folder.startswith('Part'):
-                label_path = os.path.join(_id2folder[i], f'{i}-label.nii.gz')
+                label_path = folder_path / f'{i}-label.nii.gz'
                 label = load(label_path)
             elif folder == 'ribfrac-val-images':
-                dir = os.path.join(os.path.dirname(_id2folder[i]), 'ribfrac-val-labels')
-                label = load(os.path.join(dir, f'{i}-label.nii.gz'))
+                dir = folder_path.parent / 'ribfrac-val-labels'
+                label = load(dir / f'{i}-label.nii.gz')
 
             label = np.swapaxes(label, 0, 1)[:, :, ::-1]
             return label.astype(np.int16)
 
     def spacing(i, _id2folder):
         """Returns voxel spacing along axes (x, y, z)."""
-        nii_path = os.path.join(_id2folder[i], f'{i}-image.nii.gz')
-        nii_header = nibabel.load(nii_path).header
+        nii_path = Path(_id2folder[i]) / f'{i}-image.nii.gz'
+        nii_header = nibabel.load(str(nii_path)).header
         spacing = nii_header.get_zooms()
         assert spacing[0] == spacing[1]  # important as we swap axes
         return spacing
