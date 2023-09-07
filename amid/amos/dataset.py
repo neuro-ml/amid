@@ -8,7 +8,7 @@ import pandas as pd
 from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, register
 from ..utils import open_nii_gz_file, unpack
 from .utils import add_labels
 
@@ -17,17 +17,7 @@ ARCHIVE_NAME = 'amos22.zip'
 ARCHIVE_ROOT_NAME = 'amos22'
 
 
-@register(
-    body_region='Abdomen',
-    license=licenses.CC_BY_40,
-    link='https://zenodo.org/record/7262581',
-    modality=('CT', 'MRI'),
-    raw_data_size='23G',
-    prep_data_size='89,5G',
-    task='Supervised multi-modality abdominal multi-organ segmentation',
-)
-@checksum('amos')
-class AMOS(Source):
+class AMOSBase(Source):
     """
     AMOS provides 500 CT and 100 MRI scans collected from multi-center, multi-vendor, multi-modality, multi-phase,
     multi-disease patients, each with voxel-level annotations of 15 abdominal organs, providing challenging examples
@@ -136,3 +126,16 @@ class SpacingFromAffine(Transform):
 
     def spacing(affine):
         return nibabel.affines.voxel_sizes(affine)
+
+
+AMOS = register(
+    AMOSBase,
+    short_name='amos',
+    body_region='Abdomen',
+    license=licenses.CC_BY_40,
+    link='https://zenodo.org/record/7262581',
+    modality=('CT', 'MRI'),
+    raw_data_size='23G',
+    prep_data_size='89,5G',
+    task='Supervised multi-modality abdominal multi-organ segmentation',
+)
