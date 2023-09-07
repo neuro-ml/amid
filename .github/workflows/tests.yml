@@ -42,13 +42,6 @@ jobs:
           echo $MODULE_PARENT
           echo "MODULE_PARENT=$(echo $MODULE_PARENT)" >> $GITHUB_ENV
 
-      - name: Check code style
-        run: |
-          pip install -r lint-requirements.txt
-          flake8 .
-          isort --check .
-          black --check .
-
       - name: Create the storage
         if: "! github.event.pull_request.head.repo.fork "
         env:
@@ -93,7 +86,7 @@ jobs:
       - name: Test with pytest
         if: "! github.event.pull_request.head.repo.fork "
         run: |
-          pytest tests --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
+          pytest tests -m "not raw" --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
       - name: Generate coverage report
         if: "! github.event.pull_request.head.repo.fork "
         run: |

@@ -70,8 +70,8 @@ def checksum(path: str, *, ignore=(), columns=()):
                 self._version = version
                 super().__init__(*args)
 
-            @classmethod
-            def raw(cls, root: Optional[str] = None, version: str = Local):
+            @staticmethod
+            def raw(root: Optional[str] = None, version: str = Local):
                 ds = cls(root=root)
                 return Chain(
                     ds,
