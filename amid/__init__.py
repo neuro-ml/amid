@@ -23,13 +23,13 @@ from .midrc import MIDRC
 from .mood import MOOD
 from .nlst import NLST
 from .nsclc import NSCLC
+from .ribfrac import RibFrac
 from .rsna_bc import RSNABreastCancer
 from .stanford_coca import StanfordCoCa
 from .totalsegmentator import Totalsegmentator
 from .upenn_gbm import UPENN_GBM
 from .verse import VerSe
 from .vs_seg import VSSEG
-from .ribfrac import RibFrac
 
 
 unstable_module(__name__)
