@@ -24,6 +24,7 @@ from .mood import MOOD
 from .nlst import NLST
 from .nsclc import NSCLC
 from .ribfrac import RibFrac
+from .ribseg import RibSeg
 from .rsna_bc import RSNABreastCancer
 from .stanford_coca import StanfordCoCa
 from .totalsegmentator import Totalsegmentator
