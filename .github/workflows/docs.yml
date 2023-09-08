@@ -23,10 +23,13 @@ jobs:
           pip install -r docs/requirements.txt
 
       - name: Create the storage
+        if: "! github.event.pull_request.head.repo.fork "
         env:
           CACHE_HOST: ${{ secrets.CACHE_HOST }}
+          CACHE_HOST_KEY: ${{ secrets.CACHE_HOST_KEY }}
+          CACHE_HOST_USER: ${{ secrets.CACHE_HOST_USER }}
         run: |
-          mkdir -p ~/.config/amid
+          mkdir -p ~/.config/amid ~/.ssh
           cat >~/.config/amid/.bev.yml <<EOL
           local:
             storage: '/home/runner/work/amid/amid/storage'
@@ -35,12 +38,21 @@ jobs:
           remote:
             storage:
               remote: 
-                nginx: $CACHE_HOST
+                amid.internals.locations.SFTPConfig: 'amid:bucket'
           
           meta:
             fallback: local
           EOL
           amid init
+          cat >~/.ssh/config <<EOL
+          Host amid
+            HostName $CACHE_HOST
+            User $CACHE_HOST_USER
+            IdentityFile ~/.ssh/amid
+          EOL
+          echo "$CACHE_HOST_KEY" > ~/.ssh/amid
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/amid
 
       # release
       - id: get_version
