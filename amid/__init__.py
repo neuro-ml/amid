@@ -29,6 +29,7 @@ from .totalsegmentator import Totalsegmentator
 from .upenn_gbm import UPENN_GBM
 from .verse import VerSe
 from .vs_seg import VSSEG
+from .ribfrac import RibFrac
 
 
 unstable_module(__name__)
