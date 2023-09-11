@@ -2,8 +2,6 @@ from functools import partial
 
 from connectome import Function
 
-from .const import COLUMN2LABEL
-
 
 def loader(column, i, _meta):
     # ambiguous data in meta
@@ -13,6 +11,5 @@ def loader(column, i, _meta):
     return _meta[_meta['amos_id'] == int(i)][column].item()
 
 
-def add_labels(scope):
-    for column, label in COLUMN2LABEL.items():
-        scope[label] = Function(partial(loader, column), 'id', '_meta')
+def label(column):
+    return Function(partial(loader, column), 'id', '_meta')

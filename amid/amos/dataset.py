@@ -8,9 +8,9 @@ import pandas as pd
 from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import licenses, register
+from ..internals import licenses, normalize
 from ..utils import open_nii_gz_file, unpack
-from .utils import add_labels
+from .utils import label
 
 
 ARCHIVE_NAME = 'amos22.zip'
@@ -51,8 +51,6 @@ class AMOSBase(Source):
     """
 
     _root: str = None
-
-    add_labels(locals())
 
     def _base(_root: Silent):
         return Path(_root)
@@ -95,6 +93,16 @@ class AMOSBase(Source):
         except FileNotFoundError:
             return None
 
+    # labels
+
+    birth_date = label("Patient's Birth Date")
+    sex = label("Patient's Sex")
+    age = label("Patient's Age")
+    manufacturer_model = label("Manufacturer's Model Name")
+    manufacturer = label('Manufacturer')
+    acquisition_date = label('Acquisition Date')
+    site = label('Site')
+
     @lru_cache(None)
     def _id2split(_base):
         id2split = {}
@@ -116,10 +124,6 @@ class AMOSBase(Source):
         with unpack(_base, file) as (unpacked, _):
             return pd.read_csv(unpacked)
 
-    @classmethod
-    def normalizer(cls):
-        return SpacingFromAffine()
-
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
@@ -128,9 +132,10 @@ class SpacingFromAffine(Transform):
         return nibabel.affines.voxel_sizes(affine)
 
 
-AMOS = register(
+AMOS = normalize(
     AMOSBase,
-    short_name='amos',
+    'AMOS',
+    'amos',
     body_region='Abdomen',
     license=licenses.CC_BY_40,
     link='https://zenodo.org/record/7262581',
@@ -138,4 +143,5 @@ AMOS = register(
     raw_data_size='23G',
     prep_data_size='89,5G',
     task='Supervised multi-modality abdominal multi-organ segmentation',
+    normalizers=[SpacingFromAffine()],
 )

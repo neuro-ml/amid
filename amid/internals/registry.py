@@ -23,12 +23,26 @@ class Description(NamedTuple):
     task: str = None
 
 
-def register(cls: Type, short_name: str, **kwargs):
-    name = cls.__name__
-    module = inspect.getmodule(inspect.stack()[1][0]).__name__
+def register(**kwargs):
+    def decorator(cls: Type):
+        _register(cls, cls.__origin__.__name__, description, 2)
+        return cls
+
+    description = Description(**kwargs)
+    return decorator
+
+
+def normalize(cls: Type, name: str, short_name: str, *, normalizers=(), ignore=(), columns=(), **kwargs):
+    cls = checksum(short_name, normalizers=normalizers, ignore=ignore, columns=columns)(cls)
+    description = Description(**kwargs)
+    _register(cls, name, description, 2)
+    return cls
+
+
+def _register(cls, name, description, level):
+    module = inspect.getmodule(inspect.stack()[level][0]).__name__
     assert name not in _REGISTRY, name
-    _REGISTRY[name] = cls, module, Description(**kwargs)
-    return checksum(short_name)(cls)
+    _REGISTRY[name] = cls, module, description
 
 
 def gather_datasets():
