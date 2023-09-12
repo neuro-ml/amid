@@ -58,7 +58,7 @@ jobs:
           remote:
             storage:
               remote: 
-                amid.internals.locations.SFTPConfig: 'amid:bucket'
+                sftp: 'amid:bucket'
           
           meta:
             fallback: local
