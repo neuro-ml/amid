@@ -6,23 +6,33 @@ import pytest
 from amid import AMOS
 from amid.internals import gather_datasets
 
-
-DATASETS = [x[0] for x in gather_datasets().values()]
+MAPPING = gather_datasets()
+DATASETS = [x[0] for x in MAPPING.values()]
+NAMES = list(MAPPING)
 ROOT_MAPPING = {
     AMOS: '/shared/data/amos22',
 }
 
 
-@pytest.mark.parametrize('cls', DATASETS, ids=[cls.__name__ for cls in DATASETS])
+@pytest.mark.parametrize('cls', DATASETS, ids=NAMES)
 def test_ids_availability(cls):
     assert len(cls().ids) > 0
 
 
-@pytest.mark.parametrize('cls', DATASETS, ids=[cls.__name__ for cls in DATASETS])
+@pytest.mark.parametrize('cls', DATASETS, ids=NAMES)
 def test_pickleable(cls):
-    ds = cls()[0]
-    loader = ds._compile(dir(ds))
-    pickle.dumps(loader)
+    raw = cls()[0]
+    cached = cls()
+    fields = dir(raw)
+
+    for ds in raw, cached:
+        loader = ds._compile(fields)
+        pickle.dumps(loader)
+
+    f = cached._compile('ids')
+    raw = pickle.dumps(f)
+    g = pickle.loads(raw)
+    assert f() == g()
 
 
 @pytest.mark.raw
