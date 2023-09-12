@@ -6,20 +6,10 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
-@register(
-    body_region='Chest',
-    license=licenses.CC_BY_40,
-    link='https://github.com/XiaoweiXu/Dataset_Type-B-Aortic-Dissection',
-    modality='CT',
-    prep_data_size='14G',
-    raw_data_size='14G',
-    task='Aortic dissection segmentation',
-)
-@checksum('tbad')
-class TBAD(Source):
+class TBADBase(Source):
     """
     A dataset of 3D Computed Tomography (CT) images for Type-B Aortic Dissection segmentation.
 
@@ -101,3 +91,17 @@ class TBAD(Source):
                 nii = nb.FileHolder(fileobj=nii)
                 label = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return np.uint8(label.get_fdata())
+
+
+TBAD = normalize(
+    TBADBase,
+    'TBAD',
+    'tbad',
+    body_region='Chest',
+    license=licenses.CC_BYNC_40,
+    link='https://github.com/XiaoweiXu/Dataset_Type-B-Aortic-Dissection',
+    modality='CT',
+    prep_data_size='14G',
+    raw_data_size='14G',
+    task='Aortic dissection segmentation',
+)
