@@ -11,6 +11,7 @@ from connectome.interface.nodes import Silent
 
 from .internals import licenses, normalize
 
+
 TASK_TO_NAME: dict = {
     'Task01_BrainTumour': 'BRATS',
     'Task02_Heart': 'la',

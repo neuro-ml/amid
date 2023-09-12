@@ -7,7 +7,7 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Positional, Source, meta
+from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import licenses, normalize
