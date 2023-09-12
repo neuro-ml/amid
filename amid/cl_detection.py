@@ -3,26 +3,16 @@ from pathlib import Path
 
 import numpy as np
 import SimpleITK
-from connectome import Apply, Source, Transform, meta
+from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 from imops import crop_to_box
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import mask_to_box
 
 
-@register(
-    body_region='Head',
-    license=licenses.CC_BYNC_40,
-    link='https://github.com/cwwang1979/CL-detection2023/',
-    modality='X-ray',
-    prep_data_size='1.8G',
-    raw_data_size='1.5G',
-    task='Keypoint detection',
-)
-@checksum('cl-detection-2023')
-class CLDetection2023(Source):
+class CLDetection2023Base(Source):
     """
     The data for the "Cephalometric Landmark Detection in Lateral X-ray Images" Challenge,
     held with the MICCAI-2023 conference.
@@ -83,11 +73,6 @@ class CLDetection2023(Source):
         scale = float(scale)
         return [scale, scale]
 
-    @classmethod
-    def normalizer(cls):
-        # align the points' and image's axes
-        return Apply(points=lambda pts: {name: pt[::-1] for name, pt in pts.items()}) >> CropPadding()
-
 
 class CropPadding(Transform):
     __inherit__ = 'spacing'
@@ -100,3 +85,28 @@ class CropPadding(Transform):
 
     def points(points, _box):
         return {k: v - _box[0] for k, v in points.items()}
+
+
+class FlipPoints(Transform):
+    __inherit__ = True
+
+    def points(points):
+        return {name: pt[::-1] for name, pt in points.items()}
+
+
+CLDetection2023 = normalize(
+    CLDetection2023Base,
+    'CLDetection2023',
+    'cl-detection-2023',
+    body_region='Head',
+    license=licenses.CC_BYNC_40,
+    link='https://github.com/cwwang1979/CL-detection2023/',
+    modality='X-ray',
+    prep_data_size='1.8G',
+    raw_data_size='1.5G',
+    task='Keypoint detection',
+    normalizers=[
+        FlipPoints(),
+        CropPadding(),
+    ],
+)

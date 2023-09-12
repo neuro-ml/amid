@@ -22,20 +22,10 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
-@register(
-    body_region='Thorax',
-    license=licenses.CC_BYNC_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
-    modality='CT',
-    prep_data_size='7,9G',
-    raw_data_size='12G',
-    task='COVID-19 Segmentation',
-)
-@checksum('midrc')
-class MIDRC(Source):
+class MIDRCBase(Source):
     """
 
         MIDRC-RICORD dataset 1a is a public COVID-19 CT segmentation dataset with 120 scans.
@@ -178,6 +168,20 @@ class MIDRC(Source):
             ys, xs = np.array(row['data']['vertices']).T
             mask[(pathology_index, *polygon(ys, xs, shape[:2]), slice_index)] = True
         return mask
+
+
+MIDRC = normalize(
+    MIDRCBase,
+    'MIDRC',
+    'midrc',
+    body_region='Thorax',
+    license=licenses.CC_BYNC_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
+    modality='CT',
+    prep_data_size='7,9G',
+    raw_data_size='12G',
+    task='COVID-19 Segmentation',
+)
 
 
 # TODO: simplify

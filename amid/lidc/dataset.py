@@ -8,22 +8,12 @@ from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix,
 from pylidc.utils import consensus
 from scipy import stats
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 from ..utils import deprecate, get_series_date
 from .nodules import get_nodule
 
 
-@register(
-    body_region='Chest',
-    license=licenses.CC_BY_30,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254',
-    modality='CT',
-    prep_data_size='71,2G',
-    raw_data_size='126G',
-    task='Lung nodules segmentation',
-)
-@checksum('lidc')
-class LIDC(Source):
+class LIDCBase(Source):
     """
     The (L)ung (I)mage (D)atabase (C)onsortium image collection (LIDC-IDRI) [1]_
     consists of diagnostic and lung cancer screening thoracic computed tomography (CT) scans
@@ -203,3 +193,17 @@ class LIDC(Source):
             cancer |= consensus(anns, pad=np.inf)[0]
 
         return cancer
+
+
+LIDC = normalize(
+    LIDCBase,
+    'LIDC',
+    'lidc',
+    body_region='Chest',
+    license=licenses.CC_BY_30,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254',
+    modality='CT',
+    prep_data_size='71,2G',
+    raw_data_size='126G',
+    task='Lung nodules segmentation',
+)

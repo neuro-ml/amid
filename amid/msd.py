@@ -9,7 +9,7 @@ import numpy as np
 from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
 TASK_TO_NAME: dict = {
@@ -28,16 +28,7 @@ TASK_TO_NAME: dict = {
 NAME_TO_TASK = dict(zip(TASK_TO_NAME.values(), TASK_TO_NAME.keys()))
 
 
-@register(
-    body_region=('Chest', 'Abdominal', 'Head'),
-    license=licenses.CC_BYSA_40,  # check all datasets
-    link='http://medicaldecathlon.com/',
-    modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
-    raw_data_size='97.8G',
-    task='Image segmentation',
-)
-@checksum('msd')
-class MSD(Source):
+class MSDBase(Source):
     """
     MSD is a Medical Segmentaton Decathlon Challenge with 10 tasks.
     Parameters
@@ -120,10 +111,6 @@ class MSD(Source):
             file = tf.extractfile(member)
             return json.loads(file.read())['labels']
 
-    @classmethod
-    def normalizer(cls):
-        return SpacingFromAffine()
-
     def mask(_relative, _root: Silent):
         task, relative = _relative
         if 'imagesTs' not in str(relative):
@@ -134,6 +121,27 @@ class MSD(Source):
                     with gzip.GzipFile(fileobj=file) as nii_gz:
                         nii = nb.FileHolder(fileobj=nii_gz)
                         return np.uint8(nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).get_fdata())
+
+
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nb.affines.voxel_sizes(affine)
+
+
+MSD = normalize(
+    MSDBase,
+    'MSD',
+    'msd',
+    body_region=('Chest', 'Abdominal', 'Head'),
+    license=licenses.CC_BYSA_40,  # check all datasets
+    link='http://medicaldecathlon.com/',
+    modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
+    raw_data_size='97.8G',
+    task='Image segmentation',
+    normalizers=[SpacingFromAffine()],
+)
 
 
 @contextlib.contextmanager
@@ -153,13 +161,6 @@ def open_nii_gz(path, nii_gz_path):
     else:
         with tarfile.open(path / f'{task}.tar', 'r') as tar:
             yield tar.extractfile(str(task / relative)), False
-
-
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nb.affines.voxel_sizes(affine)
 
 
 def get_id(filename: Path):

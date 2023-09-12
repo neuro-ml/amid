@@ -8,21 +8,11 @@ from bev.utils import PathOrStr
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, register
-from .utils import add_csv_fields, fields, unpack
+from ..internals import normalize
+from .utils import csv_field, unpack
 
 
-@register(
-    body_region='Thorax',
-    license='Non-Commercial Use',
-    link='https://www.kaggle.com/competitions/rsna-breast-cancer-detection/data',
-    modality='MG',
-    raw_data_size='271G',
-    prep_data_size='294G',
-    task='Breast cancer classification',
-)
-@checksum('rsna-breast-cancer', columns=tuple(fields))
-class RSNABreastCancer(Source):
+class RSNABreastCancerBase(Source):
     _root: PathOrStr
 
     def _base(_root: Silent):
@@ -54,7 +44,22 @@ class RSNABreastCancer(Source):
     def _row(i, _meta):
         return _meta[i]
 
-    add_csv_fields(locals())
+    # csv fields
+    site_id = csv_field(str)
+    patient_id = csv_field(str)
+    image_id = csv_field(str)
+    laterality = csv_field(None)
+    view = csv_field(None)
+    age = csv_field(None)
+    cancer = csv_field(bool)
+    biopsy = csv_field(bool)
+    invasive = csv_field(bool)
+    BIRADS = csv_field(int)
+    implant = csv_field(bool)
+    density = csv_field(None)
+    machine_id = csv_field(str)
+    prediction_id = csv_field(str)
+    difficult_negative_case = csv_field(bool)
 
     @meta
     def ids(_meta):
@@ -72,3 +77,34 @@ class RSNABreastCancer(Source):
 
     def intensity_sign(_dicom):
         return getattr(_dicom, 'PixelIntensityRelationshipSign', None)
+
+
+RSNABreastCancer = normalize(
+    RSNABreastCancerBase,
+    'RSNABreastCancer',
+    'rsna-breast-cancer',
+    body_region='Thorax',
+    license='Non-Commercial Use',
+    link='https://www.kaggle.com/competitions/rsna-breast-cancer-detection/data',
+    modality='MG',
+    raw_data_size='271G',
+    prep_data_size='294G',
+    task='Breast cancer classification',
+    columns=[
+        'site_id',
+        'patient_id',
+        'image_id',
+        'laterality',
+        'view',
+        'age',
+        'cancer',
+        'biopsy',
+        'invasive',
+        'BIRADS',
+        'implant',
+        'density',
+        'machine_id',
+        'prediction_id',
+        'difficult_negative_case',
+    ],
+)
