@@ -6,6 +6,7 @@ import pytest
 from amid import AMOS
 from amid.internals import gather_datasets
 
+
 MAPPING = gather_datasets()
 DATASETS = [x[0] for x in MAPPING.values()]
 NAMES = list(MAPPING)
