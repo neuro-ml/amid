@@ -51,6 +51,7 @@ def checksum(path: str, *, ignore=(), columns=(), normalizers=()):
     def decorator(cls):
         # TODO: legacy
         assert not hasattr(cls, 'normalizers')
+        assert not hasattr(cls, 'normalizer')
 
         class Checked(Chain):
             __origin__ = cls

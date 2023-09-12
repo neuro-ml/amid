@@ -11,7 +11,6 @@ from connectome.interface.nodes import Silent
 
 from .internals import licenses, normalize
 
-
 TASK_TO_NAME: dict = {
     'Task01_BrainTumour': 'BRATS',
     'Task02_Heart': 'la',
@@ -111,10 +110,6 @@ class MSDBase(Source):
             file = tf.extractfile(member)
             return json.loads(file.read())['labels']
 
-    @classmethod
-    def normalizer(cls):
-        return SpacingFromAffine()
-
     def mask(_relative, _root: Silent):
         task, relative = _relative
         if 'imagesTs' not in str(relative):
@@ -127,6 +122,13 @@ class MSDBase(Source):
                         return np.uint8(nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).get_fdata())
 
 
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nb.affines.voxel_sizes(affine)
+
+
 MSD = normalize(
     MSDBase,
     'MSD',
@@ -137,6 +139,7 @@ MSD = normalize(
     modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
     raw_data_size='97.8G',
     task='Image segmentation',
+    normalizers=[SpacingFromAffine()],
 )
 
 
@@ -157,13 +160,6 @@ def open_nii_gz(path, nii_gz_path):
     else:
         with tarfile.open(path / f'{task}.tar', 'r') as tar:
             yield tar.extractfile(str(task / relative)), False
-
-
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nb.affines.voxel_sizes(affine)
 
 
 def get_id(filename: Path):
