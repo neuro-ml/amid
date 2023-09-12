@@ -24,7 +24,7 @@ plugins:
             heading_level: 3
   - exclude:
       glob:
-        - 'mkdocstrings/**/*'
+        - '**/python_connectome.py'
         - 'fill_docs.py'
         - 'fill_readme.py'
 

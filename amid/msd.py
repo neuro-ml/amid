@@ -9,7 +9,7 @@ import numpy as np
 from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
 TASK_TO_NAME: dict = {
@@ -28,16 +28,7 @@ TASK_TO_NAME: dict = {
 NAME_TO_TASK = dict(zip(TASK_TO_NAME.values(), TASK_TO_NAME.keys()))
 
 
-@register(
-    body_region=('Chest', 'Abdominal', 'Head'),
-    license=licenses.CC_BYSA_40,  # check all datasets
-    link='http://medicaldecathlon.com/',
-    modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
-    raw_data_size='97.8G',
-    task='Image segmentation',
-)
-@checksum('msd')
-class MSD(Source):
+class MSDBase(Source):
     """
     MSD is a Medical Segmentaton Decathlon Challenge with 10 tasks.
     Parameters
@@ -134,6 +125,19 @@ class MSD(Source):
                     with gzip.GzipFile(fileobj=file) as nii_gz:
                         nii = nb.FileHolder(fileobj=nii_gz)
                         return np.uint8(nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).get_fdata())
+
+
+MSD = normalize(
+    MSDBase,
+    'MSD',
+    'msd',
+    body_region=('Chest', 'Abdominal', 'Head'),
+    license=licenses.CC_BYSA_40,  # check all datasets
+    link='http://medicaldecathlon.com/',
+    modality=('CT', 'CE CT', 'MRI', 'MRI FLAIR', 'MRI T1w', 'MRI t1gd', 'MRI T2w', 'MRI T2', 'MRI ADC'),
+    raw_data_size='97.8G',
+    task='Image segmentation',
+)
 
 
 @contextlib.contextmanager

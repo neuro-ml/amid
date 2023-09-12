@@ -7,25 +7,15 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
+from connectome import Positional, Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 from ..utils import open_nii_gz_file, unpack
 from .utils import ARCHIVE_ROOT, add_labels, add_masks
 
 
-@register(
-    body_region=('Head', 'Thorax', 'Abdomen', 'Pelvis', 'Legs'),
-    license=licenses.CC_BY_40,
-    link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
-    modality='CT',
-    raw_data_size='35G',
-    prep_data_size='35G',
-    task='Supervised anatomical structures segmentation',
-)
-@checksum('totalsegmentator')
-class Totalsegmentator(Source):
+class TotalsegmentatorBase(Source):
     """
     In 1204 CT images we segmented 104 anatomical structures (27 organs, 59 bones, 10 muscles, 8 vessels)
     covering a majority of relevant classes for most use cases.
@@ -112,3 +102,17 @@ class Totalsegmentator(Source):
 
         with unpack(_base, file, ARCHIVE_ROOT, '.zip') as (unpacked, _):
             return pd.read_csv(unpacked, sep=';')
+
+
+Totalsegmentator = normalize(
+    TotalsegmentatorBase,
+    'Totalsegmentator',
+    'totalsegmentator',
+    body_region=('Head', 'Thorax', 'Abdomen', 'Pelvis', 'Legs'),
+    license=licenses.CC_BY_40,
+    link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
+    modality='CT',
+    raw_data_size='35G',
+    prep_data_size='35G',
+    task='Supervised anatomical structures segmentation',
+)

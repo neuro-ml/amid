@@ -20,21 +20,12 @@ from dicom_csv import (
 from dicom_csv.exceptions import TagMissingError
 from tqdm.auto import tqdm
 
-from ..internals import checksum, register
+from ..internals import normalize
 from ..utils import get_series_date
 from .nodules import get_nodules
 
 
-@register(
-    body_region='Thorax',
-    modality='CT',
-    task='Lung Cancer Detection',
-    link='https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/',
-    prep_data_size='103G',
-    raw_data_size='187G',
-)
-@checksum('cancer_500')
-class MoscowCancer500(Source):
+class MoscowCancer500Base(Source):
     """
     The Moscow Radiology Cancer-500 dataset.
 
@@ -163,6 +154,19 @@ class MoscowCancer500(Source):
             return get_nodules(protocol, series_number, slice_locations)
         except ValueError:
             pass
+
+
+MoscowCancer500 = normalize(
+    MoscowCancer500Base,
+    'MoscowCancer500',
+    'cancer_500',
+    body_region='Thorax',
+    modality='CT',
+    task='Lung Cancer Detection',
+    link='https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/',
+    prep_data_size='103G',
+    raw_data_size='187G',
+)
 
 
 def _is_monotonic(sequence):

@@ -9,21 +9,11 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import deprecate
 
 
-@register(
-    body_region='Chest',
-    license=licenses.CC0_10,
-    link='http://medicalsegmentation.com/covid19/',
-    modality='CT',
-    prep_data_size='300M',
-    raw_data_size='310M',
-    task='COVID-19 segmentation',
-)
-@checksum('medseg9')
-class Medseg9(Source):
+class Medseg9Base(Source):
     """
 
     Medseg9 is a public COVID-19 CT segmentation dataset with 9 annotated images.
@@ -108,6 +98,20 @@ class Medseg9(Source):
         with open_nii_gz_file(mask_file) as nii_image:
             # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return np.uint8(nii_image.get_fdata())
+
+
+Medseg9 = normalize(
+    Medseg9Base,
+    'Medseg9',
+    'medseg9',
+    body_region='Chest',
+    license=licenses.CC0_10,
+    link='http://medicalsegmentation.com/covid19/',
+    modality='CT',
+    prep_data_size='300M',
+    raw_data_size='310M',
+    task='COVID-19 segmentation',
+)
 
 
 # TODO: sync with amid.utils

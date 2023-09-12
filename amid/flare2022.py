@@ -8,20 +8,10 @@ import numpy as np
 from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, register
+from .internals import normalize
 
 
-@register(
-    body_region='Abdomen',
-    license=None,
-    link='https://flare22.grand-challenge.org/',
-    modality='CT',
-    prep_data_size='347G',
-    raw_data_size='247G',
-    task='Semi-supervised abdominal organ segmentation',
-)
-@checksum('flare2022')
-class FLARE2022(Source):
+class FLARE2022Base(Source):
     """
     An abdominal organ segmentation dataset for semi-supervised learning [1]_.
 
@@ -142,13 +132,24 @@ class FLARE2022(Source):
                             mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                             return np.asarray(mask.dataobj)
 
-    @classmethod
-    def normalizer(cls):
-        return SpacingFromAffine()
-
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
 
     def spacing(affine):
         return nibabel.affines.voxel_sizes(affine)
+
+
+FLARE2022 = normalize(
+    FLARE2022Base,
+    'FLARE2022',
+    'flare2022',
+    body_region='Abdomen',
+    license=None,
+    link='https://flare22.grand-challenge.org/',
+    modality='CT',
+    prep_data_size='347G',
+    raw_data_size='247G',
+    task='Semi-supervised abdominal organ segmentation',
+    normalizers=[SpacingFromAffine()],
+)

@@ -10,22 +10,11 @@ from dicom_csv import get_orientation_matrix, get_slice_locations, get_voxel_spa
 from imops import restore_crop
 from more_itertools import locate
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import series_from_dicom_folder
 
 
-@register(
-    body_region='Abdomen',
-    license=licenses.CC_BY_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?'
-    'pageId=89096268#89096268412b832037484784bd78caf58e052641',
-    modality=('CT, SEG'),
-    prep_data_size='11G',
-    raw_data_size='11G',
-    task=('Segmentation', 'Classification'),
-)
-@checksum('crlm')
-class CRLM(Source):
+class CRLMBase(Source):
     """
     Parameters
     ----------
@@ -123,3 +112,18 @@ class CRLM(Source):
     def affine(_series):
         """Returns 4x4 matrix that gives the image's spatial orientation."""
         return get_orientation_matrix(_series)
+
+
+CRLM = normalize(
+    CRLMBase,
+    'CRLM',
+    'crlm',
+    body_region='Abdomen',
+    license=licenses.CC_BY_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?'
+    'pageId=89096268#89096268412b832037484784bd78caf58e052641',
+    modality=('CT, SEG'),
+    prep_data_size='11G',
+    raw_data_size='11G',
+    task=('Segmentation', 'Classification'),
+)

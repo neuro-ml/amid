@@ -8,21 +8,11 @@ import pandas as pd
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import open_nii_gz_file, unpack
 
 
-@register(
-    body_region='Head',
-    license=licenses.CC_BYNCSA_40,
-    link='http://www.braintumorsegmentation.org/',
-    modality=('MRI T1', 'MRI T1Gd', 'MRI T2', 'MRI T2-FLAIR'),
-    prep_data_size='8,96G',
-    raw_data_size='15G',
-    task=('Segmentation', 'Classification', 'Domain Adaptation'),
-)
-@checksum('brats2021', ignore=['mapping21_17'])
-class BraTS2021(Source):
+class BraTS2021Base(Source):
     """
     Parameters
     ----------
@@ -98,6 +88,21 @@ class BraTS2021(Source):
         root, relative = _get_ids_or_file(_base, fold, check_id=i, return_image=True)
         with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
             return nii_image.affine
+
+
+BraTS2021 = normalize(
+    BraTS2021Base,
+    'BraTS2021',
+    'brats2021',
+    body_region='Head',
+    license=licenses.CC_BYNCSA_40,
+    link='http://www.braintumorsegmentation.org/',
+    modality=('MRI T1', 'MRI T1Gd', 'MRI T2', 'MRI T2-FLAIR'),
+    prep_data_size='8,96G',
+    raw_data_size='15G',
+    task=('Segmentation', 'Classification', 'Domain Adaptation'),
+    ignore=['mapping21_17'],
+)
 
 
 def _get_ids_or_file(

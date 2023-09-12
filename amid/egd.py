@@ -6,21 +6,11 @@ from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
-from .internals import checksum, register
+from .internals import normalize
 from .utils import deprecate
 
 
-@register(
-    body_region='Head',
-    license='EGD data license',
-    link='https://xnat.bmia.nl/data/archive/projects/egd',
-    modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2'),
-    prep_data_size='107,49G',
-    raw_data_size='40G',
-    task='Segmentation',
-)
-@checksum('egd')
-class EGD(Source):
+class EGDBase(Source):
     """
     The Erasmus Glioma Database (EGD): Structural MRI scans, WHO 2016 subtypes,
     and segmentations of 774 patients with glioma [1]_.
@@ -147,3 +137,17 @@ class EGD(Source):
     def mask(i, _base):
         i, _ = i.rsplit('-', 1)
         return np.bool_(nb.load(_base / 'SUBJECTS' / i / 'MASK.nii.gz').get_fdata())
+
+
+EGD = normalize(
+    EGDBase,
+    'EGD',
+    'egd',
+    body_region='Head',
+    license='EGD data license',
+    link='https://xnat.bmia.nl/data/archive/projects/egd',
+    modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2'),
+    prep_data_size='107,49G',
+    raw_data_size='40G',
+    task='Segmentation',
+)

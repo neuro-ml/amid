@@ -49,21 +49,20 @@ def checksum(path: str, *, ignore=(), columns=(), normalizers=()):
     serializer = default_serializer(None)
 
     def decorator(cls):
+        # TODO: legacy
+        assert not hasattr(cls, 'normalizers')
+
         class Checked(Chain):
             __origin__ = cls
 
             def __init__(self, root: Optional[str] = None, version: str = Local):
                 ds = cls(root=root)
 
-                norm = normalizers
-                if not norm and hasattr(cls, 'normalizers'):
-                    norm = cls.normalizers()
-
-                if norm:
+                if normalizers:
                     args = [
                         ds,
                         *_checker(ds, version),
-                        Chain(*norm),
+                        Chain(*normalizers),
                         *_cache(),
                     ]
                 else:
