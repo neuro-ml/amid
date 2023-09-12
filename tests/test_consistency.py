@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 import pytest
 
@@ -14,6 +16,13 @@ ROOT_MAPPING = {
 @pytest.mark.parametrize('cls', DATASETS, ids=[cls.__name__ for cls in DATASETS])
 def test_ids_availability(cls):
     assert len(cls().ids) > 0
+
+
+@pytest.mark.parametrize('cls', DATASETS, ids=[cls.__name__ for cls in DATASETS])
+def test_pickleable(cls):
+    ds = cls()[0]
+    loader = ds._compile(dir(ds))
+    pickle.dumps(loader)
 
 
 @pytest.mark.raw
