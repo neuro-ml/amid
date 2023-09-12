@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.5">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.0e669242.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.046329b4.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
@@ -527,7 +527,7 @@
 <p>2. (Optionally) create a new branch for the dataset:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>checkout<span class="w"> </span>lits
 </code></pre></div>
-<p>3. Create a class that loads the raw data. <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTS</a> is a good
+<p>3. Create a class that loads the raw data. <a href="https://github.com/neuro-ml/amid/blob/master/amid/lits.py">LiTSBase</a> is a good
 example. Note how each field is implemented as a separate function.</p>
 <p>There are no strict rules regarding the dataset fields,
 but try to keep the output "as raw as possible",
@@ -553,8 +553,21 @@ This way, the image axes will be consistent with the potential contour coordinat
 <p class="admonition-title">Tip</p>
 <p>If the raw data contains a table with metadata, it is preferable to split the metadata columns into separate fields.</p>
 </div>
-<p>4. Add the <code>@checksum(slug)</code> decorator, where <code>slug</code> is a slug for the dataset, e.g., <code>'lits'</code>.</p>
-<p>5. Add the <code>@register(...)</code> decorator with the following arguments:</p>
+<p>4. Register the dataset like so:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">amid.internals</span> <span class="kn">import</span> <span class="n">normalize</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">LiTS</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">LiTSBase</span><span class="p">,</span> <span class="s1">&#39;LiTS&#39;</span><span class="p">,</span> <span class="s1">&#39;lits&#39;</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="o">...</span><span class="p">,</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">)</span>
+</code></pre></div>
+<p>where the first 3 arguments are</p>
+<ul>
+<li>the raw dataset</li>
+<li>the final dataset name</li>
+<li>a short name for the dataset (mostly used for various files generation)</li>
+</ul>
+<p>and <code>...</code> stands for the following arguments:</p>
 <ul>
 <li><code>modality</code> — the images' modality/modalities, e.g., CT, MRI</li>
 <li><code>body_region</code> — the anatomical regions present in the dataset, e.g., Head, Thorax, Abdomen</li>
@@ -564,18 +577,18 @@ This way, the image axes will be consistent with the potential contour coordinat
 <li><code>task</code> — the dataset's downstream task if any.
     E.g., Supervised Learning, Domain Adaptation, Self-supervised Learning, Tumor Segmentation, etc.</li>
 </ul>
-<p>6. Make sure all the methods are working as expected:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span> <span class="nn">amid.lits</span> <span class="kn">import</span> <span class="n">LiTS</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">dataset</span> <span class="o">=</span> <span class="n">LiTS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;/datasets/LiTS&quot;</span><span class="p">)</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">id_</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<p>5. Make sure all the methods are working as expected:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">amid.lits</span> <span class="kn">import</span> <span class="n">LiTS</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">dataset</span> <span class="o">=</span> <span class="n">LiTS</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s2">&quot;/datasets/LiTS&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">id_</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </code></pre></div>
-<p>7. Populate the dataset:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>amid<span class="w"> </span>populate<span class="w"> </span>LiTS<span class="w"> </span>/shared/data/LiTS
+<p>6. Populate the dataset:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>amid<span class="w"> </span>populate<span class="w"> </span>LiTS<span class="w"> </span>/shared/data/LiTS
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -585,12 +598,12 @@ This way, the image axes will be consistent with the potential contour coordinat
 <p class="admonition-title">Tip</p>
 <p>Use the option <code>--help</code> for a more detailed information on this command.</p>
 </div>
-<p>8. If there is no error, the file <code>amid/data/lits.hash</code> will appear (the name depends on <code>slug</code> given to <code>@checksum</code>).</p>
-<p>9. Check the codestyle using the <code>lint.sh</code> script in the repository's root and make changes if flake8 is not happy:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>lint-requirements.txt<span class="w"> </span><span class="c1"># only for the first time</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>./lint.sh
+<p>7. If there is no error, the file <code>amid/data/lits.hash</code> will appear (the name depends on <code>short_name</code> given to <code>normalize</code>).</p>
+<p>8. Check the codestyle using the <code>lint.sh</code> script in the repository's root and make changes if flake8 is not happy:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>lint-requirements.txt<span class="w"> </span><span class="c1"># only for the first time</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>./lint.sh
 </code></pre></div>
-<p>10. Commit all the files you added, including the <code>*.hash</code> one.</p>
+<p>9. Commit all the files you added, including the <code>*.hash</code> one.</p>
 
 
 
@@ -631,7 +644,7 @@ This way, the image axes will be consistent with the potential contour coordinat
     <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.78eede0e.min.js"></script>
+      <script src="../assets/javascripts/bundle.dff1b7c8.min.js"></script>
       
         <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
       
