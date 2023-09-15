@@ -2,22 +2,13 @@ from pathlib import Path
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, Transform, meta
+from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import normalize
 
-@register(
-    body_region='thorax',
-    license=None, #todo
-    link='https://kits-challenge.org/kits23/',
-    modality='CT',
-    prep_data_size='12G',
-    raw_data_size='12G', # TODO
-    task='Kidney Tumor Segmentation',
-)
-@checksum('kits')
-class KiTS23(Source):
+
+class KiTS23Base(Source):
     """Kidney and Kidney Tumor Segmentation Challenge,
     The 2023 Kidney and Kidney Tumor Segmentation challenge (abbreviated KiTS23)
     is a competition in which teams compete to develop the best system for
@@ -67,9 +58,23 @@ class KiTS23(Source):
     def normalizer(cls):
         return SpacingFromAffine()
 
-# TODO
+
 class SpacingFromAffine(Transform):
     __inherit__ = True
 
     def spacing(affine):
         return nb.affines.voxel_sizes(affine)
+
+
+KiTS23 = normalize(
+    KiTS23Base,
+    'KiTS23',
+    'kits',
+    body_region='thorax',
+    license=None, #todo
+    link='https://kits-challenge.org/kits23/',
+    modality='CT',
+    prep_data_size='12G',
+    raw_data_size='12G', # TODO
+    task='Kidney Tumor Segmentation',
+)
