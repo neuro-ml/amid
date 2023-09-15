@@ -35,7 +35,7 @@ class KiTS23Base(Source):
         return tuple(sorted([sub.name for sub in (Path(_root) / 'dataset').glob('*')]))
 
     def _image_file(i, _root: Silent):
-        return nb.load(Path(_root) / i / f'imaging.nii.gz')
+        return nb.load(Path(_root) / i / 'imaging.nii.gz')
 
     def image(_image_file):
         # CT images are integer-valued, this will help us improve compression rates
@@ -45,7 +45,7 @@ class KiTS23Base(Source):
     # TODO add labels mapping
     def mask(i, _root: Silent):
         """ """
-        mask_path = Path(_root) / i / f'segmentation.nii.gz'
+        mask_path = Path(_root) / i / 'segmentation.nii.gz'
         ct_scan_nifti = nb.load(mask_path)
         return np.bool_(ct_scan_nifti.get_fdata()[...])
 
@@ -73,7 +73,7 @@ KiTS23 = normalize(
     license=None,  # todo
     link='https://kits-challenge.org/kits23/',
     modality='CT',
-    prep_data_size='12G',
+    prep_data_size='50G',
     raw_data_size='12G',  # TODO
     task='Kidney Tumor Segmentation',
 )
