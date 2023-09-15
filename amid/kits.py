@@ -53,10 +53,6 @@ class KiTS23Base(Source):
         """The 4x4 matrix that gives the image's spatial orientation."""
         return _image_file.affine
 
-    @classmethod
-    def normalizer(cls):
-        return SpacingFromAffine()
-
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
@@ -76,4 +72,5 @@ KiTS23 = normalize(
     prep_data_size='50G',
     raw_data_size='12G',
     task='Kidney Tumor Segmentation',
+    normalizers=[SpacingFromAffine()]
 )
