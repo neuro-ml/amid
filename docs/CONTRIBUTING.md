@@ -42,7 +42,7 @@ We will be using [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.p
 git checkout lits
 ```
 
-3\. Create a class that loads the raw data. [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) is a good
+3\. Create a class that loads the raw data. [LiTSBase](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) is a good
 example. Note how each field is implemented as a separate function.
 
 There are no strict rules regarding the dataset fields,
@@ -66,9 +66,24 @@ i.e., do not apply heavy processing that modifies the data irreversibly.
 !!! tip
     If the raw data contains a table with metadata, it is preferable to split the metadata columns into separate fields.
 
-4\. Add the `@checksum(slug)` decorator, where `slug` is a slug for the dataset, e.g., `'lits'`.
+4\. Register the dataset like so:
 
-5\. Add the `@register(...)` decorator with the following arguments:
+```python
+from amid.internals import normalize
+
+LiTS = normalize(
+    LiTSBase, 'LiTS', 'lits',
+    ...,
+)
+```
+
+where the first 3 arguments are
+
+- the raw dataset
+- the final dataset name
+- a short name for the dataset (mostly used for various files generation)
+
+and `...` stands for the following arguments:
 
 - `modality` — the images' modality/modalities, e.g., CT, MRI
 - `body_region` — the anatomical regions present in the dataset, e.g., Head, Thorax, Abdomen
@@ -78,7 +93,7 @@ i.e., do not apply heavy processing that modifies the data irreversibly.
 - `task` — the dataset's downstream task if any.
     E.g., Supervised Learning, Domain Adaptation, Self-supervised Learning, Tumor Segmentation, etc.
 
-6\. Make sure all the methods are working as expected:
+5\. Make sure all the methods are working as expected:
 
 ```python
 from amid.lits import LiTS
@@ -91,7 +106,7 @@ id_ = dataset.ids[0]
 print(dataset.image(id_).shape)
 ```
 
-7\. Populate the dataset:
+6\. Populate the dataset:
 
 ```shell
 amid populate LiTS /shared/data/LiTS
@@ -103,13 +118,13 @@ amid populate LiTS /shared/data/LiTS
 !!! tip
     Use the option `--help` for a more detailed information on this command.
 
-8\. If there is no error, the file `amid/data/lits.hash` will appear (the name depends on `slug` given to `@checksum`).
+7\. If there is no error, the file `amid/data/lits.hash` will appear (the name depends on `short_name` given to `normalize`).
 
-9\. Check the codestyle using the `lint.sh` script in the repository's root and make changes if flake8 is not happy:
+8\. Check the codestyle using the `lint.sh` script in the repository's root and make changes if flake8 is not happy:
 
 ```shell
 pip install -r lint-requirements.txt # only for the first time
 ./lint.sh
 ```
 
-10\. Commit all the files you added, including the `*.hash` one.
+9\. Commit all the files you added, including the `*.hash` one.

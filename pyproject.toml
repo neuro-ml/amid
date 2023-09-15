@@ -41,6 +41,11 @@ include = ["amid"]
 version = { attr = "amid.__version__.__version__" }
 dependencies = { file = "requirements.txt" }
 
+[tool.pytest.ini_options]
+markers = [
+    "raw: tests that require the raw files storage",
+]
+
 [tool.black]
 line-length = 120
 skip-string-normalization = true
