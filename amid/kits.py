@@ -15,10 +15,10 @@ class KiTS23Base(Source):
     automatic semantic segmentation of kidneys, renal tumors, and renal cysts.
 
     Competition page is https://kits-challenge.org/kits23/, official competition repository is
-    https://github.com/neheller/kits23/. 
+    https://github.com/neheller/kits23/.
 
     For usage, clone the repository https://github.com/neheller/kits23/, install and run `kits23_download_data`.
-    
+
     Parameters
     ----------
     root: str, path to downloaded author's repository
@@ -44,12 +44,11 @@ class KiTS23Base(Source):
     # TODO add multiple segmentations
     # TODO add labels mapping
     def mask(i, _root: Silent):
-        """
-        """
+        """ """
         mask_path = Path(_root) / i / f'segmentation.nii.gz'
         ct_scan_nifti = nb.load(mask_path)
         return np.bool_(ct_scan_nifti.get_fdata()[...])
-    
+
     def affine(_image_file):
         """The 4x4 matrix that gives the image's spatial orientation."""
         return _image_file.affine
@@ -71,10 +70,10 @@ KiTS23 = normalize(
     'KiTS23',
     'kits',
     body_region='thorax',
-    license=None, #todo
+    license=None,  # todo
     link='https://kits-challenge.org/kits23/',
     modality='CT',
     prep_data_size='12G',
-    raw_data_size='12G', # TODO
+    raw_data_size='12G',  # TODO
     task='Kidney Tumor Segmentation',
 )
