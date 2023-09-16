@@ -517,6 +517,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.tbad.TBAD" class="md-nav__link">
+    TBAD
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.totalsegmentator.dataset.Totalsegmentator" class="md-nav__link">
     Totalsegmentator
   </a>
@@ -829,6 +836,13 @@
         <li class="md-nav__item">
   <a href="#amid.stanford_coca.StanfordCoCa" class="md-nav__link">
     StanfordCoCa
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.tbad.TBAD" class="md-nav__link">
+    TBAD
   </a>
   
 </li>
@@ -8131,6 +8145,182 @@ and a folder with the non-gated CT scans with corresponding coronary with corona
 
 <h4 id="amid.stanford_coca.StanfordCoCa.score" class="doc doc-heading">
           <code class="highlight language-python"><span class="n">score</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h3 id="amid.tbad.TBAD" class="doc doc-heading">
+          <code>amid.tbad.TBAD</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>A dataset of 3D Computed Tomography (CT) images for Type-B Aortic Dissection segmentation.</p>
+<h5 id="amid.tbad.TBAD--notes">Notes</h5>
+<p>The data can only be obtained by contacting the authors by email.
+See the <a href="https://github.com/XiaoweiXu/Dataset_Type-B-Aortic-Dissection">dataset home page</a> for details.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+                <code>(str, <span title="pathlib.Path">Path</span>)</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>path to the folder containing the raw downloaded files.
+If not provided, the cache is assumed to be already populated.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>the data version. Only has effect if the library was installed from a cloned git repository.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+<p><strong>Examples:</strong></p>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place the downloaded files in any folder and pass the path to the constructor:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">ds</span> <span class="o">=</span> <span class="n">TBAD</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/path/to/files/root&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">))</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go"># 100</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go"># (512, 512, 327)</span>
+</code></pre></div>
+      <h5 id="amid.tbad.TBAD--references">References</h5>
+<p>.. [1] Yao, Zeyang &amp; Xie, Wen &amp; Zhang, Jiawei &amp; Dong, Yuhao &amp; Qiu, Hailong &amp; Haiyun, Yuan &amp; Jia,
+       Qianjun &amp; Tianchen, Wang &amp; Shi, Yiyi &amp; Zhuang, Jian &amp; Que, Lifeng &amp; Xu, Xiaowei &amp; Huang, Meiping.
+       (2021). ImageTBAD: A 3D Computed Tomography Angiography Image Dataset for Automatic Segmentation
+       of Type-B Aortic Dissection. Frontiers in Physiology. 12. 732711. 10.3389/fphys.2021.732711.</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.tbad.TBAD.ids" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.tbad.TBAD.image" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.tbad.TBAD.affine" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.tbad.TBAD.mask" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
 
 </h4>
 
