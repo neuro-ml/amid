@@ -3,7 +3,7 @@ from pathlib import Path
 
 import nibabel as nb
 import numpy as np
-from connectome import Source, meta
+from connectome import Source, Transform, meta
 from connectome.interface.nodes import Silent
 
 from .internals import licenses, normalize
@@ -77,20 +77,19 @@ class TBADBase(Source):
                 image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return image.affine
 
-    def spacing(_fname):
-        """Returns voxel spacing along axes (x, y, z)."""
-        with _fname.open('rb') as opened:
-            with gzip.GzipFile(fileobj=opened) as nii:
-                nii = nb.FileHolder(fileobj=nii)
-                image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                return tuple(image.header['pixdim'][1:4])
-
     def mask(i, _base_p: Silent):
         with Path(_base_p / f'{i}_label.nii.gz').open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nb.FileHolder(fileobj=nii)
                 label = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return np.uint8(label.get_fdata())
+
+
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nb.affines.voxel_sizes(affine)
 
 
 TBAD = normalize(
@@ -104,4 +103,5 @@ TBAD = normalize(
     prep_data_size='14G',
     raw_data_size='14G',
     task='Aortic dissection segmentation',
+    normalizers=[SpacingFromAffine()],
 )
