@@ -72,5 +72,5 @@ KiTS23 = normalize(
     prep_data_size='50G',
     raw_data_size='12G',
     task='Kidney Tumor Segmentation',
-    normalizers=[SpacingFromAffine()]
+    normalizers=[SpacingFromAffine()],
 )
