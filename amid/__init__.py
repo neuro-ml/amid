@@ -30,6 +30,8 @@ from .totalsegmentator import Totalsegmentator
 from .upenn_gbm import UPENN_GBM
 from .verse import VerSe
 from .vs_seg import VSSEG
+from .kits import KiTS23
+from .msd import MSD
 
 
 unstable_module(__name__)
