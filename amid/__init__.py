@@ -15,12 +15,14 @@ from .deeplesion import DeepLesion
 from .egd import EGD
 from .flare2022 import FLARE2022
 from .internals import CacheColumns, CacheToDisk
+from .kits import KiTS23
 from .lidc import LIDC
 from .lits import LiTS
 from .liver_medseg import LiverMedseg
 from .medseg9 import Medseg9
 from .midrc import MIDRC
 from .mood import MOOD
+from .msd import MSD
 from .nlst import NLST
 from .nsclc import NSCLC
 from .ribfrac import RibFrac
@@ -30,8 +32,6 @@ from .totalsegmentator import Totalsegmentator
 from .upenn_gbm import UPENN_GBM
 from .verse import VerSe
 from .vs_seg import VSSEG
-from .kits import KiTS23
-from .msd import MSD
 
 
 unstable_module(__name__)
