@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.2">
     
     
       
@@ -26,10 +26,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.046329b4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.d451bc0e.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a5377069.min.css">
       
       
 
@@ -419,6 +419,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#amid.kits.KiTS23" class="md-nav__link">
+    KiTS23
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#amid.lidc.dataset.LIDC" class="md-nav__link">
     LIDC
   </a>
@@ -586,14 +593,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
+          
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
@@ -738,6 +747,13 @@
         <li class="md-nav__item">
   <a href="#amid.flare2022.FLARE2022" class="md-nav__link">
     FLARE2022
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#amid.kits.KiTS23" class="md-nav__link">
+    KiTS23
   </a>
   
 </li>
@@ -4163,6 +4179,156 @@ Medical Image Analysis 82 (2022): 102616.</p>
 
 
   <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+
+<h3 id="amid.kits.KiTS23" class="doc doc-heading">
+          <code>amid.kits.KiTS23</code>
+
+
+</h3>
+
+
+  <div class="doc doc-contents first">
+
+  
+      <p>Kidney and Kidney Tumor Segmentation Challenge,
+The 2023 Kidney and Kidney Tumor Segmentation challenge (abbreviated KiTS23)
+is a competition in which teams compete to develop the best system for
+automatic semantic segmentation of kidneys, renal tumors, and renal cysts.</p>
+<p>Competition page is https://kits-challenge.org/kits23/, official competition repository is
+https://github.com/neheller/kits23/.</p>
+<p>For usage, clone the repository https://github.com/neheller/kits23/, install and run <code>kits23_download_data</code>.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>root</code></td>
+          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <h5 id="amid.kits.KiTS23--example">Example</h5>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.kits.KiTS23.ids" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">ids</span><span class="p">()</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.kits.KiTS23.image" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">image</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.kits.KiTS23.mask" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">mask</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h4 id="amid.kits.KiTS23.affine" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">affine</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span></code>
+
+</h4>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The 4x4 matrix that gives the image's spatial orientation.</p>
 
   </div>
 
@@ -9491,10 +9657,10 @@ If not provided, the cache is assumed to be already populated.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.dff1b7c8.min.js"></script>
+      <script src="../assets/javascripts/bundle.726fbb30.min.js"></script>
       
         <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
       
