@@ -34,6 +34,7 @@ def register(**kwargs):
 
 def normalize(cls: Type, name: str, short_name: str, *, normalizers=(), ignore=(), columns=(), **kwargs):
     cls = checksum(short_name, normalizers=normalizers, ignore=ignore, columns=columns)(cls)
+    cls.__qualname__ = name
     description = Description(**kwargs)
     _register(cls, name, description, 2)
     return cls
