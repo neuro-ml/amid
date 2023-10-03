@@ -39,7 +39,7 @@ class RibFracBase(Source):
     Annotations downloaded from here:
     At the time of September 2023 the dataset was pre-launched, for details go to https://github.com/M3DV/RibSeg
     dataset: https://drive.google.com/file/d/1ZZGGrhd0y1fLyOZGo_Y-wlVUP4lkHVgm/view?usp=sharing
-    description table: https://docs.google.com/spreadsheets/d/1lz9liWPy8yHybKCdO3BCA9K76QH8a54XduiZS_9fK70/edit?usp=sharing
+    table: https://docs.google.com/spreadsheets/d/1lz9liWPy8yHybKCdO3BCA9K76QH8a54XduiZS_9fK70/edit?usp=sharing
 
     example:
     seg: seg = nibabel.load(file name).get_fdata()
