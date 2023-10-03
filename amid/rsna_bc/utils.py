@@ -1,43 +1,23 @@
 import contextlib
 import zipfile
+from functools import partial
 from pathlib import Path
 
 import pandas as pd
+from connectome import Positional
 
 
-fields = {
-    'site_id': str,
-    'patient_id': str,
-    'image_id': str,
-    'laterality': None,
-    'view': None,
-    'age': None,
-    'cancer': bool,
-    'biopsy': bool,
-    'invasive': bool,
-    'BIRADS': int,
-    'implant': bool,
-    'density': None,
-    'machine_id': str,
-    'prediction_id': str,
-    'difficult_negative_case': bool,
-}
+def _loader(cast, name, _row):
+    value = _row.get(name)
+    if pd.isnull(value):
+        return None
+    if cast is not None:
+        return cast(value)
+    return value
 
 
-def add_csv_fields(scope):
-    def make_loader(field, cast):
-        def loader(_row):
-            value = _row.get(field)
-            if pd.isnull(value):
-                return None
-            if cast is not None:
-                return cast(value)
-            return value
-
-        return loader
-
-    for _field, _cast in fields.items():
-        scope[_field] = make_loader(_field, _cast)
+def csv_field(cast):
+    return Positional(partial(_loader, cast), 'name', '_row')
 
 
 @contextlib.contextmanager

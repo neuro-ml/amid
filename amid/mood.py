@@ -9,21 +9,11 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, register
+from .internals import normalize
 from .utils import deprecate
 
 
-@register(
-    body_region=('Head', 'Abdominal'),
-    license=None,  # FIXME: inherit licenses from the original datasets...
-    link='http://medicalood.dkfz.de/web/',
-    modality=('MRI', 'CT'),
-    prep_data_size='405G',
-    raw_data_size='120G',
-    task='Out-of-distribution detection',
-)
-@checksum('mood')
-class MOOD(Source):
+class MOODBase(Source):
     """
     A (M)edival (O)ut-(O)f-(D)istribution analysis challenge [1]_
 
@@ -154,6 +144,20 @@ class MOOD(Source):
         if 'toy' in _file.name:
             with open_nii_gz_file(_file.parent.parent / 'toy_label/pixel' / _file.name) as nii_image:
                 return np.bool_(nii_image.get_fdata())
+
+
+MOOD = normalize(
+    MOODBase,
+    'MOOD',
+    'mood',
+    body_region=('Head', 'Abdominal'),
+    license=None,  # FIXME: inherit licenses from the original datasets...
+    link='http://medicalood.dkfz.de/web/',
+    modality=('MRI', 'CT'),
+    prep_data_size='405G',
+    raw_data_size='120G',
+    task='Out-of-distribution detection',
+)
 
 
 # TODO: sync with amid.utils

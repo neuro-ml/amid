@@ -12,9 +12,8 @@ plugins:
       default_handler: python_connectome
       handlers:
         python_connectome:
-          selection:
+          options:
             docstring_style: numpy
-          rendering:
             merge_init_into_class: true
             members_order: source
             show_if_no_docstring: true
@@ -23,11 +22,9 @@ plugins:
             show_root_heading: true
             show_source: false
             heading_level: 3
-      watch:
-        - amid
   - exclude:
       glob:
-        - 'mkdocstrings/**/*'
+        - '**/python_connectome.py'
         - 'fill_docs.py'
         - 'fill_readme.py'
 
