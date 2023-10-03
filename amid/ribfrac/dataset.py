@@ -7,19 +7,10 @@ from connectome import Source, meta
 from connectome.interface.nodes import Silent
 from pandas import read_excel
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 
 
-@register(
-    body_region='Chest',
-    license=licenses.CC_BYNC_40,
-    link='https://ribfrac.grand-challenge.org',
-    modality='CT',
-    raw_data_size='77.8 G',
-    task='Segmentation',
-)
-@checksum('ribfrac')
-class RibFrac(Source):
+class RibFracBase(Source):
     """
     RibFrac dataset is a benchmark for developping algorithms on rib fracture detection,
     segmentation and classification. We hope this large-scale dataset could facilitate
@@ -133,3 +124,16 @@ class RibFrac(Source):
     def _meta(_base):
         file = 'RibSeg v2.xlsx'
         return read_excel(_base / file)
+
+
+RibFrac = normalize(
+    RibFracBase,
+    'RibFrac',
+    'ribfrac',
+    body_region='Chest',
+    license=licenses.CC_BYNC_40,
+    link='https://ribfrac.grand-challenge.org',
+    modality='CT',
+    raw_data_size='77.8 G',
+    task='Segmentation',
+)
