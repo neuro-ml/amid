@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from tqdm.auto import tqdm
 
 import numpy as np
 import pydicom
@@ -85,14 +86,18 @@ class NLST(Source):
     _root: str = None
 
     @meta
-    def ids(_root: Silent):
-        return tuple(
-            path.name
-            for path in Path(_root).glob('*/*/*/*')
-            if path.is_dir()
-            if any(path.iterdir())
-            if int(_load_json(path.parent / f'{path.name}.json')['Total'][5]) >= 8  # at least 8 slices
-        )
+    def ids(_root):
+        ids = []
+        for path in tqdm(list(Path(_root).iterdir())):
+            series_uid2num_slices = {
+                p.name[:-len('.json')]: int(_load_json(p)['Total'][5])
+                for p in path.glob('*/*/*')
+                if p.is_file()
+                if p.name.endswith('.json')
+            }
+            ids.append(max(series_uid2num_slices, key=series_uid2num_slices.get))
+
+        return ids[:5000]
 
     def _series(i, _root: Silent):
         (folder,) = Path(_root).glob(f'**/{i}')
