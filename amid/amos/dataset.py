@@ -77,11 +77,18 @@ class AMOSBase(Source):
                 with open_nii_gz_file(unpacked) as image:
                     return np.asarray(image.dataobj)
 
-    def affine(i, _id2split, _base):
+    def affine(i, _id2split, _base, _archive_name):
         """The 4x4 matrix that gives the image's spatial orientation"""
-        file = f'images{_id2split[i]}/amos_{i}.nii.gz'
+        if i in _id2split:
+            archive_name = ARCHIVE_NAME_SEG
+            archive_root = ARCHIVE_ROOT_NAME
+            file = f'images{_id2split[i]}/amos_{i}.nii.gz'
+        else: 
+            archive_name = _archive_name
+            archive_root = '.'
+            file = f'amos_{i}.nii.gz'
 
-        with unpack(_base / ARCHIVE_NAME_SEG, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
+        with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
