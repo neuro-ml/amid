@@ -68,7 +68,7 @@ class AMOSBase(Source):
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else: 
             archive_name = _archive_name
-            archive_root = '.' # check
+            archive_root = ARCHIVE_ROOT_NAME
             file = f'amos_{i}.nii.gz'
         
 
@@ -87,7 +87,7 @@ class AMOSBase(Source):
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else: 
             archive_name = _archive_name
-            archive_root = '.' # check
+            archive_root = ARCHIVE_ROOT_NAME
             file = f'amos_{i}.nii.gz'
 
         with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
@@ -151,10 +151,16 @@ class AMOSBase(Source):
 
     @lru_cache(None)
     def _meta(_base):
-        file = 'labeled_data_meta_0000_0599.csv'
-
-        with unpack(_base, file) as (unpacked, _):
-            return pd.read_csv(unpacked)
+        files = ['labeled_data_meta_0000_0599.csv',
+        'unlabeled_data_meta_5400_5899.csv',
+        'unlabeled_data_meta_5000_5399.csv',
+        'unlabeled_data_meta_5900_6199.csv']
+        
+        dfs = []
+        for file in files:
+            with unpack(_base, file) as (unpacked, _):
+                dfs.append(pd.read_csv(unpacked))
+        return pd.concat(dfs)
         
     def _archive_name(i):
         if  5000 <= int(i) < 5400:
