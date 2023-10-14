@@ -96,7 +96,10 @@ class AMOSBase(Source):
                     return image.affine
 
     def mask(i, _id2split, _base):
-        file = f'labels{_id2split[i]}/amos_{i}.nii.gz'
+        if i in _id2split:
+            file = f'labels{_id2split[i]}/amos_{i}.nii.gz'
+        else:
+            return
 
         try:
             with unpack(_base / ARCHIVE_NAME_SEG, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
@@ -106,7 +109,7 @@ class AMOSBase(Source):
                     with open_nii_gz_file(unpacked) as image:
                         return np.asarray(image.dataobj)
         except FileNotFoundError:
-            return None
+            return 
 
     # labels
 
