@@ -56,8 +56,10 @@ class AMOSBase(Source):
         return Path(_root)
 
     @meta
-    def ids(_id2split):
-        return sorted(_id2split)
+    def ids(_id2split, _ids_unlabelled):
+        labelled = sorted(_id2split)
+        unlabelled = sorted(_ids_unlabelled) 
+        return labelled + unlabelled
 
     def image(i, _id2split, _base, _archive_name):
         if i in _id2split:
@@ -66,7 +68,7 @@ class AMOSBase(Source):
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else: 
             archive_name = _archive_name
-            archive_root = '.'
+            archive_root = '.' # check
             file = f'amos_{i}.nii.gz'
         
 
@@ -85,7 +87,7 @@ class AMOSBase(Source):
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else: 
             archive_name = _archive_name
-            archive_root = '.'
+            archive_root = '.' # check
             file = f'amos_{i}.nii.gz'
 
         with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
@@ -134,6 +136,18 @@ class AMOSBase(Source):
                     id2split[id_] = split
 
         return id2split
+    
+    def _ids_unlabelled(_base):
+        ids_unlabelled = []
+        for archive in ['amos22_unlabeled_ct_5000_5399.zip', 'amos22_unlabeled_ct_5400_5899.zip',
+                        'amos22_unlabeled_ct_5900_6199.zip', 'amos22_unlabeled_ct_6200_6899.zip']:
+            with ZipFile(_base / archive) as zf:
+                for x in zf.namelist():
+                    if x.endswith('.nii.gz'):
+                        file = x.split('/')[-1]
+                        id_ = file.split('.')[0].split('_')[-1]
+                        ids_unlabelled.append(id_)
+        return ids_unlabelled
 
     @lru_cache(None)
     def _meta(_base):
