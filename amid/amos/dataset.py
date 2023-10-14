@@ -13,7 +13,7 @@ from ..utils import open_nii_gz_file, unpack
 from .utils import label
 
 
-ARCHIVE_NAME = 'amos22.zip'
+ARCHIVE_NAME_SEG = 'amos22.zip'
 ARCHIVE_ROOT_NAME = 'amos22'
 
 
@@ -59,10 +59,18 @@ class AMOSBase(Source):
     def ids(_id2split):
         return sorted(_id2split)
 
-    def image(i, _id2split, _base):
-        file = f'images{_id2split[i]}/amos_{i}.nii.gz'
+    def image(i, _id2split, _base, _archive_name):
+        if i in _id2split:
+            archive_name = ARCHIVE_NAME_SEG
+            archive_root = ARCHIVE_ROOT_NAME
+            file = f'images{_id2split[i]}/amos_{i}.nii.gz'
+        else: 
+            archive_name = _archive_name
+            archive_root = '.'
+            file = f'amos_{i}.nii.gz'
+        
 
-        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
+        with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return np.asarray(nibabel.load(unpacked).dataobj)
             else:
@@ -73,7 +81,7 @@ class AMOSBase(Source):
         """The 4x4 matrix that gives the image's spatial orientation"""
         file = f'images{_id2split[i]}/amos_{i}.nii.gz'
 
-        with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
+        with unpack(_base / ARCHIVE_NAME_SEG, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
@@ -84,7 +92,7 @@ class AMOSBase(Source):
         file = f'labels{_id2split[i]}/amos_{i}.nii.gz'
 
         try:
-            with unpack(_base / ARCHIVE_NAME, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
+            with unpack(_base / ARCHIVE_NAME_SEG, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
                 if is_unpacked:
                     return np.asarray(nibabel.load(unpacked).dataobj)
                 else:
@@ -107,7 +115,7 @@ class AMOSBase(Source):
     def _id2split(_base):
         id2split = {}
 
-        with ZipFile(_base / ARCHIVE_NAME) as zf:
+        with ZipFile(_base / ARCHIVE_NAME_SEG) as zf:
             for x in zf.namelist():
                 if (len(x.strip('/').split('/')) == 3) and x.endswith('.nii.gz'):
                     file, split = x.split('/')[-1], x.split('/')[-2][-2:]
@@ -123,7 +131,17 @@ class AMOSBase(Source):
 
         with unpack(_base, file) as (unpacked, _):
             return pd.read_csv(unpacked)
-
+        
+    def _archive_name(i):
+        if  5000 <= int(i) < 5400:
+            return 'amos22_unlabeled_ct_5000_5399.zip'
+        elif 5400 <= int(i) < 5900:
+            return 'amos22_unlabeled_ct_5400_5899.zip'
+        elif 5900 <= int(i) < 6200:
+            return 'amos22_unlabeled_ct_5900_6199.zip'
+        else:
+            return 'amos22_unlabeled_ct_6200_6899.zip'
+        
 
 class SpacingFromAffine(Transform):
     __inherit__ = True
