@@ -64,13 +64,12 @@ class AMOSBase(Source):
         return labelled + unlabelled
 
     def image(i, _id2split, _base, _archive_name):
+        archive_name, archive_root = _archive_name
         if i in _id2split:
             archive_name = ARCHIVE_NAME_SEG
             archive_root = ARCHIVE_ROOT_NAME
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else:
-            archive_name = _archive_name
-            archive_root = _archive_name.removesuffix('.zip')
             file = f'amos_{i}.nii.gz'
 
         with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
@@ -82,13 +81,12 @@ class AMOSBase(Source):
 
     def affine(i, _id2split, _base, _archive_name):
         """The 4x4 matrix that gives the image's spatial orientation"""
+        archive_name, archive_root = _archive_name
         if i in _id2split:
             archive_name = ARCHIVE_NAME_SEG
             archive_root = ARCHIVE_ROOT_NAME
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else:
-            archive_name = _archive_name
-            archive_root = _archive_name.removesuffix('.zip')
             file = f'amos_{i}.nii.gz'
 
         with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
@@ -171,13 +169,13 @@ class AMOSBase(Source):
 
     def _archive_name(i):
         if 5000 <= int(i) < 5400:
-            return 'amos22_unlabeled_ct_5000_5399.zip'
+            return 'amos22_unlabeled_ct_5000_5399.zip', 'amos_unlabeled_ct_5000_5399'
         elif 5400 <= int(i) < 5900:
-            return 'amos22_unlabeled_ct_5400_5899.zip'
+            return 'amos22_unlabeled_ct_5400_5899.zip', 'amos_unlabeled_ct_5400_5899'
         elif 5900 <= int(i) < 6200:
-            return 'amos22_unlabeled_ct_5900_6199.zip'
+            return 'amos22_unlabeled_ct_5900_6199.zip', 'amos22_unlabeled_ct_5900_6199'
         else:
-            return 'amos22_unlabeled_ct_6200_6899.zip'
+            return 'amos22_unlabeled_ct_6200_6899.zip', 'amos22_unlabeled_6200_6899'
 
 
 class SpacingFromAffine(Transform):
