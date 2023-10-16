@@ -70,7 +70,7 @@ class AMOSBase(Source):
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else:
             archive_name = _archive_name
-            archive_root = ARCHIVE_ROOT_NAME
+            archive_root = _archive_name.removesuffix('.zip')
             file = f'amos_{i}.nii.gz'
 
         with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
@@ -88,7 +88,7 @@ class AMOSBase(Source):
             file = f'images{_id2split[i]}/amos_{i}.nii.gz'
         else:
             archive_name = _archive_name
-            archive_root = ARCHIVE_ROOT_NAME
+            archive_root = _archive_name.removesuffix('.zip')
             file = f'amos_{i}.nii.gz'
 
         with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
