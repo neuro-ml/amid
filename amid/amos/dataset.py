@@ -15,8 +15,8 @@ from .utils import label
 
 ARCHIVE_NAME_SEG = 'amos22.zip'
 ARCHIVE_ROOT_NAME = 'amos22'
+ERRORS = ['5514', '5437'] # these ids are damaged in the zip archives
 # TODO: add MRI
-# TODO: test and populate
 
 
 class AMOSBase(Source):
@@ -64,6 +64,10 @@ class AMOSBase(Source):
         return labelled + unlabelled
 
     def image(i, _id2split, _base, _archive_name):
+        """Corresponding 3D image."""
+        if i in ERRORS:
+            return None # this image is damaged in the archive
+        
         archive_name, archive_root = _archive_name
         if i in _id2split:
             archive_name = ARCHIVE_NAME_SEG
@@ -80,7 +84,9 @@ class AMOSBase(Source):
                     return np.asarray(image.dataobj)
 
     def affine(i, _id2split, _base, _archive_name):
-        """The 4x4 matrix that gives the image's spatial orientation"""
+        """The 4x4 matrix that gives the image's spatial orientation."""
+        if i in ERRORS:
+            return None # this image is damaged in the archive
         archive_name, archive_root = _archive_name
         if i in _id2split:
             archive_name = ARCHIVE_NAME_SEG
@@ -112,6 +118,12 @@ class AMOSBase(Source):
         except FileNotFoundError:
             return
 
+    def image_modality(i):
+        """Returns image modality, `CT` or `MRI`."""
+        if 500 < int(i) <= 600:
+            return 'MRI'
+        return 'CT'
+        
     # labels
 
     birth_date = label("Patient's Birth Date")
