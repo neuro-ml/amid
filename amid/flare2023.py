@@ -107,7 +107,7 @@ class FLARE2023(Source):
             return None
 
         archive = list(Path(_root).glob('val-gt-50cases-for-sanity-check*'))
-        assert len(archive) == 1, f"Multiple .zip archives detected {archive}. Expected only one"
+        assert len(archive) == 1, f'Multiple .zip archives detected {archive}. Expected only one'
         archive = archive[0]
 
         with ZipFile(archive) as zf:
