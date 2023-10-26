@@ -7,20 +7,10 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, register
+from .internals import normalize
 
 
-@register(
-    body_region=('Abdomen', 'Thorax'),
-    license='DeepLesion data license',  # TODO
-    link='https://nihcc.app.box.com/v/DeepLesion',
-    modality='CT',
-    prep_data_size='259G',
-    raw_data_size='259G',
-    task=('Localisation', 'Detection', 'Classification'),
-)
-@checksum('deeplesion')
-class DeepLesion(Source):
+class DeepLesionBase(Source):
     """
     DeepLesion is composed of 33,688 bookmarked radiology images from
     10,825 studies of 4,477 unique patients. For every bookmarked image, a bound-
@@ -165,3 +155,17 @@ class DeepLesion(Source):
                 image_index,
             ] = 1
         return mask
+
+
+DeepLesion = normalize(
+    DeepLesionBase,
+    'DeepLesion',
+    'deeplesion',
+    body_region=('Abdomen', 'Thorax'),
+    license='DeepLesion data license',  # TODO
+    link='https://nihcc.app.box.com/v/DeepLesion',
+    modality='CT',
+    prep_data_size='259G',
+    raw_data_size='259G',
+    task=('Localisation', 'Detection', 'Classification'),
+)

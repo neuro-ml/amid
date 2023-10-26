@@ -11,21 +11,11 @@ import pandas as pd
 from connectome import Source, meta
 from connectome.interface.nodes import Output, Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import deprecate
 
 
-@register(
-    body_region='Head',
-    license=licenses.CC_BYNCSA_40,
-    link='https://zenodo.org/record/6504722#.YsgwnNJByV4',
-    modality=('MRI T1c', 'MRI T2hr'),
-    prep_data_size='8,96G',
-    raw_data_size='17G',
-    task=('Segmentation', 'Classification', 'Domain Adaptation'),
-)
-@checksum('crossmoda2022')
-class CrossMoDA(Source):
+class CrossMoDABase(Source):
     """
     Parameters
     ----------
@@ -146,6 +136,20 @@ class CrossMoDA(Source):
         if split == 'training_source':
             grade = train_source_df.loc[i, 'koos']
             return -1 if (grade == 'post-operative-london') else int(grade)
+
+
+CrossMoDA = normalize(
+    CrossMoDABase,
+    'CrossMoDA',
+    'crossmoda2022',
+    body_region='Head',
+    license=licenses.CC_BYNCSA_40,
+    link='https://zenodo.org/record/6504722#.YsgwnNJByV4',
+    modality=('MRI T1c', 'MRI T2hr'),
+    prep_data_size='8,96G',
+    raw_data_size='17G',
+    task=('Segmentation', 'Classification', 'Domain Adaptation'),
+)
 
 
 # TODO: sync with amid.utils

@@ -21,20 +21,10 @@ from dicom_csv import (
     stack_images,
 )
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
-@register(
-    body_region='Thorax',
-    license=licenses.CC_BY_30,
-    link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
-    modality='CT',
-    prep_data_size='13G',
-    raw_data_size='34G',
-    task='Tumor Segmentation',
-)
-@checksum('nsclc')
-class NSCLC(Source):
+class NSCLCBase(Source):
     """
 
         NSCLC-Radiomics is a public cell lung cancer segmentation dataset with 422 patients.
@@ -238,6 +228,20 @@ class NSCLC(Source):
                 raise AssertionError(i)
             all_masks[seg] = sub_mask
         return all_masks
+
+
+NSCLC = normalize(
+    NSCLCBase,
+    'NSCLC',
+    'nsclc',
+    body_region='Thorax',
+    license=licenses.CC_BY_30,
+    link='https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics',
+    modality='CT',
+    prep_data_size='13G',
+    raw_data_size='34G',
+    task='Tumor Segmentation',
+)
 
 
 def get_cancer_orientation_matrix(cancer_dicom):

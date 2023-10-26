@@ -14,24 +14,10 @@ from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 from deli import load
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
-@register(
-    body_region='Chest',
-    license=licenses.CC_BY_40,
-    link='https://ieee-dataport.org/open-access/bimcv-covid-19'
-    '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
-    modality='CT',
-    prep_data_size='859G',
-    raw_data_size='859G',
-    task='Segmentation',
-)
-@checksum(
-    'bimcv_covid19',
-    columns=['affine', 'is_positive', 'label_info', 'session_id', 'session_info', 'subject_id', 'subject_info', 'tags'],
-)
-class BIMCVCovid19(Source):
+class BIMCVCovid19Base(Source):
     """
     BIMCV COVID-19 Dataset, CT-images only
     It includes BIMCV COVID-19 positive partition (https://arxiv.org/pdf/2006.01174.pdf)
@@ -83,7 +69,7 @@ class BIMCVCovid19(Source):
             Available at: https://dx.doi.org/10.21227/m4j2-ap59.
     """
 
-    _root: str
+    _root: str = None
 
     def _base(_root: Silent):
         if _root is None:
@@ -310,6 +296,23 @@ class SpacingFromAffine(Transform):
 
     def spacing(affine):
         return nb.affines.voxel_sizes(affine)
+
+
+BIMCVCovid19 = normalize(
+    BIMCVCovid19Base,
+    'BIMCVCovid19',
+    'bimcv_covid19',
+    body_region='Chest',
+    license=licenses.CC_BY_40,
+    link='https://ieee-dataport.org/open-access/bimcv-covid-19'
+    '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
+    modality='CT',
+    prep_data_size='859G',
+    raw_data_size='859G',
+    task='Segmentation',
+    columns=['affine', 'is_positive', 'label_info', 'session_id', 'session_info', 'subject_id', 'subject_info', 'tags'],
+    normalizers=[SpacingFromAffine()],
+)
 
 
 @contextlib.contextmanager

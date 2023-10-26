@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11' ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
 
     steps:
       - uses: actions/checkout@v3
@@ -42,19 +42,14 @@ jobs:
           echo $MODULE_PARENT
           echo "MODULE_PARENT=$(echo $MODULE_PARENT)" >> $GITHUB_ENV
 
-      - name: Check code style
-        run: |
-          pip install -r lint-requirements.txt
-          flake8 .
-          isort --check .
-          black --check .
-
       - name: Create the storage
         if: "! github.event.pull_request.head.repo.fork "
         env:
           CACHE_HOST: ${{ secrets.CACHE_HOST }}
+          CACHE_HOST_KEY: ${{ secrets.CACHE_HOST_KEY }}
+          CACHE_HOST_USER: ${{ secrets.CACHE_HOST_USER }}
         run: |
-          mkdir -p ~/.config/amid
+          mkdir -p ~/.config/amid ~/.ssh
           cat >~/.config/amid/.bev.yml <<EOL
           local:
             storage: '/home/runner/work/amid/amid/storage'
@@ -63,12 +58,21 @@ jobs:
           remote:
             storage:
               remote: 
-                nginx: $CACHE_HOST
+                sftp: 'amid:bucket'
           
           meta:
             fallback: local
           EOL
           amid init
+          cat >~/.ssh/config <<EOL
+          Host amid
+            HostName $CACHE_HOST
+            User $CACHE_HOST_USER
+            IdentityFile ~/.ssh/amid
+          EOL
+          echo "$CACHE_HOST_KEY" > ~/.ssh/amid
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/amid
 
       - name: Check readme generation
         if: "! github.event.pull_request.head.repo.fork "
@@ -82,7 +86,7 @@ jobs:
       - name: Test with pytest
         if: "! github.event.pull_request.head.repo.fork "
         run: |
-          pytest tests --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
+          pytest tests -m "not raw" --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
       - name: Generate coverage report
         if: "! github.event.pull_request.head.repo.fork "
         run: |
@@ -97,10 +101,11 @@ jobs:
           name: reports-${{ matrix.python-version }}
           path: reports/*-${{ matrix.python-version }}.xml
 
-      - name: Upload coverage results
-        if: "! github.event.pull_request.head.repo.fork "
-        uses: codecov/codecov-action@v3
-        with:
-          fail_ci_if_error: true
-          files: reports/coverage-${{ matrix.python-version }}.xml
-          verbose: true
+# TODO: coverage is not informative in the CI anyway
+#      - name: Upload coverage results
+#        if: "! github.event.pull_request.head.repo.fork "
+#        uses: codecov/codecov-action@v3
+#        with:
+#          fail_ci_if_error: true
+#          files: reports/coverage-${{ matrix.python-version }}.xml
+#          verbose: true

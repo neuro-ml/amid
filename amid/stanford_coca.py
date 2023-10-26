@@ -23,7 +23,7 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
 class CoCaClasses(IntEnum):
@@ -47,17 +47,7 @@ class Calcification(NamedTuple):
     total: int
 
 
-@register(
-    body_region=('Coronary', 'Chest'),
-    license=licenses.StanfordDSResearch,
-    link='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',
-    modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
-    raw_data_size='28G',
-    task='Coronary Calcium Segmentation',
-)
-@checksum('stanford_coca')
-class StanfordCoCa(Source):
+class StanfordCoCaBase(Source):
     """
     A Stanford AIMI's Co(ronary) Ca(lcium) dataset.
 
@@ -241,6 +231,20 @@ class StanfordCoCa(Source):
         except KeyError:
             warnings.warn(f'Missing scores for idx "{_i}"')
             return None
+
+
+StanfordCoCa = normalize(
+    StanfordCoCaBase,
+    'StanfordCoCa',
+    'stanford_coca',
+    body_region=('Coronary', 'Chest'),
+    license=licenses.StanfordDSResearch,
+    link='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='28G',
+    task='Coronary Calcium Segmentation',
+)
 
 
 class ContoursToMask(Transform):

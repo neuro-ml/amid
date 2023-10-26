@@ -6,6 +6,7 @@ from typing import NamedTuple, Type
 
 import pandas as pd
 
+from .checksum import checksum
 from .licenses import License
 
 
@@ -24,14 +25,25 @@ class Description(NamedTuple):
 
 def register(**kwargs):
     def decorator(cls: Type):
-        name = cls.__name__
-        module = inspect.getmodule(inspect.stack()[1][0]).__name__
-        assert name not in _REGISTRY, name
-        _REGISTRY[name] = cls, module, description
+        _register(cls, cls.__origin__.__name__, description, 2)
         return cls
 
     description = Description(**kwargs)
     return decorator
+
+
+def normalize(cls: Type, name: str, short_name: str, *, normalizers=(), ignore=(), columns=(), **kwargs):
+    cls = checksum(short_name, normalizers=normalizers, ignore=ignore, columns=columns)(cls)
+    cls.__qualname__ = name
+    description = Description(**kwargs)
+    _register(cls, name, description, 2)
+    return cls
+
+
+def _register(cls, name, description, level):
+    module = inspect.getmodule(inspect.stack()[level][0]).__name__
+    assert name not in _REGISTRY, name
+    _REGISTRY[name] = cls, module, description
 
 
 def gather_datasets():

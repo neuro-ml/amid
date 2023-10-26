@@ -20,36 +20,11 @@ from dicom_csv import (
     stack_images,
 )
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import get_series_date
 
 
-@register(
-    body_region='Thorax',
-    license=licenses.CC_BY_30,
-    link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
-    modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
-    raw_data_size=None,  # TODO: should be measured...
-    task=None,
-)
-@checksum(
-    'nlst',
-    columns=[
-        'accession_number',
-        'conv_kernel',
-        'kvp',
-        'orientation_matrix',
-        'patient_id',
-        'pixel_spacing',
-        'series_uid',
-        'slice_locations',
-        'sop_uids',
-        'study_date',
-        'study_uid',
-    ],
-)
-class NLST(Source):
+class NLSTBase(Source):
     """
 
         Dataset with low-dose CT scans of 26,254 patients acquired during National Lung Screening Trial.
@@ -144,6 +119,33 @@ class NLST(Source):
 
     def accession_number(_series):
         return get_common_tag(_series, 'AccessionNumber', default=None)
+
+
+NLST = normalize(
+    NLSTBase,
+    'NLST',
+    'nlst',
+    body_region='Thorax',
+    license=licenses.CC_BY_30,
+    link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size=None,  # TODO: should be measured...
+    task=None,
+    columns=[
+        'accession_number',
+        'conv_kernel',
+        'kvp',
+        'orientation_matrix',
+        'patient_id',
+        'pixel_spacing',
+        'series_uid',
+        'slice_locations',
+        'sop_uids',
+        'study_date',
+        'study_uid',
+    ],
+)
 
 
 def _load_json(file):
