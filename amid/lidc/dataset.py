@@ -167,6 +167,9 @@ class LIDC(Source):
     def kvp(_series):
         return get_common_tag(_series, 'KVP', default=None)
 
+    def tube_current(_series):
+        return get_common_tag(_series, 'XRayTubeCurrent', default=None)
+
     def study_date(_series):
         return get_series_date(_series)
 
