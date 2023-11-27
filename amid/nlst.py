@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from tqdm.auto import tqdm
 
 import numpy as np
 import pydicom
@@ -19,6 +18,7 @@ from dicom_csv import (
     order_series,
     stack_images,
 )
+from tqdm.auto import tqdm
 
 from .internals import licenses, normalize
 from .utils import get_series_date
@@ -65,7 +65,7 @@ class NLSTBase(Source):
         ids = []
         for path in tqdm(list(Path(_root).iterdir())):
             series_uid2num_slices = {
-                p.name[:-len('.json')]: int(_load_json(p)['Total'][5])
+                p.name[: -len('.json')]: int(_load_json(p)['Total'][5])
                 for p in path.glob('*/*/*')
                 if p.is_file()
                 if p.name.endswith('.json')
