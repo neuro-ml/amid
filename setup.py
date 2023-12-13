@@ -8,7 +8,6 @@ classifiers = [
     'Development Status :: 4 - Beta',
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
@@ -41,5 +40,5 @@ setup(
     },
     classifiers=classifiers,
     install_requires=requirements,
-    python_requires='>=3.6',
+    python_requires='>=3.8',
 )

@@ -9,6 +9,7 @@ from typing import List, Union
 
 import nibabel
 import numpy as np
+from bev.utils import PathOrStr
 from dicom_csv import get_common_tag, order_series, stack_images
 from dicom_csv.exceptions import ConsistencyError, TagTypeError
 from pydicom import Dataset, dcmread
@@ -18,7 +19,7 @@ Numeric = Union[float, int]
 
 
 @contextlib.contextmanager
-def unpack(root: str, relative: str, archive_root_name: str = None, archive_ext: str = None):
+def unpack(root: PathOrStr, relative: str, archive_root_name: str = None, archive_ext: str = None):
     """Provides the absolute path to the file in both scenarios: inside archive or inside folder.
 
     Parameters
