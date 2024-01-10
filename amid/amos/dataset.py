@@ -9,16 +9,19 @@ from bev.utils import PathOrStr
 from connectome import Transform
 from jboc import collect, composed
 
+from ..internals import Dataset, normalize
 from ..utils import open_nii_gz_file, unpack
 
 
 ARCHIVE_NAME_SEG = 'amos22.zip'
 ARCHIVE_ROOT_NAME = 'amos22'
 ERRORS = ['5514', '5437']  # these ids are damaged in the zip archives
+
+
 # TODO: add MRI
 
 
-class AMOS:
+class AMOS(Dataset):
     """
     AMOS provides 500 CT and 100 MRI scans collected from multi-center, multi-vendor, multi-modality, multi-phase,
     multi-disease patients, each with voxel-level annotations of 15 abdominal organs, providing challenging examples
@@ -50,10 +53,6 @@ class AMOS:
     .. [1] JI YUANFENG. (2022). Amos: A large-scale abdominal multi-organ benchmark for
     versatile medical image segmentation [Data set]. Zenodo. https://doi.org/10.5281/zenodo.7262581
     """
-
-    def __init__(self, root: PathOrStr):
-        # TODO: other interfaces?
-        self.root = Path(root)
 
     @property
     def ids(self):

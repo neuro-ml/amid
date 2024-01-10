@@ -1,8 +1,7 @@
-import functools
 from collections import defaultdict
 from contextlib import suppress
 from pathlib import Path
-from typing import Any, BinaryIO, Optional, Tuple
+from typing import Any, BinaryIO, Tuple
 
 import numpy as np
 from bev import Local, Repository
@@ -24,184 +23,158 @@ from .base import get_repo
 from .cache import CacheColumns, CacheToDisk, default_serializer
 
 
-# TODO: add possibility to check the entire tree without the need to pull anything from remote
+class Checked(Chain):
+    def __init__(self, ds, path: str, version: str = Local):
+        self._path = path
+        self._dataset = ds
+        self._version = version
+        self._serializer = default_serializer(None)
+        self._ignore = {'cached'}
+        self._columns = ()
+        self._fields = {x.name for x in ds._container.outputs} - self._ignore
 
+        normalizers = []
+        if normalizers:
+            args = [
+                ds,
+                *self._checker(),
+                Chain(*normalizers),
+                *self._cache(),
+            ]
+        else:
+            args = [
+                ds,
+                *self._cache(),
+                *self._checker(),
+            ]
+        super().__init__(*args)
 
-def checksum(path: str, *, ignore=(), columns=(), normalizers=()):
-    def _cache(cols=False):
+    def _cache(self, cols=False):
         repository = get_repo(strict=False)
         if repository is not None and repository.cache is not None and repository.cache.local:
-            yield CacheToDisk(AntiSet(('id', *columns)), serializer=serializer)
+            yield CacheToDisk(AntiSet(('id', *self._columns)), serializer=self._serializer)
             if cols:
-                yield CacheColumns(columns, serializer=serializer, verbose=True, shard_size=500)
+                yield CacheColumns(self._columns, serializer=self._serializer, verbose=True, shard_size=500)
 
-    def _checker(ds, version):
-        if version is not None:
-            repository = get_repo(strict=False)
-            if repository is not None:
-                yield CacheAndCheck(
-                    set(dir(ds)) - {'id', 'ids', *ignore},
-                    repository.copy(version=version, fetch=True),
-                    path,
-                    serializer=serializer,
+    def _checker(self):
+        repository = get_repo(strict=True)
+        yield CacheAndCheck(
+            self._fields - {'id', 'ids', *self._ignore},
+            repository.copy(version=self._version, fetch=True),
+            self._path,
+            serializer=self._serializer,
+        )
+
+    def _populate(
+            self,
+            *,
+            ignore_errors: bool = False,
+            cache: bool = True,
+            fetch: bool = True,
+            n_jobs: int = 1,
+            analyze_fields: bool = False,
+    ):
+        repository = get_repo().copy(fetch=fetch, version=Local)
+        ds = self[0]
+        fields = sorted(set(dir(ds)) - {'ids', 'id', *self._ignore})
+
+        if cache:
+            ds = Chain(ds, *self.__cache(False))
+        ids = sorted(ds.ids)
+
+        checked = ds >> CacheAndCheck(
+            fields,
+            repository,
+            self._path,
+            serializer=self._serializer,
+            return_tree=True,
+        )
+        _loader = checked._compile(fields)
+
+        def loader(key):
+            try:
+                return key, _loader(key)
+            except Exception as e:
+                if not ignore_errors:
+                    raise RuntimeError(f'Error while processing id {key}') from e
+
+                return key, None
+
+        print(f'Populating the cache with {len(fields)} fields for {len(ids)} ids')
+
+        checksums = {}
+        successes, errors = [], []
+        hashes = defaultdict(list)
+        with ProgressParallel(
+                n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids), desc='Populating checksums')
+        ) as bar:
+            for i, trees in bar(map(delayed(loader), ids)):
+                if trees is None:
+                    errors.append(i)
+                    continue
+
+                successes.append(i)
+                for name, tree in zip_equal(fields, trees):
+                    for k, v in tree.items():
+                        hashes[name].append(v)
+                        checksums['/'.join((name, i, k))] = v
+
+        # we save the checksums 2 times to make sure the work isn't lost
+        save_hash(checksums, to_hash(Path(repository.path / self._path)), repository.storage)
+
+        # check the columns and give recommendations
+        if analyze_fields:
+            #   we allow to cache to mem all fields that take <500mb
+            sizes = {}
+            for name, vs in tqdm(hashes.items(), 'Analyzing the fields'):
+                max_count = 50
+                mul = 1
+                if len(vs) > max_count:
+                    mul = len(vs) / max_count
+                    vs = np.random.choice(vs, max_count, replace=False)
+
+                sizes[name] = sum(repository.storage.read(lambda x: get_value_size(x) / 1024 ** 2, v) for v in vs) * mul
+
+            add = {k for k, v in sizes.items() if v <= 500} - set(self._columns)
+            remove = {k for k, v in sizes.items() if v > 500} & set(self._columns)
+            if add or remove:
+                print(
+                    f'It is recommended to add these fields to columns cache: {list(add)!r}, '
+                    f'also, remove these fields: {list(remove)!r}, like so:\n'
+                    f'@checksum(..., columns={sorted(add | set(self._columns))!r})'
                 )
 
-    serializer = default_serializer(None)
+        # build columns cache
+        if self._columns:
+            values = defaultdict(list)
+            checked = Chain(ds, *self._checker())
+            new_ids = sorted(checked.ids)
+            with ProgressParallel(
+                    n_jobs=n_jobs,
+                    backend='threading',
+                    tqdm_kwargs=dict(total=len(new_ids), desc='Populating lightweight columns'),
+            ) as bar:
+                for vals in bar(map(delayed(checked._compile(self._columns)), new_ids)):
+                    for k, v in zip_equal(self._columns, vals):
+                        values[k].append(v)
 
-    def decorator(cls):
-        # TODO: legacy
-        assert not hasattr(cls, 'normalizers')
-        assert not hasattr(cls, 'normalizer')
+            for name, vals in values.items():
+                for k, v in serialize(vals, self._serializer, repository).items():
+                    checksums['/'.join((f'_{name}', k))] = v
 
-        class Checked(Chain):
-            __origin__ = cls
-
-            def __init__(self, root: Optional[str] = None, version: str = Local):
-                ds = cls(root=root)
-
-                if normalizers:
-                    args = [
-                        ds,
-                        *_checker(ds, version),
-                        Chain(*normalizers),
-                        *_cache(),
-                    ]
-                else:
-                    args = [
-                        ds,
-                        *_cache(),
-                        *_checker(ds, version),
-                    ]
-
-                self._version = version
-                super().__init__(*args)
-
-            @staticmethod
-            def raw(root: Optional[str] = None, version: str = Local):
-                ds = cls(root=root)
-                return Chain(
-                    ds,
-                    *_cache(),
-                    *_checker(ds, version),
-                )
-
-            def _populate(
-                self,
-                *,
-                ignore_errors: bool = False,
-                cache: bool = True,
-                fetch: bool = True,
-                n_jobs: int = 1,
-                analyze_fields: bool = False,
-            ):
-                repository = get_repo().copy(fetch=fetch, version=Local)
-                ds = self[0]
-                fields = sorted(set(dir(ds)) - {'ids', 'id', *ignore})
-
-                if cache:
-                    ds = Chain(ds, *_cache(False))
-                ids = sorted(ds.ids)
-
-                checked = ds >> CacheAndCheck(
-                    fields,
-                    repository,
-                    path,
-                    serializer=serializer,
-                    return_tree=True,
-                )
-                _loader = checked._compile(fields)
-
-                def loader(key):
-                    try:
-                        return key, _loader(key)
-                    except Exception as e:
-                        if not ignore_errors:
-                            raise RuntimeError(f'Error while processing id {key}') from e
-
-                        return key, None
-
-                print(f'Populating the cache with {len(fields)} fields for {len(ids)} ids')
-
-                checksums = {}
-                successes, errors = [], []
-                hashes = defaultdict(list)
-                with ProgressParallel(
-                    n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids), desc='Populating checksums')
-                ) as bar:
-                    for i, trees in bar(map(delayed(loader), ids)):
-                        if trees is None:
-                            errors.append(i)
-                            continue
-
-                        successes.append(i)
-                        for name, tree in zip_equal(fields, trees):
-                            for k, v in tree.items():
-                                hashes[name].append(v)
-                                checksums['/'.join((name, i, k))] = v
-
-                # we save the checksums 2 times to make sure the work isn't lost
-                save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
-
-                # check the columns and give recommendations
-                if analyze_fields:
-                    #   we allow to cache to mem all fields that take <500mb
-                    sizes = {}
-                    for name, vs in tqdm(hashes.items(), 'Analyzing the fields'):
-                        max_count = 50
-                        mul = 1
-                        if len(vs) > max_count:
-                            mul = len(vs) / max_count
-                            vs = np.random.choice(vs, max_count, replace=False)
-
-                        sizes[name] = (
-                            sum(repository.storage.read(lambda x: get_value_size(x) / 1024**2, v) for v in vs) * mul
-                        )
-
-                    add = {k for k, v in sizes.items() if v <= 500} - set(columns)
-                    remove = {k for k, v in sizes.items() if v > 500} & set(columns)
-                    if add or remove:
-                        print(
-                            f'It is recommended to add these fields to columns cache: {list(add)!r}, '
-                            f'also, remove these fields: {list(remove)!r}, like so:\n'
-                            f'@checksum(..., columns={sorted(add | set(columns))!r})'
-                        )
-
-                # build columns cache
-                if columns:
-                    values = defaultdict(list)
-                    checked = Chain(ds, *_checker(ds, Local))
-                    new_ids = sorted(checked.ids)
-                    with ProgressParallel(
-                        n_jobs=n_jobs,
-                        backend='threading',
-                        tqdm_kwargs=dict(total=len(new_ids), desc='Populating lightweight columns'),
-                    ) as bar:
-                        for vals in bar(map(delayed(checked._compile(columns)), new_ids)):
-                            for k, v in zip_equal(columns, vals):
-                                values[k].append(v)
-
-                    for name, vals in values.items():
-                        for k, v in serialize(vals, serializer, repository).items():
-                            checksums['/'.join((f'_{name}', k))] = v
-
-                    save_hash(checksums, to_hash(Path(repository.path / path)), repository.storage)
-                return len(successes), len(errors)
-
-        functools.update_wrapper(Checked, cls, updated=())
-        return Checked
-
-    return decorator
+            save_hash(checksums, to_hash(Path(repository.path / self._path)), repository.storage)
+        return len(successes), len(errors)
 
 
 class CacheAndCheck(CacheToStorage):
     def __init__(
-        self,
-        names,
-        repository: Repository,
-        path,
-        *,
-        serializer=None,
-        return_tree: bool = False,
+            self,
+            names,
+            repository: Repository,
+            path,
+            *,
+            serializer=None,
+            return_tree: bool = False,
     ):
         super().__init__(names, False)
         serializer = default_serializer(serializer)
@@ -385,7 +358,7 @@ def get_value_size(x):
     if isinstance(x, (Path, str)):
         return Path(x).stat().st_size
     assert isinstance(x, BinaryIO)
-    chunk_size, size = 2**16, 0
+    chunk_size, size = 2 ** 16, 0
     value = x.read(chunk_size)
     while len(value) > 0:
         size += len(value)
