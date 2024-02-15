@@ -49,7 +49,6 @@ class MSLUB(Source):
         return path
     
     def image(_file):
-        print(_file)
         if 'longitudinal' in str(_file):
             study_number = _file.stem
             file_name = _file.parent / f'{study_number}_FLAIR.nii.gz'
