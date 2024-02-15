@@ -27,7 +27,7 @@ class MSLUB(Source):
     def ids(_root: Silent):
         result = set()
         for file in Path(_root).glob('**/*.gz'):
-            if not 'raw' in str(file):
+            if (not 'raw' in str(file)) or ('gt'in str(file)):
                 continue
             patient = file.parent.name
             plane = file.parent.parent.parent.name
@@ -49,6 +49,7 @@ class MSLUB(Source):
         return path
     
     def image(_file):
+        print(_file)
         if 'longitudinal' in str(_file):
             study_number = _file.stem
             file_name = _file.parent / f'{study_number}_FLAIR.nii.gz'
