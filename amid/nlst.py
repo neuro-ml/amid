@@ -18,37 +18,13 @@ from dicom_csv import (
     order_series,
     stack_images,
 )
+from tqdm.auto import tqdm
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import get_series_date
 
 
-@register(
-    body_region='Thorax',
-    license=licenses.CC_BY_30,
-    link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
-    modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
-    raw_data_size=None,  # TODO: should be measured...
-    task=None,
-)
-@checksum(
-    'nlst',
-    columns=[
-        'accession_number',
-        'conv_kernel',
-        'kvp',
-        'orientation_matrix',
-        'patient_id',
-        'pixel_spacing',
-        'series_uid',
-        'slice_locations',
-        'sop_uids',
-        'study_date',
-        'study_uid',
-    ],
-)
-class NLST(Source):
+class NLSTBase(Source):
     """
 
         Dataset with low-dose CT scans of 26,254 patients acquired during National Lung Screening Trial.
@@ -85,14 +61,18 @@ class NLST(Source):
     _root: str = None
 
     @meta
-    def ids(_root: Silent):
-        return tuple(
-            path.name
-            for path in Path(_root).glob('*/*/*/*')
-            if path.is_dir()
-            if any(path.iterdir())
-            if int(_load_json(path.parent / f'{path.name}.json')['Total'][5]) >= 8  # at least 8 slices
-        )
+    def ids(_root):
+        ids = []
+        for path in tqdm(list(Path(_root).iterdir())):
+            series_uid2num_slices = {
+                p.name[: -len('.json')]: int(_load_json(p)['Total'][5])
+                for p in path.glob('*/*/*')
+                if p.is_file()
+                if p.name.endswith('.json')
+            }
+            ids.append(max(series_uid2num_slices, key=series_uid2num_slices.get))
+
+        return ids[:5000]
 
     def _series(i, _root: Silent):
         (folder,) = Path(_root).glob(f'**/{i}')
@@ -139,6 +119,33 @@ class NLST(Source):
 
     def accession_number(_series):
         return get_common_tag(_series, 'AccessionNumber', default=None)
+
+
+NLST = normalize(
+    NLSTBase,
+    'NLST',
+    'nlst',
+    body_region='Thorax',
+    license=licenses.CC_BY_30,
+    link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size=None,  # TODO: should be measured...
+    task=None,
+    columns=[
+        'accession_number',
+        'conv_kernel',
+        'kvp',
+        'orientation_matrix',
+        'patient_id',
+        'pixel_spacing',
+        'series_uid',
+        'slice_locations',
+        'sop_uids',
+        'study_date',
+        'study_uid',
+    ],
+)
 
 
 def _load_json(file):

@@ -9,6 +9,7 @@
 ignore = W503,E203,B019,B028,C408
 per-file-ignores =
     **/__init__.py:F401
+    scripts/*:I251
     tests/*:I251
     docs/*:I251
     amid/internals/cli.py:B008

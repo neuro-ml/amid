@@ -10,21 +10,11 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import deprecate
 
 
-@register(
-    body_region=('Chest', 'Abdomen'),
-    license=licenses.CC_BYSA_40,
-    link='https://www.medseg.ai/database/liver-segments-50-cases',
-    modality='CT',
-    prep_data_size='1,88G',
-    raw_data_size='616M',
-    task='Segmentation',
-)
-@checksum('liver_medseg')
-class LiverMedseg(Source):
+class LiverMedsegBase(Source):
     """
     LiverMedseg is a public CT segmentation dataset with 50 annotated images.
     Case collection of 50 livers with their segments.
@@ -103,6 +93,20 @@ class LiverMedseg(Source):
         _file = zipfile.Path(folder, image)
         with open_nii_gz_file(_file) as nii_file:
             return np.asarray(nii_file.dataobj).astype(np.uint8)
+
+
+LiverMedseg = normalize(
+    LiverMedsegBase,
+    'LiverMedseg',
+    'liver_medseg',
+    body_region=('Chest', 'Abdomen'),
+    license=licenses.CC_BYSA_40,
+    link='https://www.medseg.ai/database/liver-segments-50-cases',
+    modality='CT',
+    prep_data_size='1,88G',
+    raw_data_size='616M',
+    task='Segmentation',
+)
 
 
 # TODO: sync with amid.utils
