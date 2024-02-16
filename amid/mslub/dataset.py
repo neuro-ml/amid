@@ -7,20 +7,10 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 
 
-@register(
-    body_region='Head',
-    #license=licenses., Creative-Commons Attribution (CC-BY) license
-    link='https://github.com/muschellij2/open_ms_data?tab=readme-ov-file',
-    modality='MRI',
-    prep_data_size='18G',
-    raw_data_size='5.9G',
-    task='Anomaly segmentation',
-)
-@checksum('mslub')
-class MSLUB(Source):
+class MSLUBBase(Source):
     _root: str = None
 
     @meta
@@ -78,3 +68,16 @@ class MSLUB(Source):
         else:
             file_name = _file / 'FLAIR.nii.gz'
         return nb.load(file_name).affine
+
+MSLUB = normalize(
+    MSLUBBase,
+    'MSLUB',
+    'mslub',
+    body_region='Head',
+    license=licenses.CC_BY_30,
+    link='https://github.com/muschellij2/open_ms_data?tab=readme-ov-file',
+    modality='MRI',
+    prep_data_size='18G',
+    raw_data_size='5.9G',
+    task='Anomaly segmentation',
+)
