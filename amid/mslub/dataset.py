@@ -1,10 +1,7 @@
-import zipfile
 from pathlib import Path
-from zipfile import ZipFile
 
 import nibabel as nb
-import numpy as np
-from connectome import Output, Source, meta
+from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
 from ..internals import licenses, normalize
@@ -17,7 +14,7 @@ class MSLUBBase(Source):
     def ids(_root: Silent):
         result = set()
         for file in Path(_root).glob('**/*.gz'):
-            if (not 'raw' in str(file)) or ('gt'in str(file)):
+            if ('raw' not in str(file)) or ('gt' in str(file)):
                 continue
             patient = file.parent.name
             plane = file.parent.parent.parent.name
@@ -28,7 +25,7 @@ class MSLUBBase(Source):
                 ind = f'{ind}-{study_number}'
             result.add(ind)
         return list(result)
-    
+
     def _file(i, _root: Silent):
         plane = i.split('-')[0]
         patient = i.split('-')[1]
@@ -37,7 +34,7 @@ class MSLUBBase(Source):
             study_number = i.split('-')[2]
             return path / study_number
         return path
-    
+
     def image(_file):
         if 'longitudinal' in str(_file):
             study_number = _file.stem
@@ -54,13 +51,13 @@ class MSLUBBase(Source):
             file_name = _file / 'consensus_gt.nii.gz'
         image = nb.load(file_name).get_fdata()
         return image
-    
+
     def patient(_file):
         if 'longitudinal' in str(_file):
             return Path(_file).parent.name
         else:
             return Path(_file).name
-        
+
     def affine(_file):
         if 'longitudinal' in str(_file):
             study_number = _file.stem
@@ -68,6 +65,7 @@ class MSLUBBase(Source):
         else:
             file_name = _file / 'FLAIR.nii.gz'
         return nb.load(file_name).affine
+
 
 MSLUB = normalize(
     MSLUBBase,
