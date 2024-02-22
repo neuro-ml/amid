@@ -2,6 +2,7 @@ from connectome.cache import unstable_module
 
 from .__version__ import __version__
 from .amos import AMOS
+from .atlas import ATLAS
 from .bimcv import BIMCVCovid19
 from .brats2021 import BraTS2021
 from .cancer_500 import MoscowCancer500
