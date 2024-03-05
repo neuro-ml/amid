@@ -14,6 +14,7 @@ from .ct_ich import CT_ICH
 from .deeplesion import DeepLesion
 from .egd import EGD
 from .flare2022 import FLARE2022
+from .hcp import HCP
 from .internals import CacheColumns, CacheToDisk
 from .lidc import LIDC
 from .lits import LiTS
