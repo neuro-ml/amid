@@ -18,21 +18,11 @@ from dicom_csv import (
 from scipy import stats
 from skimage.draw import polygon
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 from ..utils import get_series_date
 
 
-@register(
-    body_region='Head',
-    license=licenses.CC_BY_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053',
-    modality=('MRI T1c', 'MRI T2'),
-    prep_data_size='14,42G',
-    raw_data_size='27G',
-    task='Segmentation',
-)
-@checksum('vs_seg')
-class VSSEG(Source):
+class VSSEGBase(Source):
     """
     Segmentation of vestibular schwannoma from MRI, an open annotated dataset ... (VS-SEG) [1]_.
 
@@ -166,6 +156,20 @@ class VSSEG(Source):
 
     def study_date(_series):
         return get_series_date(_series)
+
+
+VSSEG = normalize(
+    VSSEGBase,
+    'VSSEG',
+    'vs_seg',
+    body_region='Head',
+    license=licenses.CC_BY_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053',
+    modality=('MRI T1c', 'MRI T2'),
+    prep_data_size='14,42G',
+    raw_data_size='27G',
+    task='Segmentation',
+)
 
 
 def _load_series(_id, root):

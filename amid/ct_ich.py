@@ -6,21 +6,11 @@ import pandas as pd
 from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 from .utils import deprecate
 
 
-@register(
-    body_region='Head',
-    license=licenses.PhysioNet_RHD_150,
-    link='https://physionet.org/content/ct-ich/1.3.1/',
-    modality='CT',
-    prep_data_size='661M',
-    raw_data_size='2,8G',
-    task='Intracranial hemorrhage segmentation',
-)
-@checksum('ct_ich')
-class CT_ICH(Source):
+class CT_ICHBase(Source):
     """
     (C)omputed (T)omography Images for (I)ntracranial (H)emorrhage Detection and (S)egmentation.
 
@@ -142,6 +132,17 @@ class CT_ICH(Source):
         num_id = int(i.split('_')[-1])
         return _diagnosis_metadata[_diagnosis_metadata['PatientNumber'] == num_id]
 
-    @classmethod
-    def normalizer(cls):
-        return Transform(__inherit__=True, gender=lambda sex: sex)
+
+CT_ICH = normalize(
+    CT_ICHBase,
+    'CT_ICH',
+    'ct_ich',
+    body_region='Head',
+    license=licenses.PhysioNet_RHD_150,
+    link='https://physionet.org/content/ct-ich/1.3.1/',
+    modality='CT',
+    prep_data_size='661M',
+    raw_data_size='2,8G',
+    task='Intracranial hemorrhage segmentation',
+    normalizers=[Transform(__inherit__=True, gender=lambda sex: sex)],
+)

@@ -6,24 +6,14 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, meta
+from connectome import Output, Source, Transform, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 from ..utils import deprecate
 
 
-@register(
-    body_region='Head',
-    license=licenses.CC_BYND_40,
-    link='https://sites.google.com/view/calgary-campinas-dataset/home',
-    modality='MRI T1',
-    prep_data_size='14,66G',
-    raw_data_size='4,1G',
-    task='Segmentation',
-)
-@checksum('cc359')
-class CC359(Source):
+class CC359Base(Source):
     """
     A (C)algary-(C)ampinas public brain MR dataset with (359) volumetric images [1]_.
 
@@ -112,7 +102,7 @@ class CC359(Source):
     def age(_image_file):
         return zipfile2meta(_image_file)['age']
 
-    def gender(_image_file):
+    def sex(_image_file):
         return zipfile2meta(_image_file)['gender']
 
     def image(_image_file):
@@ -154,6 +144,21 @@ class CC359(Source):
             if file.name.startswith(i):
                 with open_nii_gz_file(file) as nii_image:
                     return np.uint8(nii_image.get_fdata())
+
+
+CC359 = normalize(
+    CC359Base,
+    'CC359',
+    'cc359',
+    body_region='Head',
+    license=licenses.CC_BYND_40,
+    link='https://sites.google.com/view/calgary-campinas-dataset/home',
+    modality='MRI T1',
+    prep_data_size='14,66G',
+    raw_data_size='4,1G',
+    task='Segmentation',
+    normalizers=[Transform(__inherit__=True, gender=lambda sex: sex)],
+)
 
 
 # TODO: sync with amid.utils

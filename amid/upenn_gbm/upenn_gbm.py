@@ -7,21 +7,11 @@ import pandas as pd
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 from .data_classes import AcquisitionInfo, ClinicalInfo
 
 
-@register(
-    body_region='Head',
-    license=licenses.CC_BY_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70225642',
-    modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2', 'DSC MRI', 'DTI MRI'),
-    prep_data_size='70G',
-    raw_data_size='69G',
-    task='Segmentation',
-)
-@checksum('upenn_gbm')
-class UPENN_GBM(Source):
+class UPENN_GBMBase(Source):
     """
     Multi-parametric magnetic resonance imaging (mpMRI) scans for de novo Glioblastoma
       (GBM) patients from the University of Pennsylvania Health System (UPENN-GBM).
@@ -163,3 +153,17 @@ class UPENN_GBM(Source):
 
     def spacing(i):
         return (1, 1, 1)
+
+
+UPENN_GBM = normalize(
+    UPENN_GBMBase,
+    'UPENN_GBM',
+    'upenn_gbm',
+    body_region='Head',
+    license=licenses.CC_BY_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70225642',
+    modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2', 'DSC MRI', 'DTI MRI'),
+    prep_data_size='70G',
+    raw_data_size='69G',
+    task='Segmentation',
+)

@@ -7,21 +7,11 @@ import numpy as np
 from connectome import Output, Source, meta
 from connectome.interface.nodes import Silent
 
-from ..internals import checksum, licenses, register
+from ..internals import licenses, normalize
 from ..utils import deprecate
 
 
-@register(
-    body_region='Abdominal',
-    license=licenses.CC_BYNCND_40,
-    link='https://competitions.codalab.org/competitions/17094',
-    modality='CT',
-    prep_data_size='24,7G',
-    raw_data_size='35G',
-    task='Segmentation',
-)
-@checksum('lits')
-class LiTS(Source):
+class LiTSBase(Source):
     """
     A (Li)ver (T)umor (S)egmentation dataset [1]_ from Medical Segmentation Decathlon [2]_
 
@@ -160,3 +150,17 @@ class LiTS(Source):
                 nii = nb.FileHolder(fileobj=nii)
                 image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return np.uint8(image.get_fdata())
+
+
+LiTS = normalize(
+    LiTSBase,
+    'LiTS',
+    'lits',
+    body_region='Abdominal',
+    license=licenses.CC_BYNCND_40,
+    link='https://competitions.codalab.org/competitions/17094',
+    modality='CT',
+    prep_data_size='24,7G',
+    raw_data_size='35G',
+    task='Segmentation',
+)

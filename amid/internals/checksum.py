@@ -27,7 +27,7 @@ from .cache import CacheColumns, CacheToDisk, default_serializer
 # TODO: add possibility to check the entire tree without the need to pull anything from remote
 
 
-def checksum(path: str, *, ignore=(), columns=()):
+def checksum(path: str, *, ignore=(), columns=(), normalizers=()):
     def _cache(cols=False):
         repository = get_repo(strict=False)
         if repository is not None and repository.cache is not None and repository.cache.local:
@@ -49,15 +49,21 @@ def checksum(path: str, *, ignore=(), columns=()):
     serializer = default_serializer(None)
 
     def decorator(cls):
+        # TODO: legacy
+        assert not hasattr(cls, 'normalizers')
+        assert not hasattr(cls, 'normalizer')
+
         class Checked(Chain):
+            __origin__ = cls
+
             def __init__(self, root: Optional[str] = None, version: str = Local):
                 ds = cls(root=root)
 
-                if hasattr(cls, 'normalizer'):
+                if normalizers:
                     args = [
                         ds,
                         *_checker(ds, version),
-                        cls.normalizer(),
+                        Chain(*normalizers),
                         *_cache(),
                     ]
                 else:
@@ -70,8 +76,8 @@ def checksum(path: str, *, ignore=(), columns=()):
                 self._version = version
                 super().__init__(*args)
 
-            @classmethod
-            def raw(cls, root: Optional[str] = None, version: str = Local):
+            @staticmethod
+            def raw(root: Optional[str] = None, version: str = Local):
                 ds = cls(root=root)
                 return Chain(
                     ds,

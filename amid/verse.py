@@ -10,19 +10,10 @@ import numpy as np
 from connectome import Source, meta
 from connectome.interface.nodes import Silent
 
-from .internals import checksum, licenses, register
+from .internals import licenses, normalize
 
 
-@register(
-    body_region=('Thorax', 'Abdomen'),
-    modality='CT',
-    task='Vertebrae Segmentation',
-    link='https://osf.io/4skx2/',
-    raw_data_size='97G',
-    license=licenses.CC_BYSA_40,
-)
-@checksum('verse')
-class VerSe(Source):
+class VerSeBase(Source):
     """
     A Vertebral Segmentation Dataset with Fracture Grading [1]_
 
@@ -157,3 +148,16 @@ class VerSe(Source):
                 nii = nibabel.FileHolder(fileobj=nii)
                 mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return mask.get_fdata().astype(np.uint8)
+
+
+VerSe = normalize(
+    VerSeBase,
+    'VerSe',
+    'verse',
+    body_region=('Thorax', 'Abdomen'),
+    modality='CT',
+    task='Vertebrae Segmentation',
+    link='https://osf.io/4skx2/',
+    raw_data_size='97G',
+    license=licenses.CC_BYSA_40,
+)
