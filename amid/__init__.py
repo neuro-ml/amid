@@ -14,6 +14,7 @@ from .ct_ich import CT_ICH
 from .deeplesion import DeepLesion
 from .egd import EGD
 from .flare2022 import FLARE2022
+from .hcp import HCP
 from .internals import CacheColumns, CacheToDisk
 from .lidc import LIDC
 from .lits import LiTS
@@ -21,6 +22,7 @@ from .liver_medseg import LiverMedseg
 from .medseg9 import Medseg9
 from .midrc import MIDRC
 from .mood import MOOD
+from .mslub import MSLUB
 from .nlst import NLST
 from .nsclc import NSCLC
 from .ribfrac import RibFrac
