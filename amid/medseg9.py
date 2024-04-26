@@ -10,16 +10,18 @@ import numpy as np
 from .internals import Dataset, licenses, register
 
 
-@register(
-    path='medseg9',
-    body_region='Chest',
-    license=licenses.CC0_10,
-    link='http://medicalsegmentation.com/covid19/',
-    modality='CT',
-    prep_data_size='300M',
-    raw_data_size='310M',
-    task='COVID-19 segmentation',
-)
+# @register(
+#     path='medseg9',
+#     body_region='Chest',
+#     license=licenses.CC0_10,
+#     link='http://medicalsegmentation.com/covid19/',
+#     modality='CT',
+#     prep_data_size='300M',
+#     raw_data_size='310M',
+#     task='COVID-19 segmentation',
+# )
+
+
 class Medseg9(Dataset):
     """
 

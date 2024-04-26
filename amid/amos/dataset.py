@@ -1,15 +1,13 @@
 from functools import cached_property
-from pathlib import Path
 from zipfile import ZipFile
 
 import nibabel
 import numpy as np
 import pandas as pd
-from bev.utils import PathOrStr
 from connectome import Transform
 from jboc import collect, composed
 
-from ..internals import Dataset, normalize
+from ..internals import Dataset
 from ..utils import open_nii_gz_file, unpack
 
 
