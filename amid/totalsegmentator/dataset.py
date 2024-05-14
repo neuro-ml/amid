@@ -1,21 +1,29 @@
 import gzip
 from contextlib import suppress
-from functools import lru_cache
 from pathlib import Path
 from zipfile import ZipFile
 
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
-from connectome.interface.nodes import Silent
+from bev.utils import PathOrStr
 
-from ..internals import licenses, normalize
-from ..utils import open_nii_gz_file, unpack
 from .utils import ARCHIVE_ROOT, add_labels, add_masks
+from ..internals import Dataset, licenses, register
+from ..utils import open_nii_gz_file, unpack
+from .const import ANATOMICAL_STRUCTURES, LABELS
 
 
-class TotalsegmentatorBase(Source):
+@register(
+    body_region=('Head', 'Thorax', 'Abdomen', 'Pelvis', 'Legs'),
+    license=licenses.CC_BY_40,
+    link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
+    modality='CT',
+    raw_data_size='35G',
+    prep_data_size='35G',
+    task='Supervised anatomical structures segmentation',
+)
+class Totalsegmentator(Dataset):
     """
     In 1204 CT images we segmented 104 anatomical structures (27 organs, 59 bones, 10 muscles, 8 vessels)
     covering a majority of relevant classes for most use cases.
@@ -52,67 +60,53 @@ class TotalsegmentatorBase(Source):
     Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8
     """
 
-    _root: str = None
+    _fields = (
+        'image', 'affine',
+        *LABELS, *ANATOMICAL_STRUCTURES,
+    )
 
     add_masks(locals())
     add_labels(locals())
 
-    def _base(_root: Silent):
-        _root = Path(_root)
-        if _root.is_dir():
-            if _root / ARCHIVE_ROOT in list(_root.iterdir()):
-                return _root / ARCHIVE_ROOT
-        # it's a zip file
-        return _root
+    def __init__(self, root: PathOrStr):
+        root = Path(root)
+        if root.is_dir():
+            if root / ARCHIVE_ROOT in list(root.iterdir()):
+                root = root / ARCHIVE_ROOT
 
-    @meta
-    def ids(_base):
-        if _base.is_dir():
-            return sorted({x.name for x in _base.iterdir() if x.name != 'meta.csv'})
+        file = 'meta.csv'
+        with unpack(root, file, ARCHIVE_ROOT, '.zip') as (unpacked, _):
+            self._meta = pd.read_csv(unpacked, sep=';')
+
+        super().__init__(root)
+
+    @property
+    def ids(self):
+        if self.root.is_dir():
+            return sorted({x.name for x in self.root.iterdir() if x.name != 'meta.csv'})
         else:
-            with ZipFile(_base) as zf:
+            with ZipFile(self.root) as zf:
                 parsed_namelist = [x.strip('/').split('/') for x in zf.namelist()]
                 return sorted({x[-1] for x in parsed_namelist if len(x) == 2 and x[-1] != 'meta.csv'})
 
-    def image(i, _base):
+    def image(self, i):
         file = f'{i}/ct.nii.gz'
 
         with suppress(gzip.BadGzipFile):
-            with unpack(_base, file, ARCHIVE_ROOT, '.zip') as (unpacked, is_unpacked):
+            with unpack(self.root, file, ARCHIVE_ROOT, '.zip') as (unpacked, is_unpacked):
                 if is_unpacked:
                     return np.asarray(nibabel.load(unpacked).dataobj)
                 else:
                     with open_nii_gz_file(unpacked) as image:
                         return np.asarray(image.dataobj)
 
-    def affine(i, _base):
+    def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation"""
         file = f'{i}/ct.nii.gz'
 
-        with unpack(_base, file, ARCHIVE_ROOT, '.zip') as (unpacked, is_unpacked):
+        with unpack(self.root, file, ARCHIVE_ROOT, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return image.affine
-
-    @lru_cache(None)
-    def _meta(_base):
-        file = 'meta.csv'
-
-        with unpack(_base, file, ARCHIVE_ROOT, '.zip') as (unpacked, _):
-            return pd.read_csv(unpacked, sep=';')
-
-
-Totalsegmentator = normalize(
-    TotalsegmentatorBase,
-    'Totalsegmentator',
-    'totalsegmentator',
-    body_region=('Head', 'Thorax', 'Abdomen', 'Pelvis', 'Legs'),
-    license=licenses.CC_BY_40,
-    link='https://zenodo.org/record/6802614#.Y6M2MxXP1D8',
-    modality='CT',
-    raw_data_size='35G',
-    prep_data_size='35G',
-    task='Supervised anatomical structures segmentation',
-)

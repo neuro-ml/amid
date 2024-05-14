@@ -25,10 +25,10 @@ class Description(NamedTuple):
 def register(**kwargs):
     def decorator(cls: Type):
         _register(cls, cls.__name__, description, 2)
-        cls._path = path
+        # cls._path = path
         return cls
 
-    path = kwargs.pop('path')
+    # path = kwargs.pop('path')
     description = Description(**kwargs)
     return decorator
 

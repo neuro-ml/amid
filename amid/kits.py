@@ -2,16 +2,18 @@ import nibabel as nb
 import numpy as np
 from connectome import Transform
 
-from .internals import Dataset
+from .internals import Dataset, register
 
 
-KITS_LABEL_NAMES = {  # https://github.com/neheller/kits23/blob/063d4c00afd383fc68145a00c0aa6a4e2a3c0f50/kits23/configuration/labels.py#L23
-    1: "kidney",
-    2: "tumor",
-    3: "cyst",
-}
-
-
+@register(
+    body_region='thorax',
+    license=None,  # todo
+    link='https://kits-challenge.org/kits23/',
+    modality='CT',
+    prep_data_size='50G',
+    raw_data_size='12G',
+    task='Kidney Tumor Segmentation',
+)
 class KiTS23(Dataset):
     """Kidney and Kidney Tumor Segmentation Challenge,
     The 2023 Kidney and Kidney Tumor Segmentation challenge (abbreviated KiTS23)
@@ -25,38 +27,45 @@ class KiTS23(Dataset):
 
     Parameters
     ----------
-    root : str, Path, optional
+    root: str, Path
         Absolute path to the root containing the downloaded archive and meta.
         If not provided, the cache is assumed to be already populated.
-
-    Example
-    -------
-
     """
+
+    _fields = 'image', 'mask', 'affine'
 
     @property
     def ids(self):
-        return tuple(sorted([sub.name for sub in (self.root / 'dataset').glob('*')]))
-    
+        return tuple(sorted(sub.name for sub in (self.root / 'dataset').glob('*')))
+
     def image(self, i):
         # CT images are integer-valued, this will help us improve compression rates
         image_file = nb.load(self.root / 'dataset' / i / 'imaging.nii.gz')
         return np.int16(image_file.get_fdata()[...])
-    
+
     # TODO add multiple segmentations
     def mask(self, i):
         """Combined annotation for kidneys, tumor and cyst (if present)."""
         ct_scan_nifti = nb.load(self.root / 'dataset' / i / 'segmentation.nii.gz')
-        return np.int16(ct_scan_nifti.get_fdata())
+        return np.int8(ct_scan_nifti.get_fdata())
 
     def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
         image_file = nb.load(self.root / 'dataset' / i / 'imaging.nii.gz')
         return image_file.affine
 
-    def labels_names(i):
+    @property
+    def labels_names(self):
         """Indicates which label correspond to which mask, consistent accross all samples."""
         return KITS_LABEL_NAMES
+
+
+KITS_LABEL_NAMES = {
+    # https://github.com/neheller/kits23/blob/063d4c00afd383fc68145a00c0aa6a4e2a3c0f50/kits23/configuration/labels.py#L23
+    1: "kidney",
+    2: "tumor",
+    3: "cyst",
+}
 
 
 class SpacingFromAffine(Transform):
@@ -64,18 +73,3 @@ class SpacingFromAffine(Transform):
 
     def spacing(affine):
         return nb.affines.voxel_sizes(affine)
-
-
-# KiTS23 = normalize(
-#     KiTS23Base,
-#     'KiTS23',
-#     'kits',
-#     body_region='thorax',
-#     license=None,  # todo
-#     link='https://kits-challenge.org/kits23/',
-#     modality='CT',
-#     prep_data_size='50G',
-#     raw_data_size='12G',
-#     task='Kidney Tumor Segmentation',
-#     normalizers=[SpacingFromAffine()],
-# )
