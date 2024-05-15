@@ -66,13 +66,13 @@ class Checked(Chain):
         )
 
     def _populate(
-            self,
-            *,
-            ignore_errors: bool = False,
-            cache: bool = True,
-            fetch: bool = True,
-            n_jobs: int = 1,
-            analyze_fields: bool = False,
+        self,
+        *,
+        ignore_errors: bool = False,
+        cache: bool = True,
+        fetch: bool = True,
+        n_jobs: int = 1,
+        analyze_fields: bool = False,
     ):
         repository = get_repo().copy(fetch=fetch, version=Local)
         ds = self[0]
@@ -106,7 +106,7 @@ class Checked(Chain):
         successes, errors = [], []
         hashes = defaultdict(list)
         with ProgressParallel(
-                n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids), desc='Populating checksums')
+            n_jobs=n_jobs, backend='threading', tqdm_kwargs=dict(total=len(ids), desc='Populating checksums')
         ) as bar:
             for i, trees in bar(map(delayed(loader), ids)):
                 if trees is None:
@@ -133,7 +133,7 @@ class Checked(Chain):
                     mul = len(vs) / max_count
                     vs = np.random.choice(vs, max_count, replace=False)
 
-                sizes[name] = sum(repository.storage.read(lambda x: get_value_size(x) / 1024 ** 2, v) for v in vs) * mul
+                sizes[name] = sum(repository.storage.read(lambda x: get_value_size(x) / 1024**2, v) for v in vs) * mul
 
             add = {k for k, v in sizes.items() if v <= 500} - set(self._columns)
             remove = {k for k, v in sizes.items() if v > 500} & set(self._columns)
@@ -150,9 +150,9 @@ class Checked(Chain):
             checked = Chain(ds, *self._checker())
             new_ids = sorted(checked.ids)
             with ProgressParallel(
-                    n_jobs=n_jobs,
-                    backend='threading',
-                    tqdm_kwargs=dict(total=len(new_ids), desc='Populating lightweight columns'),
+                n_jobs=n_jobs,
+                backend='threading',
+                tqdm_kwargs=dict(total=len(new_ids), desc='Populating lightweight columns'),
             ) as bar:
                 for vals in bar(map(delayed(checked._compile(self._columns)), new_ids)):
                     for k, v in zip_equal(self._columns, vals):
@@ -168,13 +168,13 @@ class Checked(Chain):
 
 class CacheAndCheck(CacheToStorage):
     def __init__(
-            self,
-            names,
-            repository: Repository,
-            path,
-            *,
-            serializer=None,
-            return_tree: bool = False,
+        self,
+        names,
+        repository: Repository,
+        path,
+        *,
+        serializer=None,
+        return_tree: bool = False,
     ):
         super().__init__(names, False)
         serializer = default_serializer(serializer)
@@ -358,7 +358,7 @@ def get_value_size(x):
     if isinstance(x, (Path, str)):
         return Path(x).stat().st_size
     assert isinstance(x, BinaryIO)
-    chunk_size, size = 2 ** 16, 0
+    chunk_size, size = 2**16, 0
     value = x.read(chunk_size)
     while len(value) > 0:
         size += len(value)

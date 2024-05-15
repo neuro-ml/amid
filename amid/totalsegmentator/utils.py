@@ -1,8 +1,8 @@
 import nibabel
 import numpy as np
 
-from .const import ANATOMICAL_STRUCTURES, LABELS
 from ..utils import open_nii_gz_file, unpack
+from .const import ANATOMICAL_STRUCTURES, LABELS
 
 
 ARCHIVE_ROOT = 'Totalsegmentator_dataset'

@@ -10,18 +10,15 @@ import numpy as np
 from .internals import Dataset, licenses, register
 
 
-# @register(
-#     path='medseg9',
-#     body_region='Chest',
-#     license=licenses.CC0_10,
-#     link='http://medicalsegmentation.com/covid19/',
-#     modality='CT',
-#     prep_data_size='300M',
-#     raw_data_size='310M',
-#     task='COVID-19 segmentation',
-# )
-
-
+@register(
+    body_region='Chest',
+    license=licenses.CC0_10,
+    link='http://medicalsegmentation.com/covid19/',
+    modality='CT',
+    prep_data_size='300M',
+    raw_data_size='310M',
+    task='COVID-19 segmentation',
+)
 class Medseg9(Dataset):
     """
 
@@ -55,6 +52,8 @@ class Medseg9(Dataset):
 
     """
 
+    _fields = 'image', 'lungs', 'covid', 'affine'
+
     @property
     def ids(self):
         result = set()
@@ -85,11 +84,6 @@ class Medseg9(Dataset):
         """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(self._file(i)) as nii_image:
             return nii_image.affine
-
-    def spacing(self, i):
-        """Returns voxel spacing along axes (x, y, z)."""
-        with open_nii_gz_file(self._file(i)) as nii_image:
-            return tuple(nii_image.header['pixdim'][1:4])
 
     def lungs(self, i):
         mask_file = zipfile.Path(self.root / 'rp_lung_msk.zip', f'rp_lung_msk/{self._filename(i)}')

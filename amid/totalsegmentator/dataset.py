@@ -8,10 +8,10 @@ import numpy as np
 import pandas as pd
 from bev.utils import PathOrStr
 
-from .utils import ARCHIVE_ROOT, add_labels, add_masks
 from ..internals import Dataset, licenses, register
 from ..utils import open_nii_gz_file, unpack
 from .const import ANATOMICAL_STRUCTURES, LABELS
+from .utils import ARCHIVE_ROOT, add_labels, add_masks
 
 
 @register(
@@ -61,8 +61,10 @@ class Totalsegmentator(Dataset):
     """
 
     _fields = (
-        'image', 'affine',
-        *LABELS, *ANATOMICAL_STRUCTURES,
+        'image',
+        'affine',
+        *LABELS,
+        *ANATOMICAL_STRUCTURES,
     )
 
     add_masks(locals())

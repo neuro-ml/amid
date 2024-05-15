@@ -62,9 +62,9 @@ class KiTS23(Dataset):
 
 KITS_LABEL_NAMES = {
     # https://github.com/neheller/kits23/blob/063d4c00afd383fc68145a00c0aa6a4e2a3c0f50/kits23/configuration/labels.py#L23
-    1: "kidney",
-    2: "tumor",
-    3: "cyst",
+    1: 'kidney',
+    2: 'tumor',
+    3: 'cyst',
 }
 
 

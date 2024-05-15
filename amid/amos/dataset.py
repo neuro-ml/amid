@@ -7,7 +7,7 @@ import pandas as pd
 from connectome import Transform
 from jboc import collect, composed
 
-from ..internals import Dataset
+from ..internals import Dataset, licenses, register
 from ..utils import open_nii_gz_file, unpack
 
 
@@ -19,6 +19,15 @@ ERRORS = ['5514', '5437']  # these ids are damaged in the zip archives
 # TODO: add MRI
 
 
+@register(
+    body_region='Abdomen',
+    license=licenses.CC_BY_40,
+    link='https://zenodo.org/record/7262581',
+    modality=('CT', 'MRI'),
+    raw_data_size='23G',  # TODO: update size with unlabelled
+    prep_data_size='89,5G',
+    task='Supervised multi-modality abdominal multi-organ segmentation',
+)
 class AMOS(Dataset):
     """
     AMOS provides 500 CT and 100 MRI scans collected from multi-center, multi-vendor, multi-modality, multi-phase,
@@ -209,18 +218,3 @@ class SpacingFromAffine(Transform):
 
     def spacing(affine):
         return nibabel.affines.voxel_sizes(affine)
-
-
-# AMOS = normalize(
-#     AMOSBase,
-#     'AMOS',
-#     'amos',
-#     body_region='Abdomen',
-#     license=licenses.CC_BY_40,
-#     link='https://zenodo.org/record/7262581',
-#     modality=('CT', 'MRI'),
-#     raw_data_size='23G',  # TODO: update size with unlabelled
-#     prep_data_size='89,5G',
-#     task='Supervised multi-modality abdominal multi-organ segmentation',
-#     normalizers=[SpacingFromAffine()],
-# )
