@@ -18,21 +18,19 @@ from dicom_csv import (
     stack_images,
 )
 from skimage.draw import polygon
-from tarn.interface import PathOrStr
 
-from .internals import Dataset
+from .internals import Dataset, licenses, register
 
 
-_pathologies: Tuple[str, ...] = (
-    'Infectious opacity',
-    'Infectious TIB/micronodules',
-    'Atelectasis',
-    'Other noninfectious opacity',
-    'Noninfectious nodule/mass',
-    'Infectious cavity',
+@register(
+    body_region='Thorax',
+    license=licenses.CC_BYNC_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
+    modality='CT',
+    prep_data_size='7,9G',
+    raw_data_size='12G',
+    task='COVID-19 Segmentation',
 )
-
-
 class MIDRC(Dataset):
     """
 
@@ -73,8 +71,7 @@ class MIDRC(Dataset):
     ----------
     """
 
-    def __init__(self, root: PathOrStr):
-        super().__init__(root)
+    _fields = 'image', 'image_meta', 'spacing', 'labels', 'mask'
 
     @cached_property
     def _joined(self):
@@ -150,7 +147,7 @@ class MIDRC(Dataset):
     def labels(self, i):
         sub = self._annotation[
             (self._annotation.scope == 'STUDY') & (self._annotation.StudyInstanceUID == self._study_id(i))
-        ]
+            ]
         return tuple(sub['labelName'].unique())
 
     def mask(self, i):
@@ -173,18 +170,14 @@ class MIDRC(Dataset):
         return mask
 
 
-# MIDRC = normalize(
-#     MIDRCBase,
-#     'MIDRC',
-#     'midrc',
-#     body_region='Thorax',
-#     license=licenses.CC_BYNC_40,
-#     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
-#     modality='CT',
-#     prep_data_size='7,9G',
-#     raw_data_size='12G',
-#     task='COVID-19 Segmentation',
-# )
+_pathologies: Tuple[str, ...] = (
+    'Infectious opacity',
+    'Infectious TIB/micronodules',
+    'Atelectasis',
+    'Other noninfectious opacity',
+    'Noninfectious nodule/mass',
+    'Infectious cavity',
+)
 
 
 # TODO: simplify
@@ -219,7 +212,6 @@ def json_to_dataframe(json_file, datasets=None):
         result.columns = ['labels', 'labelGroupId', 'labelGroupName']
 
         def unpack_dictionary(df, column):
-            ret = None
             ret = pd.concat([df, pd.DataFrame((d for idx, d in df[column].items()))], axis=1, sort=False)
             del ret[column]
             return ret
