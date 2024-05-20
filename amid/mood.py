@@ -61,6 +61,8 @@ class MOOD(Dataset):
            doi: 10.5281/zenodo.6362313 (2022).
     """
 
+    _fields = 'fold', 'task', 'sample_label', 'affine', 'pixel_label', 'image'
+
     @property
     def ids(self):
         result = set()
