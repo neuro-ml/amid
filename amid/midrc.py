@@ -147,7 +147,7 @@ class MIDRC(Dataset):
     def labels(self, i):
         sub = self._annotation[
             (self._annotation.scope == 'STUDY') & (self._annotation.StudyInstanceUID == self._study_id(i))
-            ]
+        ]
         return tuple(sub['labelName'].unique())
 
     def mask(self, i):

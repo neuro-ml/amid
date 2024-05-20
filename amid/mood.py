@@ -6,14 +6,20 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 
-from .internals import normalize
-from .utils import deprecate
+from .internals import Dataset, register
 
 
-class MOODBase(Source):
+@register(
+    body_region=('Head', 'Abdominal'),
+    license=None,  # FIXME: inherit licenses from the original datasets...
+    link='http://medicalood.dkfz.de/web/',
+    modality=('MRI', 'CT'),
+    prep_data_size='405G',
+    raw_data_size='120G',
+    task='Out-of-distribution detection',
+)
+class MOOD(Dataset):
     """
     A (M)edival (O)ut-(O)f-(D)istribution analysis challenge [1]_
 
@@ -30,8 +36,6 @@ class MOODBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -57,13 +61,11 @@ class MOODBase(Source):
            doi: 10.5281/zenodo.6362313 (2022).
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
+    @property
+    def ids(self):
         result = set()
         # zip archives for train images:
-        for archive in Path(_root).glob('*.zip'):
+        for archive in self.root.glob('*.zip'):
             if 'brain' in str(archive):  # define whether it is brain (MRI) or abdominal (CT)
                 task = 'brain'
             else:
@@ -89,75 +91,59 @@ class MOODBase(Source):
 
         return tuple(sorted(result))
 
-    def fold(i, _root: Silent):
+    def fold(self, i):
         """Returns fold: train or toy (test)."""
         if 'train' in i:
             return 'train'
         # if 'toy' in i:
         return 'toy'
 
-    def task(i, _root: Silent):
+    def task(self, i):
         """Returns task: brain (MRI) or abdominal (CT)."""
         if 'brain' in i:
             return 'brain'
         # if 'abdom' in i:
         return 'abdom'
 
-    def _file(i, _root: Silent):
+    def _file(self, i):
         task, fold, num_id = i.split('_')[-3:]
         if fold == 'train':
-            return zipfile.Path(Path(_root) / f'{task}_{fold}.zip', f'{task}_{fold}/{num_id}.nii.gz')
-        return zipfile.Path(Path(_root) / f'{task}_{fold}.zip', f'toy/toy_{num_id}.nii.gz')
+            return zipfile.Path(self.root / f'{task}_{fold}.zip', f'{task}_{fold}/{num_id}.nii.gz')
+        return zipfile.Path(self.root / f'{task}_{fold}.zip', f'toy/toy_{num_id}.nii.gz')
 
-    def image(_file):
-        with open_nii_gz_file(_file) as nii_image:
+    def image(self, i):
+        with open_nii_gz_file(self._file(i)) as nii_image:
             return np.asarray(nii_image.dataobj)
 
-    def affine(_file):
+    def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
-        with open_nii_gz_file(_file) as nii_image:
+        with open_nii_gz_file(self._file(i)) as nii_image:
             return nii_image.affine
 
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
-
-    def spacing(_file):
+    def spacing(self, i):
         """Returns voxel spacing along axes (x, y, z)."""
-        with open_nii_gz_file(_file) as nii_image:
+        with open_nii_gz_file(self._file(i)) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 
-    def sample_label(_file):
+    def sample_label(self, i):
         """
         Returns sample-level OOD score for toy examples and None otherwise.
         0 indicates no abnormality and 1 indicates abnormal input.
         """
-        if 'toy' in _file.name:
-            with (_file.parent.parent / 'toy_label/sample' / f'{_file.name}.txt').open('r') as nii:
+        file = self._file(i)
+        if 'toy' in file.name:
+            with (file.parent.parent / 'toy_label/sample' / f'{file.name}.txt').open('r') as nii:
                 return int(nii.read())
 
-    def pixel_label(_file):
+    def pixel_label(self, i):
         """
         Returns voxel-level OOD scores for toy examples and None otherwise.
         0 indicates no abnormality and 1 indicates abnormal input.
         """
-        if 'toy' in _file.name:
-            with open_nii_gz_file(_file.parent.parent / 'toy_label/pixel' / _file.name) as nii_image:
+        file = self._file(i)
+        if 'toy' in file.name:
+            with open_nii_gz_file(file.parent.parent / 'toy_label/pixel' / file.name) as nii_image:
                 return np.bool_(nii_image.get_fdata())
-
-
-MOOD = normalize(
-    MOODBase,
-    'MOOD',
-    'mood',
-    body_region=('Head', 'Abdominal'),
-    license=None,  # FIXME: inherit licenses from the original datasets...
-    link='http://medicalood.dkfz.de/web/',
-    modality=('MRI', 'CT'),
-    prep_data_size='405G',
-    raw_data_size='120G',
-    task='Out-of-distribution detection',
-)
 
 
 # TODO: sync with amid.utils
