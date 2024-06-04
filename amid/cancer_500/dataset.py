@@ -112,15 +112,15 @@ class MoscowCancer500(Dataset):
 
     @field
     def pixel_spacing(self, i):
-        return get_pixel_spacing(self, i).tolist()
+        return get_pixel_spacing(self._series(i)).tolist()
 
     @field
     def slice_locations(self, i):
-        return get_slice_locations(self, i)
+        return get_slice_locations(self._series(i))
 
     @field
     def orientation_matrix(self, i):
-        return get_orientation_matrix(self, i)
+        return get_orientation_matrix(self._series(i))
 
     @field
     def instance_numbers(self, i):
