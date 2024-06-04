@@ -19,7 +19,7 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import Dataset, licenses, register
+from .internals import Dataset, field, licenses, register
 
 
 @register(
@@ -41,8 +41,6 @@ class MIDRC(Dataset):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -111,10 +109,12 @@ class MIDRC(Dataset):
         series = order_series(series, decreasing=False)
         return series
 
+    @field
     def image(self, i):
         image = stack_images(self._series(i), -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
+    @field
     def image_meta(self, i):
         metas = [list(dict(s).values()) for s in self._series(i)]
         result = {}
@@ -136,6 +136,7 @@ class MIDRC(Dataset):
         # series_id_to_study
         return study_ids[0]
 
+    @field
     def spacing(self, i):
         series = self._series(i)
         pixel_spacing = get_pixel_spacing(series).tolist()
@@ -144,12 +145,14 @@ class MIDRC(Dataset):
         spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return tuple(spacing.tolist())
 
+    @field
     def labels(self, i):
         sub = self._annotation[
             (self._annotation.scope == 'STUDY') & (self._annotation.StudyInstanceUID == self._study_id(i))
         ]
         return tuple(sub['labelName'].unique())
 
+    @field
     def mask(self, i):
         # TODO: mask has 6 channels now. Consider adding different methods ot at least a docstring naming channels...
         sub = self._annotation[(self._annotation.SeriesInstanceUID == i) & (self._annotation.scope == 'INSTANCE')]

@@ -1,10 +1,7 @@
 import json
-from pathlib import Path
 
 import numpy as np
 import pydicom
-from connectome import Source, meta
-from connectome.interface.nodes import Silent
 from dicom_csv import (
     Plane,
     drop_duplicated_slices,
@@ -20,11 +17,20 @@ from dicom_csv import (
 )
 from tqdm.auto import tqdm
 
-from .internals import licenses, normalize
+from .internals import Dataset, field, licenses, register
 from .utils import get_series_date
 
 
-class NLSTBase(Source):
+@register(
+    body_region='Thorax',
+    license=licenses.CC_BY_30,
+    link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size=None,  # TODO: should be measured...
+    task=None,
+)
+class NLST(Dataset):
     """
 
         Dataset with low-dose CT scans of 26,254 patients acquired during National Lung Screening Trial.
@@ -34,8 +40,6 @@ class NLSTBase(Source):
     root : str, Path, optional
         path to the folder (usually called NLST) containing the patient subfolders (like 101426).
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -58,12 +62,10 @@ class NLSTBase(Source):
     ----------
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root):
+    @property
+    def ids(self):
         ids = []
-        for path in tqdm(list(Path(_root).iterdir())):
+        for path in tqdm(list(self.root.iterdir())):
             series_uid2num_slices = {
                 p.name[: -len('.json')]: int(_load_json(p)['Total'][5])
                 for p in path.glob('*/*/*')
@@ -74,8 +76,8 @@ class NLSTBase(Source):
 
         return ids[:5000]
 
-    def _series(i, _root: Silent):
-        (folder,) = Path(_root).glob(f'**/{i}')
+    def _series(self, i):
+        (folder,) = self.root.glob(f'**/{i}')
         series = list(map(pydicom.dcmread, folder.iterdir()))
         series = expand_volumetric(series)
         assert get_common_tag(series, 'Modality') == 'CT'
@@ -84,68 +86,53 @@ class NLSTBase(Source):
         series = order_series(series, decreasing=False)
         return series
 
-    def image(_series):
-        return np.moveaxis(stack_images(_series, -1).astype(np.int16), 0, 1)
+    @field
+    def image(self, i):
+        return np.moveaxis(stack_images(self._series(i), -1).astype(np.int16), 0, 1)
 
-    def study_uid(_series):
-        return get_common_tag(_series, 'StudyInstanceUID')
+    @field
+    def study_uid(self, i):
+        return get_common_tag(self._series(i), 'StudyInstanceUID')
 
-    def series_uid(_series):
-        return get_common_tag(_series, 'SeriesInstanceUID')
+    @field
+    def series_uid(self, i):
+        return get_common_tag(self._series(i), 'SeriesInstanceUID')
 
-    def sop_uids(_series):
-        return [str(get_tag(i, 'SOPInstanceUID')) for i in _series]
+    @field
+    def sop_uids(self, i):
+        return [str(get_tag(i, 'SOPInstanceUID')) for i in self._series(i)]
 
-    def pixel_spacing(_series):
-        return get_pixel_spacing(_series).tolist()
+    @field
+    def pixel_spacing(self, i):
+        return get_pixel_spacing(self, i).tolist()
 
-    def slice_locations(_series):
-        return get_slice_locations(_series)
+    @field
+    def slice_locations(self, i):
+        return get_slice_locations(self, i)
 
-    def orientation_matrix(_series):
-        return get_orientation_matrix(_series)
+    @field
+    def orientation_matrix(self, i):
+        return get_orientation_matrix(self, i)
 
-    def conv_kernel(_series):
-        return get_common_tag(_series, 'ConvolutionKernel', default=None)
+    @field
+    def conv_kernel(self, i):
+        return get_common_tag(self._series(i), 'ConvolutionKernel', default=None)
 
-    def kvp(_series):
-        return get_common_tag(_series, 'KVP', default=None)
+    @field
+    def kvp(self, i):
+        return get_common_tag(self._series(i), 'KVP', default=None)
 
-    def patient_id(_series):
-        return get_common_tag(_series, 'PatientID', default=None)
+    @field
+    def patient_id(self, i):
+        return get_common_tag(self._series(i), 'PatientID', default=None)
 
-    def study_date(_series):
-        return get_series_date(_series)
+    @field
+    def study_date(self, i):
+        return get_series_date(self._series(i))
 
-    def accession_number(_series):
-        return get_common_tag(_series, 'AccessionNumber', default=None)
-
-
-NLST = normalize(
-    NLSTBase,
-    'NLST',
-    'nlst',
-    body_region='Thorax',
-    license=licenses.CC_BY_30,
-    link='https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial',
-    modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
-    raw_data_size=None,  # TODO: should be measured...
-    task=None,
-    columns=[
-        'accession_number',
-        'conv_kernel',
-        'kvp',
-        'orientation_matrix',
-        'patient_id',
-        'pixel_spacing',
-        'series_uid',
-        'slice_locations',
-        'sop_uids',
-        'study_date',
-        'study_uid',
-    ],
-)
+    @field
+    def accession_number(self, i):
+        return get_common_tag(self._series(i), 'AccessionNumber', default=None)
 
 
 def _load_json(file):

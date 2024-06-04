@@ -2,7 +2,7 @@ import nibabel as nb
 import numpy as np
 from connectome import Transform
 
-from .internals import Dataset, register
+from .internals import Dataset, field, register
 
 
 @register(
@@ -32,23 +32,24 @@ class KiTS23(Dataset):
         If not provided, the cache is assumed to be already populated.
     """
 
-    _fields = 'image', 'mask', 'affine'
-
     @property
     def ids(self):
         return tuple(sorted(sub.name for sub in (self.root / 'dataset').glob('*')))
 
+    @field
     def image(self, i):
         # CT images are integer-valued, this will help us improve compression rates
         image_file = nb.load(self.root / 'dataset' / i / 'imaging.nii.gz')
         return np.int16(image_file.get_fdata()[...])
 
     # TODO add multiple segmentations
+    @field
     def mask(self, i):
         """Combined annotation for kidneys, tumor and cyst (if present)."""
         ct_scan_nifti = nb.load(self.root / 'dataset' / i / 'segmentation.nii.gz')
         return np.int8(ct_scan_nifti.get_fdata())
 
+    @field
     def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
         image_file = nb.load(self.root / 'dataset' / i / 'imaging.nii.gz')

@@ -7,7 +7,7 @@ from zipfile import ZipFile
 import nibabel as nb
 import numpy as np
 
-from .internals import Dataset, register
+from .internals import Dataset, field, register
 
 
 @register(
@@ -61,8 +61,6 @@ class MOOD(Dataset):
            doi: 10.5281/zenodo.6362313 (2022).
     """
 
-    _fields = 'fold', 'task', 'sample_label', 'affine', 'pixel_label', 'image'
-
     @property
     def ids(self):
         result = set()
@@ -93,6 +91,7 @@ class MOOD(Dataset):
 
         return tuple(sorted(result))
 
+    @field
     def fold(self, i):
         """Returns fold: train or toy (test)."""
         if 'train' in i:
@@ -100,6 +99,7 @@ class MOOD(Dataset):
         # if 'toy' in i:
         return 'toy'
 
+    @field
     def task(self, i):
         """Returns task: brain (MRI) or abdominal (CT)."""
         if 'brain' in i:
@@ -113,10 +113,12 @@ class MOOD(Dataset):
             return zipfile.Path(self.root / f'{task}_{fold}.zip', f'{task}_{fold}/{num_id}.nii.gz')
         return zipfile.Path(self.root / f'{task}_{fold}.zip', f'toy/toy_{num_id}.nii.gz')
 
+    @field
     def image(self, i):
         with open_nii_gz_file(self._file(i)) as nii_image:
             return np.asarray(nii_image.dataobj)
 
+    @field
     def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(self._file(i)) as nii_image:
@@ -127,6 +129,7 @@ class MOOD(Dataset):
         with open_nii_gz_file(self._file(i)) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 
+    @field
     def sample_label(self, i):
         """
         Returns sample-level OOD score for toy examples and None otherwise.
@@ -137,6 +140,7 @@ class MOOD(Dataset):
             with (file.parent.parent / 'toy_label/sample' / f'{file.name}.txt').open('r') as nii:
                 return int(nii.read())
 
+    @field
     def pixel_label(self, i):
         """
         Returns voxel-level OOD scores for toy examples and None otherwise.

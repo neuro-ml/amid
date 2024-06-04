@@ -7,7 +7,7 @@ import pandas as pd
 from connectome import Transform
 from jboc import collect, composed
 
-from ..internals import Dataset, licenses, register
+from ..internals import Dataset, field, licenses, register
 from ..utils import open_nii_gz_file, unpack
 
 
@@ -67,6 +67,7 @@ class AMOS(Dataset):
         unlabelled = sorted(self._ids_unlabelled)
         return labelled + unlabelled
 
+    @field
     def image(self, i):
         """Corresponding 3D image."""
         if i in ERRORS:
@@ -87,6 +88,7 @@ class AMOS(Dataset):
                 with open_nii_gz_file(unpacked) as image:
                     return np.asarray(image.dataobj)
 
+    @field
     def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
         if i in ERRORS:
@@ -106,6 +108,7 @@ class AMOS(Dataset):
                 with open_nii_gz_file(unpacked) as image:
                     return image.affine
 
+    @field
     def mask(self, i):
         if i not in self._id2split:
             return
@@ -121,6 +124,7 @@ class AMOS(Dataset):
         except FileNotFoundError:
             return
 
+    @field
     def image_modality(self, i):
         """Returns image modality, `CT` or `MRI`."""
         if 500 < int(i) <= 600:
@@ -128,25 +132,31 @@ class AMOS(Dataset):
         return 'CT'
 
     # labels
-
+    @field
     def birth_date(self, i):
         return self._label(i, "Patient's Birth Date")
 
+    @field
     def sex(self, i):
         return self._label(i, "Patient's Sex")
 
+    @field
     def age(self, i):
         return self._label(i, "Patient's Age")
 
+    @field
     def manufacturer_model(self, i):
         return self._label(i, "Manufacturer's Model Name")
 
+    @field
     def manufacturer(self, i):
         return self._label(i, 'Manufacturer')
 
+    @field
     def acquisition_date(self, i):
         return self._label(i, 'Acquisition Date')
 
+    @field
     def site(self, i):
         return self._label(i, 'Site')
 

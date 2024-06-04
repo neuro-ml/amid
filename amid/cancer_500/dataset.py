@@ -1,13 +1,11 @@
 import codecs
 import json
 import warnings
-from functools import lru_cache
+from functools import cached_property
 from pathlib import Path
 
 import numpy as np
 import pydicom
-from connectome import Source, meta
-from connectome.interface.nodes import Output, Silent
 from dicom_csv import (
     get_common_tag,
     get_orientation_matrix,
@@ -20,12 +18,20 @@ from dicom_csv import (
 from dicom_csv.exceptions import TagMissingError
 from tqdm.auto import tqdm
 
-from ..internals import normalize
+from ..internals import Dataset, field, register
 from ..utils import get_series_date
 from .nodules import get_nodules
 
 
-class MoscowCancer500Base(Source):
+@register(
+    body_region='Thorax',
+    modality='CT',
+    task='Lung Cancer Detection',
+    link='https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/',
+    prep_data_size='103G',
+    raw_data_size='187G',
+)
+class MoscowCancer500(Dataset):
     """
     The Moscow Radiology Cancer-500 dataset.
 
@@ -54,25 +60,19 @@ class MoscowCancer500Base(Source):
     # (512, 512, 67)
     """
 
-    _root: str = None
-
-    @lru_cache(None)
-    def _mapping(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the location of the downloaded files')
-
-        _root = Path(_root)
-        path = _root / 'series-to-files.json'
+    @cached_property
+    def _mapping(self):
+        path = self.root / 'series-to-files.json'
         if not path.exists():
             mapping = {}
             for file in tqdm(
-                _root.rglob('*'), total=sum(1 for _ in _root.rglob('*')), desc='Analyzing folder structure'
+                self.root.rglob('*'), total=sum(1 for _ in self.root.rglob('*')), desc='Analyzing folder structure'
             ):
                 if file.is_dir():
                     continue
 
                 series = pydicom.dcmread(file, specific_tags=[(0x0020, 0x000E)]).SeriesInstanceUID
-                mapping[series].append(str(file.relative_to(_root)))
+                mapping[series].append(str(file.relative_to(self.root)))
 
             with open(path, 'w') as file:
                 json.dump(mapping, file)
@@ -81,43 +81,51 @@ class MoscowCancer500Base(Source):
         with open(path) as file:
             return json.load(file)
 
-    @meta
-    def ids(_mapping):
+    @property
+    def ids(self):
         # this id has an undefined image orientation
         ignore = {'1.2.643.5.1.13.13.12.2.77.8252.604378326291403.583548115656123.'}
-        return tuple(sorted(set(_mapping) - ignore))
+        return tuple(sorted(set(self._mapping) - ignore))
 
-    def _series(i, _mapping, _root: Silent):
-        series = [pydicom.dcmread(Path(_root, 'dicom', f)) for f in _mapping[i]]
+    def _series(self, i):
+        series = [pydicom.dcmread(Path(self.root, 'dicom', f)) for f in self._mapping[i]]
         series = order_series(series, decreasing=False)
         return series
 
-    def image(_series):
-        x = stack_images(_series, -1).astype(np.int16)
+    @field
+    def image(self, i):
+        x = stack_images(self._series(i), -1).astype(np.int16)
         # DICOM specifies that the first 2 axes are (y, x). let's fix that
         return np.moveaxis(x, 0, 1)
 
-    def study_uid(_series):
-        return get_common_tag(_series, 'StudyInstanceUID')
+    @field
+    def study_uid(self, i):
+        return get_common_tag(self._series(i), 'StudyInstanceUID')
 
-    def series_uid(_series):
-        return get_common_tag(_series, 'SeriesInstanceUID')
+    @field
+    def series_uid(self, i):
+        return get_common_tag(self._series(i), 'SeriesInstanceUID')
 
-    def sop_uids(_series):
-        return [str(get_tag(i, 'SOPInstanceUID')) for i in _series]
+    @field
+    def sop_uids(self, i):
+        return [str(get_tag(i, 'SOPInstanceUID')) for i in self._series(i)]
 
-    def pixel_spacing(_series):
-        return get_pixel_spacing(_series).tolist()
+    @field
+    def pixel_spacing(self, i):
+        return get_pixel_spacing(self, i).tolist()
 
-    def slice_locations(_series):
-        return get_slice_locations(_series)
+    @field
+    def slice_locations(self, i):
+        return get_slice_locations(self, i)
 
-    def orientation_matrix(_series):
-        return get_orientation_matrix(_series)
+    @field
+    def orientation_matrix(self, i):
+        return get_orientation_matrix(self, i)
 
-    def instance_numbers(_series):
+    @field
+    def instance_numbers(self, i):
         try:
-            instance_numbers = [int(get_tag(i, 'InstanceNumber')) for i in _series]
+            instance_numbers = [int(get_tag(i, 'InstanceNumber')) for i in self._series(i)]
             if not _is_monotonic(instance_numbers):
                 warnings.warn('Ordered series has non-monotonic instance numbers.')
 
@@ -125,48 +133,41 @@ class MoscowCancer500Base(Source):
         except TagMissingError:
             pass
 
-    def conv_kernel(_series):
-        return get_common_tag(_series, 'ConvolutionKernel', default=None)
+    @field
+    def conv_kernel(self, i):
+        return get_common_tag(self._series(i), 'ConvolutionKernel', default=None)
 
-    def kvp(_series):
-        return get_common_tag(_series, 'KVP', default=None)
+    @field
+    def kvp(self, i):
+        return get_common_tag(self._series(i), 'KVP', default=None)
 
-    def patient_id(_series):
-        return get_common_tag(_series, 'PatientID', default=None)
+    @field
+    def patient_id(self, i):
+        return get_common_tag(self._series(i), 'PatientID', default=None)
 
-    def study_date(_series):
-        return get_series_date(_series)
+    @field
+    def study_date(self, i):
+        return get_series_date(self._series(i))
 
-    def accession_number(_series):
-        return get_common_tag(_series, 'AccessionNumber', default=None)
+    @field
+    def accession_number(self, i):
+        return get_common_tag(self._series(i), 'AccessionNumber', default=None)
 
-    def nodules(i, _mapping, _root: Silent, _series, slice_locations: Output):
-        folders = {Path(f).parent.name for f in _mapping[i]}
+    @field
+    def nodules(self, i):
+        folders = {Path(f).parent.name for f in self._mapping[i]}
         if len(folders) != 1:
             # can't determine protocol filename
             return
 
         (filename,) = folders
-        protocol = json.load(codecs.open(str(Path(_root) / 'protocols' / f'{filename}.json'), 'r', 'utf-8-sig'))
+        protocol = json.load(codecs.open(str(self.root / 'protocols' / f'{filename}.json'), 'r', 'utf-8-sig'))
 
-        series_number = get_common_tag(_series, 'SeriesNumber')
+        series_number = get_common_tag(self._series(i), 'SeriesNumber')
         try:
-            return get_nodules(protocol, series_number, slice_locations)
+            return get_nodules(protocol, series_number, self.slice_locations(i))
         except ValueError:
             pass
-
-
-MoscowCancer500 = normalize(
-    MoscowCancer500Base,
-    'MoscowCancer500',
-    'cancer_500',
-    body_region='Thorax',
-    modality='CT',
-    task='Lung Cancer Detection',
-    link='https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/',
-    prep_data_size='103G',
-    raw_data_size='187G',
-)
 
 
 def _is_monotonic(sequence):

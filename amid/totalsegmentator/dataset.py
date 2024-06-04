@@ -8,9 +8,8 @@ import numpy as np
 import pandas as pd
 from bev.utils import PathOrStr
 
-from ..internals import Dataset, licenses, register
+from ..internals import Dataset, field, licenses, register
 from ..utils import open_nii_gz_file, unpack
-from .const import ANATOMICAL_STRUCTURES, LABELS
 from .utils import ARCHIVE_ROOT, add_labels, add_masks
 
 
@@ -60,13 +59,6 @@ class Totalsegmentator(Dataset):
     Available at: https://zenodo.org/record/6802614#.Y6M2MxXP1D8
     """
 
-    _fields = (
-        'image',
-        'affine',
-        *LABELS,
-        *ANATOMICAL_STRUCTURES,
-    )
-
     add_masks(locals())
     add_labels(locals())
 
@@ -91,6 +83,7 @@ class Totalsegmentator(Dataset):
                 parsed_namelist = [x.strip('/').split('/') for x in zf.namelist()]
                 return sorted({x[-1] for x in parsed_namelist if len(x) == 2 and x[-1] != 'meta.csv'})
 
+    @field
     def image(self, i):
         file = f'{i}/ct.nii.gz'
 
@@ -102,6 +95,7 @@ class Totalsegmentator(Dataset):
                     with open_nii_gz_file(unpacked) as image:
                         return np.asarray(image.dataobj)
 
+    @field
     def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation"""
         file = f'{i}/ct.nii.gz'

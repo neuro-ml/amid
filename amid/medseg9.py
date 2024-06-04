@@ -7,7 +7,7 @@ from zipfile import ZipFile
 import nibabel as nb
 import numpy as np
 
-from .internals import Dataset, licenses, register
+from .internals import Dataset, field, licenses, register
 
 
 @register(
@@ -52,8 +52,6 @@ class Medseg9(Dataset):
 
     """
 
-    _fields = 'image', 'lungs', 'covid', 'affine'
-
     @property
     def ids(self):
         result = set()
@@ -75,21 +73,25 @@ class Medseg9(Dataset):
     def _file(self, i):
         return zipfile.Path(self.root / 'rp_im.zip', f'rp_im/{self._filename(i)}')
 
+    @field
     def image(self, i):
         with open_nii_gz_file(self._file(i)) as nii_image:
             # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return np.int16(nii_image.get_fdata())
 
+    @field
     def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
         with open_nii_gz_file(self._file(i)) as nii_image:
             return nii_image.affine
 
+    @field
     def lungs(self, i):
         mask_file = zipfile.Path(self.root / 'rp_lung_msk.zip', f'rp_lung_msk/{self._filename(i)}')
         with open_nii_gz_file(mask_file) as nii_image:
             return np.bool_(nii_image.get_fdata())
 
+    @field
     def covid(self, i):
         """
         int16 mask.

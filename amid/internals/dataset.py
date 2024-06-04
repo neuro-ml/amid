@@ -20,3 +20,16 @@ class Dataset(ExternalBase):
     @classmethod
     def __getversion__(cls):
         return 0
+
+
+_Fields = {}
+
+
+def register_field(cls, name, func):
+    _Fields.setdefault(cls, {})[name] = func
+
+
+def field(func):
+    cls, name = func.__qualname__.split('.')
+    register_field(cls, name, func)
+    return func
