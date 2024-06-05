@@ -74,7 +74,7 @@ class NLST(Dataset):
             }
             ids.append(max(series_uid2num_slices, key=series_uid2num_slices.get))
 
-        return ids[:5000]
+        return ids
 
     def _series(self, i):
         (folder,) = self.root.glob(f'**/{i}')
