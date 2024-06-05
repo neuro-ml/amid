@@ -1,23 +1,23 @@
 import contextlib
 import zipfile
-from functools import partial
 from pathlib import Path
 
 import pandas as pd
-from connectome import Positional
+
+from ..internals.dataset import register_field
 
 
-def _loader(cast, name, _row):
-    value = _row.get(name)
-    if pd.isnull(value):
-        return None
-    if cast is not None:
-        return cast(value)
-    return value
+def csv_field(name, cast):
+    def _loader(self, i):
+        value = self._meta[i].get(name)
+        if pd.isnull(value):
+            return None
+        if cast is not None:
+            return cast(value)
+        return value
 
-
-def csv_field(cast):
-    return Positional(partial(_loader, cast), 'name', '_row')
+    register_field('RSNABreastCancer', name, _loader)
+    return _loader
 
 
 @contextlib.contextmanager
