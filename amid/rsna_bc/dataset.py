@@ -16,23 +16,6 @@ from .utils import csv_field, unpack
     raw_data_size='271G',
     prep_data_size='294G',
     task='Breast cancer classification',
-    columns=[
-        'site_id',
-        'patient_id',
-        'image_id',
-        'laterality',
-        'view',
-        'age',
-        'cancer',
-        'biopsy',
-        'invasive',
-        'BIRADS',
-        'implant',
-        'density',
-        'machine_id',
-        'prediction_id',
-        'difficult_negative_case',
-    ],
 )
 class RSNABreastCancer(Dataset):
     @cached_property
