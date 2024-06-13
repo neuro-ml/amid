@@ -17,3 +17,4 @@ pydicom
 imops
 highdicom
 SimpleITK
+py7zr
