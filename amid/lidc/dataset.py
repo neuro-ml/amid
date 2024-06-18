@@ -2,18 +2,25 @@ import os
 
 import numpy as np
 import pylidc as pl
-from connectome import Source, meta
-from connectome.interface.nodes import Output, Silent
 from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
 from pylidc.utils import consensus
 from scipy import stats
 
-from ..internals import licenses, normalize
+from ..internals import Dataset, field, licenses, register
 from ..utils import deprecate, get_series_date
 from .nodules import get_nodule
 
 
-class LIDCBase(Source):
+@register(
+    body_region='Chest',
+    license=licenses.CC_BY_30,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254',
+    modality='CT',
+    prep_data_size='71,2G',
+    raw_data_size='126G',
+    task='Lung nodules segmentation',
+)
+class LIDC(Dataset):
     """
     The (L)ung (I)mage (D)atabase (C)onsortium image collection (LIDC-IDRI) [1]_
     consists of diagnostic and lung cancer screening thoracic computed tomography (CT) scans
@@ -27,8 +34,6 @@ class LIDCBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -56,68 +61,74 @@ class LIDCBase(Source):
     https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/
     """
 
-    _root: str = None
-    _pylidc_config_start: str = '[dicom]\npath = '
-
-    def _check_config(_root: Silent, _pylidc_config_start):
-        if _root is not None:
+    def _check_config(self, pylidc_config_start='[dicom]\npath = '):
+        if self.root is not None:
             if os.path.exists(os.path.expanduser('~/.pylidcrc')):
                 with open(os.path.expanduser('~/.pylidcrc'), 'r') as config_file:
                     content = config_file.read()
-                if content == f'{_pylidc_config_start}{_root}':
+                if content == f'{pylidc_config_start}{self.root}':
                     return
 
             # save _root path to ~/.pylidcrc file for pylidc
             with open(os.path.expanduser('~/.pylidcrc'), 'w') as config_file:
-                config_file.write(f'{_pylidc_config_start}{_root}')
+                config_file.write(f'{pylidc_config_start}{self.root}')
         return
 
-    @meta
-    def ids(_root: Silent, _pylidc_config_start, _check_config):
+    @property
+    def ids(self):
         result = [scan.series_instance_uid for scan in pl.query(pl.Scan).all()]
         return tuple(sorted(result))
 
-    def _scan(i, _root: Silent, _pylidc_config_start, _check_config):
+    def _scan(self, i):
         _id = i.split('_')[-1]
         return pl.query(pl.Scan).filter(pl.Scan.series_instance_uid == _id).first()
 
-    def _series(_scan):
-        series = expand_volumetric(_scan.load_all_dicom_images(verbose=False))
+    def _series(self, i):
+        series = expand_volumetric(self._scan(i).load_all_dicom_images(verbose=False))
         series = order_series(series)
         return series
 
-    def _shape(_series):
-        return stack_images(_series, -1).shape
+    def _shape(self, i):
+        return stack_images(self._series(i), -1).shape
 
-    def image(_scan):
-        return _scan.to_volume(verbose=False)
+    @field
+    def image(self, i):
+        return self._scan(i).to_volume(verbose=False)
 
-    def study_uid(_scan):
-        return _scan.study_instance_uid
+    @field
+    def study_uid(self, i):
+        return self._scan(i).study_instance_uid
 
-    def series_uid(_scan):
-        return _scan.series_instance_uid
+    @field
+    def series_uid(self, i):
+        return self._scan(i).series_instance_uid
 
-    def patient_id(_scan):
-        return _scan.patient_id
+    @field
+    def patient_id(self, i):
+        return self._scan(i).patient_id
 
-    def sop_uids(_series):
-        return [str(get_tag(i, 'SOPInstanceUID')) for i in _series]
+    @field
+    def sop_uids(self, i):
+        return [str(get_tag(i, 'SOPInstanceUID')) for i in self._series(i)]
 
-    def pixel_spacing(_scan):
-        spacing = _scan.pixel_spacing
+    @field
+    def pixel_spacing(self, i):
+        spacing = self._scan(i).pixel_spacing
         return [spacing, spacing]
 
-    def slice_locations(_scan):
-        return _scan.slice_zvals
+    @field
+    def slice_locations(self, i):
+        return self._scan(i).slice_zvals
 
+    @field
     @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(_scan, pixel_spacing: Output):
+    def voxel_spacing(self, i):
         """Returns voxel spacing along axes (x, y, z)."""
-        spacing = np.float32([pixel_spacing[0], pixel_spacing[0], _scan.slice_spacing])
+        spacing = np.float32([self.pixel_spacing(i)[0], self.pixel_spacing(i)[0], self._scan(i).slice_spacing])
         return spacing
 
-    def spacing(pixel_spacing: Output, slice_locations: Output):
+    @field
+    def spacing(self, i):
         """
         Volumetric spacing of the image.
         The maximum relative difference in `slice_locations` < 1e-3
@@ -135,78 +146,77 @@ class LIDCBase(Source):
         And these differences appear in the maximum of 3 slices.
         Therefore, we consider their impact negligible.
         """
-        return (*pixel_spacing, stats.mode(np.diff(slice_locations))[0].item())
+        return (*self.pixel_spacing(i), stats.mode(np.diff(self.slice_locations(i)))[0].item())
 
-    def contrast_used(_scan):
+    @field
+    def contrast_used(self, i):
         """If the DICOM file for the scan had any Contrast tag, this is marked as `True`."""
-        return _scan.contrast_used
+        return self._scan(i).contrast_used
 
-    def is_from_initial(_scan):
+    @field
+    def is_from_initial(self, i):
         """
         Indicates whether or not this PatientID was tagged as
         part of the initial 399 release.
         """
-        return _scan.is_from_initial
+        return self._scan(i).is_from_initial
 
-    def orientation_matrix(_series):
-        return get_orientation_matrix(_series)
+    @field
+    def orientation_matrix(self, i):
+        return get_orientation_matrix(self._series(i))
 
-    def sex(_series):
-        return get_common_tag(_series, 'PatientSex', default=None)
+    @field
+    def sex(self, i):
+        return get_common_tag(self._series(i), 'PatientSex', default=None)
 
-    def age(_series):
-        return get_common_tag(_series, 'PatientAge', default=None)
+    @field
+    def age(self, i):
+        return get_common_tag(self._series(i), 'PatientAge', default=None)
 
-    def conv_kernel(_series):
-        return get_common_tag(_series, 'ConvolutionKernel', default=None)
+    @field
+    def conv_kernel(self, i):
+        return get_common_tag(self._series(i), 'ConvolutionKernel', default=None)
 
-    def kvp(_series):
-        return get_common_tag(_series, 'KVP', default=None)
+    @field
+    def kvp(self, i):
+        return get_common_tag(self._series(i), 'KVP', default=None)
 
-    def tube_current(_series):
-        return get_common_tag(_series, 'XRayTubeCurrent', default=None)
+    @field
+    def tube_current(self, i):
+        return get_common_tag(self._series(i), 'XRayTubeCurrent', default=None)
 
-    def study_date(_series):
-        return get_series_date(_series)
+    @field
+    def study_date(self, i):
+        return get_series_date(self._series(i))
 
-    def accession_number(_series):
-        return get_common_tag(_series, 'AccessionNumber', default=None)
+    @field
+    def accession_number(self, i):
+        return get_common_tag(self._series(i), 'AccessionNumber', default=None)
 
-    def nodules(_scan):
+    @field
+    def nodules(self, i):
         nodules = []
-        for anns in _scan.cluster_annotations():
+        for anns in self._scan(i).cluster_annotations():
             nodule_annotations = []
             for ann in anns:
                 nodule_annotations.append(get_nodule(ann))
             nodules.append(nodule_annotations)
         return nodules
 
-    def nodules_masks(_scan):
+    @field
+    def nodules_masks(self, i):
         nodules = []
-        for anns in _scan.cluster_annotations():
+        for anns in self._scan(i).cluster_annotations():
             nodule_annotations = []
             for ann in anns:
                 nodule_annotations.append(ann.boolean_mask())
             nodules.append(nodule_annotations)
         return nodules
 
-    def cancer(_scan, _shape):
-        cancer = np.zeros(_shape, dtype=bool)
-        for anns in _scan.cluster_annotations():
+    @field
+    def cancer(self, i):
+        cancer = np.zeros(self._shape(i), dtype=bool)
+        for anns in self._scan(i).cluster_annotations():
             cancer |= consensus(anns, pad=np.inf)[0]
 
         return cancer
-
-
-LIDC = normalize(
-    LIDCBase,
-    'LIDC',
-    'lidc',
-    body_region='Chest',
-    license=licenses.CC_BY_30,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254',
-    modality='CT',
-    prep_data_size='71,2G',
-    raw_data_size='126G',
-    task='Lung nodules segmentation',
-)
