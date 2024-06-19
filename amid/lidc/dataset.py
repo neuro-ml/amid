@@ -1,5 +1,6 @@
 import os
 
+from typing import List
 import numpy as np
 import pylidc as pl
 from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
@@ -9,6 +10,7 @@ from scipy import stats
 from ..internals import Dataset, field, licenses, register
 from ..utils import deprecate, get_series_date
 from .nodules import get_nodule
+from .typing import LIDCNodule
 
 
 @register(
@@ -194,7 +196,7 @@ class LIDC(Dataset):
         return get_common_tag(self._series(i), 'AccessionNumber', default=None)
 
     @field
-    def nodules(self, i):
+    def nodules(self, i) -> List[List[LIDCNodule]]:
         nodules = []
         for anns in self._scan(i).cluster_annotations():
             nodule_annotations = []
@@ -204,7 +206,7 @@ class LIDC(Dataset):
         return nodules
 
     @field
-    def nodules_masks(self, i):
+    def nodules_masks(self, i) -> List[List[np.ndarray]]:
         nodules = []
         for anns in self._scan(i).cluster_annotations():
             nodule_annotations = []
@@ -214,7 +216,7 @@ class LIDC(Dataset):
         return nodules
 
     @field
-    def cancer(self, i):
+    def cancer(self, i) -> np.ndarray:
         cancer = np.zeros(self._shape(i), dtype=bool)
         for anns in self._scan(i).cluster_annotations():
             cancer |= consensus(anns, pad=np.inf)[0]
