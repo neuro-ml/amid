@@ -120,14 +120,7 @@ class LIDC(Dataset):
     def slice_locations(self, i):
         return self._scan(i).slice_zvals
 
-    @field
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(self, i):
-        """Returns voxel spacing along axes (x, y, z)."""
-        spacing = np.float32([self.pixel_spacing(i)[0], self.pixel_spacing(i)[0], self._scan(i).slice_spacing])
-        return spacing
-
-    @field
+    # @field
     def spacing(self, i):
         """
         Volumetric spacing of the image.
