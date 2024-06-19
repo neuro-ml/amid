@@ -1,12 +1,16 @@
 import os
 
-from typing import List
+from typing import List, Union, Tuple
 import numpy as np
 import pylidc as pl
 from bev.utils import PathOrStr
-from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
+from dicom_csv import (
+    expand_volumetric, get_common_tag, get_orientation_matrix,
+    get_tag, order_series, stack_images, Series
+)
 from pylidc.utils import consensus
 from scipy import stats
+import datetime
 
 from ..internals import Dataset, field, licenses, register
 from ..utils import get_series_date
@@ -83,53 +87,53 @@ class LIDC(Dataset):
         return
 
     @property
-    def ids(self):
+    def ids(self) -> Tuple[str]:
         result = [scan.series_instance_uid for scan in pl.query(pl.Scan).all()]
         return tuple(sorted(result))
 
-    def _scan(self, i):
+    def _scan(self, i) -> pl.Scan:
         _id = i.split('_')[-1]
         return pl.query(pl.Scan).filter(pl.Scan.series_instance_uid == _id).first()
 
-    def _series(self, i):
+    def _series(self, i) -> Series:
         series = expand_volumetric(self._scan(i).load_all_dicom_images(verbose=False))
         series = order_series(series)
         return series
 
-    def _shape(self, i):
+    def _shape(self, i) -> Tuple[int, int, int]:
         return stack_images(self._series(i), -1).shape
 
     @field
-    def image(self, i):
+    def image(self, i) -> np.ndarray:
         return self._scan(i).to_volume(verbose=False)
 
     @field
-    def study_uid(self, i):
+    def study_uid(self, i) -> str:
         return self._scan(i).study_instance_uid
 
     @field
-    def series_uid(self, i):
+    def series_uid(self, i) -> str:
         return self._scan(i).series_instance_uid
 
     @field
-    def patient_id(self, i):
+    def patient_id(self, i) -> str:
         return self._scan(i).patient_id
 
     @field
-    def sop_uids(self, i):
+    def sop_uids(self, i) -> List[str]:
         return [str(get_tag(i, 'SOPInstanceUID')) for i in self._series(i)]
 
     @field
-    def pixel_spacing(self, i):
+    def pixel_spacing(self, i) -> List[float]:
         spacing = self._scan(i).pixel_spacing
         return [spacing, spacing]
 
     @field
-    def slice_locations(self, i):
+    def slice_locations(self, i) -> np.array:
         return self._scan(i).slice_zvals
 
     # @field
-    def spacing(self, i):
+    def spacing(self, i) -> Tuple[float, float, float]:
         """
         Volumetric spacing of the image.
         The maximum relative difference in `slice_locations` < 1e-3
@@ -150,12 +154,12 @@ class LIDC(Dataset):
         return (*self.pixel_spacing(i), stats.mode(np.diff(self.slice_locations(i)))[0].item())
 
     @field
-    def contrast_used(self, i):
+    def contrast_used(self, i) -> bool:
         """If the DICOM file for the scan had any Contrast tag, this is marked as `True`."""
         return self._scan(i).contrast_used
 
     @field
-    def is_from_initial(self, i):
+    def is_from_initial(self, i) -> bool:
         """
         Indicates whether or not this PatientID was tagged as
         part of the initial 399 release.
@@ -163,35 +167,35 @@ class LIDC(Dataset):
         return self._scan(i).is_from_initial
 
     @field
-    def orientation_matrix(self, i):
+    def orientation_matrix(self, i) -> np.ndarray:
         return get_orientation_matrix(self._series(i))
 
     @field
-    def sex(self, i):
+    def sex(self, i) -> Union[str, None]:
         return get_common_tag(self._series(i), 'PatientSex', default=None)
 
     @field
-    def age(self, i):
+    def age(self, i) -> Union[str, None]:
         return get_common_tag(self._series(i), 'PatientAge', default=None)
 
     @field
-    def conv_kernel(self, i):
+    def conv_kernel(self, i) -> Union[str, None]:
         return get_common_tag(self._series(i), 'ConvolutionKernel', default=None)
 
     @field
-    def kvp(self, i):
+    def kvp(self, i) -> Union[str, None]:
         return get_common_tag(self._series(i), 'KVP', default=None)
 
     @field
-    def tube_current(self, i):
+    def tube_current(self, i) -> Union[str, None]:
         return get_common_tag(self._series(i), 'XRayTubeCurrent', default=None)
 
     @field
-    def study_date(self, i):
+    def study_date(self, i) -> Union[datetime.date, None]:
         return get_series_date(self._series(i))
 
     @field
-    def accession_number(self, i):
+    def accession_number(self, i) -> Union[str, None]:
         return get_common_tag(self._series(i), 'AccessionNumber', default=None)
 
     @field
