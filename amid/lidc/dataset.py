@@ -3,12 +3,13 @@ import os
 from typing import List
 import numpy as np
 import pylidc as pl
+from bev.utils import PathOrStr
 from dicom_csv import expand_volumetric, get_common_tag, get_orientation_matrix, get_tag, order_series, stack_images
 from pylidc.utils import consensus
 from scipy import stats
 
 from ..internals import Dataset, field, licenses, register
-from ..utils import deprecate, get_series_date
+from ..utils import get_series_date
 from .nodules import get_nodule
 from .typing import LIDCNodule
 
@@ -63,7 +64,12 @@ class LIDC(Dataset):
     https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3041807/
     """
 
-    def _check_config(self, pylidc_config_start='[dicom]\npath = '):
+    def __init__(self, root: PathOrStr):
+        super().__init__(root)
+        self._check_config()
+
+    def _check_config(self):
+        pylidc_config_start = '[dicom]\npath = '
         if self.root is not None:
             if os.path.exists(os.path.expanduser('~/.pylidcrc')):
                 with open(os.path.expanduser('~/.pylidcrc'), 'r') as config_file:
@@ -122,14 +128,7 @@ class LIDC(Dataset):
     def slice_locations(self, i):
         return self._scan(i).slice_zvals
 
-    @field
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(self, i):
-        """Returns voxel spacing along axes (x, y, z)."""
-        spacing = np.float32([self.pixel_spacing(i)[0], self.pixel_spacing(i)[0], self._scan(i).slice_spacing])
-        return spacing
-
-    @field
+    # @field
     def spacing(self, i):
         """
         Volumetric spacing of the image.
