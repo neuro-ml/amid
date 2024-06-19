@@ -74,17 +74,15 @@ class LIDC(Dataset):
 
     def _check_config(self):
         pylidc_config_start = '[dicom]\npath = '
-        if self.root is not None:
-            if os.path.exists(os.path.expanduser('~/.pylidcrc')):
-                with open(os.path.expanduser('~/.pylidcrc'), 'r') as config_file:
-                    content = config_file.read()
-                if content == f'{pylidc_config_start}{self.root}':
-                    return
+        if os.path.exists(os.path.expanduser('~/.pylidcrc')):
+            with open(os.path.expanduser('~/.pylidcrc'), 'r') as config_file:
+                content = config_file.read()
+            if content == f'{pylidc_config_start}{self.root}':
+                return
 
-            # save _root path to ~/.pylidcrc file for pylidc
-            with open(os.path.expanduser('~/.pylidcrc'), 'w') as config_file:
-                config_file.write(f'{pylidc_config_start}{self.root}')
-        return
+        # save _root path to ~/.pylidcrc file for pylidc
+        with open(os.path.expanduser('~/.pylidcrc'), 'w') as config_file:
+            config_file.write(f'{pylidc_config_start}{self.root}')
 
     @property
     def ids(self) -> Tuple[str]:
