@@ -129,7 +129,7 @@ class LIDC(Dataset):
         return [spacing, spacing]
 
     @field
-    def slice_locations(self, i) -> np.array:
+    def slice_locations(self, i) -> np.ndarray:
         return self._scan(i).slice_zvals
 
     # @field
