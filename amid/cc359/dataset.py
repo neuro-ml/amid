@@ -13,7 +13,7 @@ from ..internals import licenses, normalize
 from ..utils import deprecate
 
 
-class CC359Base(Source):
+class CC359Base(Dataset):
     """
     A (C)algary-(C)ampinas public brain MR dataset with (359) volumetric images [1]_.
 
@@ -25,8 +25,7 @@ class CC359Base(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -74,12 +73,10 @@ class CC359Base(Source):
 
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root):
+    @property
+    def ids(self):
         result = set()
-        with ZipFile(Path(_root) / 'Original.zip') as zf:
+        with ZipFile(self.root / 'Original.zip') as zf:
             for zipinfo in zf.infolist():
                 if zipinfo.is_dir():
                     continue
@@ -90,7 +87,7 @@ class CC359Base(Source):
 
         return tuple(sorted(result))
 
-    def _image_file(i, _root: Silent):
+    def _image_file(self, i):
         return get_zipfile(i, 'Original.zip', _root)
 
     def vendor(_image_file):
@@ -125,12 +122,12 @@ class CC359Base(Source):
 
     # masks:
 
-    def brain(i, _root: Silent):
+    def brain(self, i):
         zf = get_zipfile(i, 'Silver-standard-machine-learning.zip', _root)
         with open_nii_gz_file(zf) as nii_image:
             return np.uint8(nii_image.get_fdata())
 
-    def hippocampus(i, _root: Silent):
+    def hippocampus(self, i):
         try:
             zf = get_zipfile(i, 'hippocampus_staple.zip', _root)
         except KeyError:
@@ -139,8 +136,8 @@ class CC359Base(Source):
         with open_nii_gz_file(zf) as nii_image:
             return np.uint8(nii_image.get_fdata())
 
-    def wm_gm_csf(i, _root: Silent):
-        for file in (Path(_root) / 'WM-GM-CSF').glob('*'):
+    def wm_gm_csf(self, i):
+        for file in (self.root / 'WM-GM-CSF').glob('*'):
             if file.name.startswith(i):
                 with open_nii_gz_file(file) as nii_image:
                     return np.uint8(nii_image.get_fdata())

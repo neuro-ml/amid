@@ -11,7 +11,7 @@ from ..internals import licenses, normalize
 from .data_classes import AcquisitionInfo, ClinicalInfo
 
 
-class UPENN_GBMBase(Source):
+class UPENN_GBMBase(Dataset):
     """
     Multi-parametric magnetic resonance imaging (mpMRI) scans for de novo Glioblastoma
       (GBM) patients from the University of Pennsylvania Health System (UPENN-GBM).
@@ -63,16 +63,14 @@ class UPENN_GBMBase(Source):
 
     """
 
-    _root: str = None
-
     def _base(_root: Silent):
         if _root is None:
             raise ValueError('Please provide the `root` argument')
-        return Path(_root)
+        return self.root
 
-    @meta
-    def ids(_base):
-        ids = [x.name for x in (_base / 'NIfTI-files/images_structural').iterdir()]
+    @property
+    def ids(self):
+        ids = [x.name for x in (self.root / 'NIfTI-files/images_structural').iterdir()]
         return tuple(sorted(ids))
 
     def modalities():
@@ -84,9 +82,9 @@ class UPENN_GBMBase(Source):
     def dti_modalities():
         return ['AD', 'FA', 'RD', 'TR']
 
-    def _mask_path(i, _base):
-        p1 = _base / 'NIfTI-files/images_segm'
-        p2 = _base / 'NIfTI-files/automated_segm'
+    def _mask_path(self, i):
+        p1 = self.root / 'NIfTI-files/images_segm'
+        p2 = self.root / 'NIfTI-files/automated_segm'
         p1 = list(p1.glob(i + '*'))
         p2 = list(p2.glob(i + '*'))
         return p1[0] if p1 else p2[0] if p2 else None
@@ -101,28 +99,28 @@ class UPENN_GBMBase(Source):
             return None
         return _mask_path.parent.name == 'automated_segm'
 
-    def image(i, modalities: Output, _base):
-        path = _base / f'NIfTI-files/images_structural/{i}'
+    def image(self, i):
+        path = self.root / f'NIfTI-files/images_structural/{i}'
         image_pathes = [path / f'{i}_{mod}.nii.gz' for mod in modalities]
         images = [np.asarray(nb.load(p).dataobj) for p in image_pathes]
         return np.stack(images)
 
-    def image_unstripped(i, modalities: Output, _base):
-        path = _base / f'NIfTI-files/images_structural_unstripped/{i}'
+    def image_unstripped(self, i):
+        path = self.root / f'NIfTI-files/images_structural_unstripped/{i}'
         image_pathes = [path / f'{i}_{mod}_unstripped.nii.gz' for mod in modalities]
         images = [np.asarray(nb.load(p).dataobj) for p in image_pathes]
         return np.stack(images)
 
-    def image_DTI(i, dti_modalities: Output, _base):
-        path = _base / f'NIfTI-files/images_DTI/{i}'
+    def image_DTI(self, i):
+        path = self.root / f'NIfTI-files/images_DTI/{i}'
         if not path.exists():
             return None
         image_pathes = [path / f'{i}_DTI_{mod}.nii.gz' for mod in dti_modalities]
         images = [np.asarray(nb.load(p).dataobj) for p in image_pathes]
         return np.stack(images)
 
-    def image_DSC(i, dsc_modalities: Output, _base):
-        path = _base / f'NIfTI-files/images_DSC/{i}'
+    def image_DSC(self, i):
+        path = self.root / f'NIfTI-files/images_DSC/{i}'
         if not path.exists():
             return None
         image_pathes = [path / (f'{i}_DSC_{mod}.nii.gz' if mod else f'{i}_DSC.nii.gz') for mod in dsc_modalities]
@@ -131,27 +129,27 @@ class UPENN_GBMBase(Source):
 
     @lru_cache(1)
     def _clinical_info(_base):
-        return pd.read_csv(_base / 'UPENN-GBM_clinical_info_v1.0.csv')
+        return pd.read_csv(self.root / 'UPENN-GBM_clinical_info_v1.0.csv')
 
     @lru_cache(1)
     def _acqusition_info(_base):
-        return pd.read_csv(_base / 'UPENN-GBM_acquisition.csv')
+        return pd.read_csv(self.root / 'UPENN-GBM_acquisition.csv')
 
-    def clinical_info(i, _clinical_info) -> ClinicalInfo:
+    def clinical_info(self, i):
         row = _clinical_info[_clinical_info.ID == i]
         return ClinicalInfo(*row.iloc[0, 1:])
 
-    def acqusition_info(i, _acqusition_info) -> AcquisitionInfo:
+    def acqusition_info(self, i):
         row = _acqusition_info[_acqusition_info.ID == i]
         return AcquisitionInfo(*row.iloc[0, 1:])
 
-    def subject_id(i):
+    def subject_id(self, i):
         return i.split('_')[0]
 
-    def affine(i):
+    def affine(self, i):
         return np.array([[-1.0, 0.0, 0.0, -0.0], [0.0, -1.0, 0.0, 239.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]])
 
-    def spacing(i):
+    def spacing(self, i):
         return (1, 1, 1)
 
 

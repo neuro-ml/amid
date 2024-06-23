@@ -24,7 +24,7 @@ from dicom_csv import (
 from .internals import licenses, normalize
 
 
-class NSCLCBase(Source):
+class NSCLCBase(Dataset):
     """
 
         NSCLC-Radiomics is a public cell lung cancer segmentation dataset with 422 patients.
@@ -34,8 +34,7 @@ class NSCLCBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -62,8 +61,6 @@ class NSCLCBase(Source):
     ----------
     """
 
-    _root: str = None
-
     # FIXME: move to filtering via `ignore_errors=True` + filtering via Filter (if needed)
     _INVALID_PATIENT_IDS = (
         # no dicom with cancer segmentation
@@ -77,32 +74,27 @@ class NSCLCBase(Source):
         'LUNG1-021',
     )
 
-    def _base(_root: Silent):
-        if _root is None:
-            raise ValueError('Please provide the `root` argument')
-        return Path(_root)
-
     @lru_cache(None)
     def _joined(_base):
-        joined_path = _base / 'joined.csv'
+        joined_path = self.root / 'joined.csv'
         if joined_path.exists():
             return pd.read_csv(joined_path)
-        joined = join_tree(_base / 'NSCLC-Radiomics', verbose=1)
+        joined = join_tree(self.root / 'NSCLC-Radiomics', verbose=1)
         joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
         joined.to_csv(joined_path)
         return joined
 
-    @meta
-    def ids(_joined):
+    @property
+    def ids(self):
         uid = _joined.groupby('SeriesInstanceUID').apply(len)
         return tuple(uid[uid > 1].keys())
 
-    def _sub(i, _joined):
+    def _sub(self, i):
         return _joined[_joined.SeriesInstanceUID == i]
 
     def _series(_sub, _base):
         series = [
-            pydicom.dcmread(_base / 'NSCLC-Radiomics' / file.PathToFolder / file.FileName)
+            pydicom.dcmread(self.root / 'NSCLC-Radiomics' / file.PathToFolder / file.FileName)
             for _, file in _sub.iterrows()
         ]
         series = expand_volumetric(series)
@@ -146,7 +138,7 @@ class NSCLCBase(Source):
             return int(age.removesuffix('Y'))
         return age
 
-    def _study_id(i, _joined):
+    def _study_id(self, i):
         study_ids = _joined[_joined.SeriesInstanceUID == i].StudyInstanceUID.unique()
         assert len(study_ids) == 1
         # series_id_to_study
@@ -180,14 +172,14 @@ class NSCLCBase(Source):
     def spinal_cord(_extract_segment_masks):
         return _extract_segment_masks.get('Spinal-Cord', None)
 
-    def _extract_segment_masks(i, _series, _joined, _base, _INVALID_PATIENT_IDS):
+    def _extract_segment_masks(self, i):
         folders = _joined[_joined.SeriesInstanceUID == i].PathToFolder.unique()
         assert len(folders) == 1, i
         patient_id = _joined[_joined.SeriesInstanceUID == i].PatientID.unique()[0]
         if patient_id in _INVALID_PATIENT_IDS:
             return {}
 
-        annotation_path = _base / 'NSCLC-Radiomics' / Path(folders[0]).parent
+        annotation_path = self.root / 'NSCLC-Radiomics' / Path(folders[0]).parent
 
         found_markup = None
         for p in annotation_path.glob('*.json'):

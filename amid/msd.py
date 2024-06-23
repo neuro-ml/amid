@@ -28,7 +28,7 @@ TASK_TO_NAME: dict = {
 NAME_TO_TASK = dict(zip(TASK_TO_NAME.values(), TASK_TO_NAME.keys()))
 
 
-class MSDBase(Source):
+class MSDBase(Dataset):
     """
     MSD is a Medical Segmentaton Decathlon Challenge with 10 tasks.
     Parameters
@@ -36,8 +36,7 @@ class MSDBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
     Notes
     -----
     Data can be downloaded here:http://medicaldecathlon.com/
@@ -47,12 +46,10 @@ class MSDBase(Source):
     (`Task03_Liver.tar`).
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent) -> tuple:
+    @property
+    def ids(self):
         ids_all = []
-        for folder in Path(_root).glob('*'):
+        for folder in self.root.glob('*'):
             if folder.name.endswith('.tar'):
                 ids_folder = ids_from_tar(folder)
             else:
@@ -67,12 +64,12 @@ class MSDBase(Source):
     def task(i) -> str:
         return NAME_TO_TASK[i.split('_')[1]]
 
-    def _relative(i, task: Output):
+    def _relative(self, i):
         name = i.removeprefix('train_').removeprefix('test_')
         return Path(task), Path('imagesTr' if 'train' in i else 'imagesTs') / f'{name}.nii.gz'
 
     def image(_relative, _root: Silent):
-        with open_nii_gz(Path(_root), _relative) as (file, unpacked):
+        with open_nii_gz(self.root, _relative) as (file, unpacked):
             if unpacked:
                 return np.int16(nb.load(file).get_fdata())
             else:
@@ -82,7 +79,7 @@ class MSDBase(Source):
 
     def affine(_relative, _root):
         """The 4x4 matrix that gives the image's spatial orientation."""
-        with open_nii_gz(Path(_root), _relative) as (file, unpacked):
+        with open_nii_gz(self.root, _relative) as (file, unpacked):
             if unpacked:
                 return nb.load(file).affine
             else:
@@ -90,23 +87,23 @@ class MSDBase(Source):
                     nii = nb.FileHolder(fileobj=nii_gz)
                     return nb.Nifti1Image.from_file_map({'header': nii, 'image': nii}).affine
 
-    def image_modality(i, task: Output, _root: Silent) -> str:
-        if (Path(_root) / task).is_dir():
-            with open(Path(_root) / task / 'dataset.json', 'r') as file:
+    def image_modality(self, i):
+        if (self.root / task).is_dir():
+            with open(self.root / task / 'dataset.json', 'r') as file:
                 return json.loads(file.read())['modality']
 
-        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+        with tarfile.open(self.root / f'{task}.tar') as tf:
             member = tf.getmember(f'{task}/dataset.json')
             file = tf.extractfile(member)
             return json.loads(file.read())['modality']
 
-    def segmentation_labels(i, task: Output, _root: Silent) -> dict:
+    def segmentation_labels(self, i):
         """Returns segmentation labels for the task"""
-        if (Path(_root) / task).is_dir():
-            with open(Path(_root) / task / 'dataset.json', 'r') as file:
+        if (self.root / task).is_dir():
+            with open(self.root / task / 'dataset.json', 'r') as file:
                 return json.loads(file.read())['labels']
 
-        with tarfile.open(Path(_root) / f'{task}.tar') as tf:
+        with tarfile.open(self.root / f'{task}.tar') as tf:
             member = tf.getmember(f'{task}/dataset.json')
             file = tf.extractfile(member)
             return json.loads(file.read())['labels']
@@ -114,7 +111,7 @@ class MSDBase(Source):
     def mask(_relative, _root: Silent):
         task, relative = _relative
         if 'imagesTs' not in str(relative):
-            with open_nii_gz(Path(_root), (task, str(relative).replace('images', 'labels'))) as (file, unpacked):
+            with open_nii_gz(self.root, (task, str(relative).replace('images', 'labels'))) as (file, unpacked):
                 if unpacked:
                     return np.uint8(nb.load(file).get_fdata())
                 else:
@@ -169,7 +166,7 @@ def get_id(filename: Path):
     return '_'.join([fold, name])
 
 
-def ids_from_tar(tar_folder: Path):
+def ids(self):
     ids = []
     with tarfile.open(tar_folder, 'r') as tf:
         for file in tf.getmembers():
@@ -179,7 +176,7 @@ def ids_from_tar(tar_folder: Path):
     return sorted(ids)
 
 
-def ids_from_folder(folder: Path):
+def ids(self):
     ids = []
     for filename in folder.rglob('*.nii.gz'):
         if not filename.name.startswith('._') and filename.suffix == '.gz' and 'images' in filename.parent.name:

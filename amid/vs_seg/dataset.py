@@ -22,7 +22,7 @@ from ..internals import licenses, normalize
 from ..utils import get_series_date
 
 
-class VSSEGBase(Source):
+class VSSEGBase(Dataset):
     """
     Segmentation of vestibular schwannoma from MRI, an open annotated dataset ... (VS-SEG) [1]_.
 
@@ -34,8 +34,7 @@ class VSSEGBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -81,29 +80,27 @@ class VSSEGBase(Source):
 
     """
 
-    _root: str = None
-
     def _base(_root: Silent):
         if _root is None:
             raise ValueError('Please provide the `root` argument')
-        return Path(_root)
+        return self.root
 
-    @meta
-    def ids(_base):
-        subject_id_paths = list((_base / 'Vestibular-Schwannoma-SEG').glob('VS-SEG-*'))
+    @property
+    def ids(self):
+        subject_id_paths = list((self.root / 'Vestibular-Schwannoma-SEG').glob('VS-SEG-*'))
         t1_ids = [p.name + '-T1' for p in subject_id_paths]
         t2_ids = [p.name + '-T2' for p in subject_id_paths]
         return tuple(sorted(t1_ids + t2_ids))
 
-    def modality(i):
+    def modality(self, i):
         return i.rsplit('-', 1)[1]
 
-    def subject_id(i):
+    def subject_id(self, i):
         return i.rsplit('-', 1)[0]
 
     # ### series and images: ###
 
-    def _series(i, _base):
+    def _series(self, i):
         return _load_series(i, _base)
 
     def image(_series):
@@ -113,7 +110,7 @@ class VSSEGBase(Source):
 
     def _contours(subject_id: Output, modality: Output, _base):
         subject_num = int(subject_id.rsplit('-', 1)[-1])
-        for file in (_base / 'contours').glob(f'vs_gk_{subject_num}_{modality.lower()}/*'):
+        for file in (self.root / 'contours').glob(f'vs_gk_{subject_num}_{modality.lower()}/*'):
             with open(str(file), 'r') as f:
                 return json.load(f)
 

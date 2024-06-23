@@ -47,7 +47,7 @@ class Calcification(NamedTuple):
     total: int
 
 
-class StanfordCoCaBase(Source):
+class StanfordCoCaBase(Dataset):
     """
     A Stanford AIMI's Co(ronary) Ca(lcium) dataset.
 
@@ -57,8 +57,7 @@ class StanfordCoCaBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -93,12 +92,10 @@ class StanfordCoCaBase(Source):
 
     """
 
-    _root: str = None
-
-    def _split(i):
+    def _split(self, i):
         return i.split('-')[0]
 
-    def _i(i):
+    def _i(self, i):
         return i.split('-')[1]
 
     def _folder_with_images(_split):
@@ -115,19 +112,19 @@ class StanfordCoCaBase(Source):
             return None
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
-    @meta
-    def ids(_root: Silent):
+    @property
+    def ids(self):
         gated_ids = tuple(
-            sorted('gated-' + x.name for x in (Path(_root) / 'Gated_release_final' / 'patient').iterdir() if x.is_dir())
+            sorted('gated-' + x.name for x in (self.root / 'Gated_release_final' / 'patient').iterdir() if x.is_dir())
         )
         nongated_ids = tuple(
-            sorted('nongated-' + x.name for x in (Path(_root) / 'deidentified_nongated').iterdir() if x.is_dir())
+            sorted('nongated-' + x.name for x in (self.root / 'deidentified_nongated').iterdir() if x.is_dir())
         )
 
         return gated_ids + nongated_ids
 
-    def _series(_i, _root: Silent, _folder_with_images):
-        folder_with_dicoms = Path(_root) / _folder_with_images / _i
+    def _series(self, i):
+        folder_with_dicoms = self.root / _folder_with_images / _i
         series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
         # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
@@ -142,7 +139,7 @@ class StanfordCoCaBase(Source):
 
         return series
 
-    def image(i, _series):
+    def image(self, i):
         image = stack_images(_series, -1).transpose((1, 0, 2)).astype(np.int16)
         return image
 
@@ -176,14 +173,14 @@ class StanfordCoCaBase(Source):
     def orientation_matrix(_series):
         return get_orientation_matrix(_series) if _series else None
 
-    def _raw_annotations(_i, _root: Silent, _folder_with_annotations):
+    def _raw_annotations(self, i):
         """Annotation as it is in xml"""
         if _folder_with_annotations is None:
             warnings.warn("The used split doesn't contain segmentation masks.")
             return None
 
         try:
-            with open(Path(_root) / _folder_with_annotations / f'{_i}.xml', 'rb') as fp:
+            with open(self.root / _folder_with_annotations / f'{_i}.xml', 'rb') as fp:
                 annotation = plistlib.load(fp)
                 image_annotations = annotation['Images']
 
@@ -216,14 +213,14 @@ class StanfordCoCaBase(Source):
 
     @lru_cache(None)
     def _scores(_root: Silent, _folder_with_images):
-        p = Path(_root) / _folder_with_images / 'scores.xlsx'
+        p = self.root / _folder_with_images / 'scores.xlsx'
 
         if not p.exists():
             return None
 
         return pd.read_excel(p, index_col=0)
 
-    def score(_i, _scores):
+    def score(self, i):
         if _scores is None:
             return None
         try:

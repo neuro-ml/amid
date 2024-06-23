@@ -14,15 +14,14 @@ from .internals import licenses, normalize
 from .utils import series_from_dicom_folder
 
 
-class CRLMBase(Source):
+class CRLMBase(Dataset):
     """
     Parameters
     ----------
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -50,19 +49,17 @@ class CRLMBase(Source):
     ----------
     """
 
-    _root: str = None
-
     def _base(_root: Silent) -> Path:
         if _root is None:
             raise ValueError('Please pass the locations of the zip archives')
-        return Path(_root)
+        return self.root
 
-    @meta
-    def ids(_base):
+    @property
+    def ids(self):
         return sorted(d.name for d in _base.iterdir())
 
-    def _folders(i, _base) -> Tuple[Path, Path]:
-        case = _base / i
+    def _folders(self, i):
+        case = self.root / i
         folders = tuple({p.parent for p in case.glob('*/*/*/*.dcm')})
         return tuple(sorted(folders, key=lambda f: len(list(f.iterdir()))))
 

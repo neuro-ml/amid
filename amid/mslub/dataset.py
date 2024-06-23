@@ -7,13 +7,11 @@ from connectome.interface.nodes import Silent
 from ..internals import licenses, normalize
 
 
-class MSLUBBase(Source):
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
+class MSLUBBase(Dataset):
+    @property
+    def ids(self):
         result = set()
-        for file in Path(_root).glob('**/*.gz'):
+        for file in self.root.glob('**/*.gz'):
             if ('raw' not in str(file)) or ('gt' in str(file)):
                 continue
             patient = file.parent.name
@@ -26,16 +24,16 @@ class MSLUBBase(Source):
             result.add(ind)
         return list(result)
 
-    def _file(i, _root: Silent):
+    def _file(self, i):
         plane = i.split('-')[0]
         patient = i.split('-')[1]
-        path = Path(_root) / plane / 'raw' / patient
+        path = self.root / plane / 'raw' / patient
         if 'longitudinal' in i:
             study_number = i.split('-')[2]
             return path / study_number
         return path
 
-    def image(_file):
+    def image(self, i):
         if 'longitudinal' in str(_file):
             study_number = _file.stem
             file_name = _file.parent / f'{study_number}_FLAIR.nii.gz'
@@ -44,7 +42,7 @@ class MSLUBBase(Source):
         image = nb.load(file_name).get_fdata()
         return image
 
-    def mask(_file):
+    def mask(self, i):
         if 'longitudinal' in str(_file):
             file_name = _file.parent / 'gt.nii.gz'
         else:
@@ -52,13 +50,13 @@ class MSLUBBase(Source):
         image = nb.load(file_name).get_fdata()
         return image
 
-    def patient(_file):
+    def patient(self, i):
         if 'longitudinal' in str(_file):
             return Path(_file).parent.name
         else:
             return Path(_file).name
 
-    def affine(_file):
+    def affine(self, i):
         if 'longitudinal' in str(_file):
             study_number = _file.stem
             file_name = _file.parent / f'{study_number}_FLAIR.nii.gz'

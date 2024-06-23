@@ -4,14 +4,20 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 
-from ..internals import licenses, normalize
-from ..utils import deprecate
+from ..internals import Dataset, licenses, register
 
 
-class LiTSBase(Source):
+@register(
+    body_region='Abdominal',
+    license=licenses.CC_BYNCND_40,
+    link='https://competitions.codalab.org/competitions/17094',
+    modality='CT',
+    prep_data_size='24,7G',
+    raw_data_size='35G',
+    task='Segmentation',
+)
+class LiTSBase(Dataset):
     """
     A (Li)ver (T)umor (S)egmentation dataset [1]_ from Medical Segmentation Decathlon [2]_
 
@@ -22,8 +28,7 @@ class LiTSBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -60,13 +65,11 @@ class LiTSBase(Source):
            arXiv preprint arXiv:2106.05735 (2021).
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
+    @property
+    def ids(self):
         result = set()
         # zip archives for train images:
-        for archive in Path(_root).glob('*.zip'):
+        for archive in self.root.glob('*.zip'):
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
                     if zipinfo.is_dir():
@@ -77,16 +80,16 @@ class LiTSBase(Source):
                         result.add('lits-train-' + file_stem.split('-')[-1])
 
         # folder for test images:
-        for file in (Path(_root) / 'LITS-Challenge-Test-Data').glob('*'):
+        for file in (self.root / 'LITS-Challenge-Test-Data').glob('*'):
             result.add('lits-test-' + file.stem.split('-')[-1])
 
         return tuple(sorted(result))
 
-    def fold(i, _root: Silent):
+    def fold(self, i):
         num_id = i.split('-')[-1]
 
         if 'train' in i:
-            for archive in Path(_root).glob('*.zip'):
+            for archive in self.root.glob('*.zip'):
                 batch = '1' if ('1' in archive.stem) else '2'
 
                 with ZipFile(archive) as zf:
@@ -100,11 +103,11 @@ class LiTSBase(Source):
         else:  # if 'test' in i:
             return 'test'
 
-    def _file(i, _root: Silent):
+    def _file(self, i):
         num_id = i.split('-')[-1]
 
         if 'train' in i:
-            for archive in Path(_root).glob('*.zip'):
+            for archive in self.root.glob('*.zip'):
                 with ZipFile(archive) as zf:
                     for zipinfo in zf.infolist():
                         if zipinfo.is_dir():
@@ -115,52 +118,35 @@ class LiTSBase(Source):
                             return zipfile.Path(str(archive), str(file))
 
         else:  # if 'test' in i:
-            return Path(_root) / 'LITS-Challenge-Test-Data' / f'test-volume-{num_id}.nii'
+            return self.root / 'LITS-Challenge-Test-Data' / f'test-volume-{num_id}.nii'
 
         raise KeyError(f'Id "{i}" not found')
 
-    def image(_file):
-        with _file.open('rb') as nii:
+    def image(self, i):
+        with self._file(i).open('rb') as nii:
             nii = nb.FileHolder(fileobj=nii)
             image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
             # most ct scans are integer-valued, this will help us improve compression rates
             return np.int16(image.get_fdata())
 
-    def affine(_file):
+    def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
-        with _file.open('rb') as nii:
+        with self._file(i).open('rb') as nii:
             nii = nb.FileHolder(fileobj=nii)
             image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
             return image.affine
 
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
-
-    def spacing(_file):
+    def spacing(self, i):
         """Returns voxel spacing along axes (x, y, z)."""
-        with _file.open('rb') as nii:
+        with self._file(i).open('rb') as nii:
             nii = nb.FileHolder(fileobj=nii)
             image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
             return tuple(image.header['pixdim'][1:4])
 
-    def mask(_file):
-        if 'test' not in _file.name:
-            with (_file.parent / _file.name.replace('volume', 'segmentation')).open('rb') as nii:
+    def mask(self, i):
+        file = self._file(i)
+        if 'test' not in file.name:
+            with (file.parent / file.name.replace('volume', 'segmentation')).open('rb') as nii:
                 nii = nb.FileHolder(fileobj=nii)
                 image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return np.uint8(image.get_fdata())
-
-
-LiTS = normalize(
-    LiTSBase,
-    'LiTS',
-    'lits',
-    body_region='Abdominal',
-    license=licenses.CC_BYNCND_40,
-    link='https://competitions.codalab.org/competitions/17094',
-    modality='CT',
-    prep_data_size='24,7G',
-    raw_data_size='35G',
-    task='Segmentation',
-)

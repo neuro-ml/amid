@@ -90,7 +90,7 @@ class LIDC(Dataset):
             config_file.write(f'{pylidc_config_start}{self.root}')
 
     @property
-    def ids(self) -> Tuple[str]:
+    def ids(self):
         result = [scan.series_instance_uid for scan in pl.query(pl.Scan).all()]
         return tuple(sorted(result))
 

@@ -1,16 +1,21 @@
-from functools import lru_cache
-from pathlib import Path
+from functools import cached_property
 
 import deli
 import nibabel
 import numpy as np
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 
-from .internals import normalize
+from .internals import Dataset, register
 
 
-class DeepLesionBase(Source):
+@register(
+    body_region=('Abdomen', 'Thorax'),
+    link='https://nihcc.app.box.com/v/DeepLesion',
+    modality='CT',
+    prep_data_size='259G',
+    raw_data_size='259G',
+    task=('Localisation', 'Detection', 'Classification'),
+)
+class DeepLesionBase(Dataset):
     """
     DeepLesion is composed of 33,688 bookmarked radiology images from
     10,825 studies of 4,477 unique patients. For every bookmarked image, a bound-
@@ -43,23 +48,16 @@ class DeepLesionBase(Source):
 
     """
 
-    _root: str = None
+    @property
+    def ids(self):
+        return tuple(sorted(file.name.replace('.nii.gz', '') for file in (self.root / 'Images_nifti').glob('*.nii.gz')))
 
-    def _base(_root: Silent):
-        if _root is None:
-            raise ValueError('Please provide the `root` argument')
-        return Path(_root)
+    def _image_file(self, i):
+        return nibabel.load(self.root / 'Images_nifti' / f'{i}.nii.gz')
 
-    @meta
-    def ids(_base):
-        return tuple(sorted([file.name.replace('.nii.gz', '') for file in (_base / 'Images_nifti').glob('*.nii.gz')]))
-
-    def _image_file(i, _base):
-        return nibabel.load(_base / 'Images_nifti' / f'{i}.nii.gz')
-
-    @lru_cache(None)
-    def _metadata(_base):
-        df = deli.load(_base / 'DL_info.csv')
+    @cached_property
+    def _metadata(self):
+        df = deli.load(self.root / 'DL_info.csv')
 
         cols_to_transform = [
             'Measurement_coordinates',
@@ -82,53 +80,53 @@ class DeepLesionBase(Source):
         df['ids'] = df.apply(get_ids, axis=1)
         return df
 
-    def _row(i, _metadata):
+    def _row(self, i):
         # funny story, f-string does not work for pandas.query,
         # @ syntax does not work for linter, use # noqa
-        return _metadata.query('ids==@i')
+        return self._metadata.query('ids==@i')
 
-    def patient_id(i):
+    def patient_id(self, i):
         patient, study, series = map(int, i.split('_')[:3])
         return patient
 
-    def study_id(i):
+    def study_id(self, i):
         patient, study, series = map(int, i.split('_')[:3])
         return study
 
-    def series_id(i):
+    def series_id(self, i):
         patient, study, series = map(int, i.split('_')[:3])
         return series
 
-    def sex(_row):
-        return _row.Patient_gender.iloc[0]
+    def sex(self, i):
+        return self._row(i).Patient_gender.iloc[0]
 
-    def age(_row):
+    def age(self, i):
         """Patient Age might be different for different studies (dataset contains longitudinal records)."""
-        return _row.Patient_age.iloc[0]
+        return self._row(i).Patient_age.iloc[0]
 
-    def ct_window(_row):
+    def ct_window(self, i):
         """CT window extracted from DICOMs. Recall, that it is min-max values for windowing, not width-level."""
-        return _row.DICOM_windows.iloc[0]
+        return self._row(i).DICOM_windows.iloc[0]
 
-    def affine(_image_file):
-        return _image_file.affine
+    def affine(self, i):
+        return self._image_file(i).affine
 
-    def spacing(_image_file):
-        return tuple(_image_file.header['pixdim'][1:4])
+    def spacing(self, i):
+        return tuple(self._image_file(i).header['pixdim'][1:4])
 
-    def image(_image_file):
+    def image(self, i):
         """Some 3D volumes are stored as separate subvolumes, e.g. ds.ids[15000] and ds.ids[15001]."""
-        return np.asarray(_image_file.dataobj)
+        return np.asarray(self._image_file(i).dataobj)
 
-    def train_val_test(_row):
+    def train_val_test(self, i):
         """Authors' defined randomly generated patient-level data split, train=1, validation=2, test=3,
         70/15/15 ratio."""
-        return int(_row.Train_Val_Test.iloc[0])
+        return int(self._row(i).Train_Val_Test.iloc[0])
 
-    def lesion_position(_row):
+    def lesion_position(self, i):
         """Lesion measurements as it appear in DL_info.csv, for details see
         https://nihcc.app.box.com/v/DeepLesion/file/306056134060 ."""
-        position = _row[
+        position = self._row(i)[
             [
                 'Slice_range_list',
                 'Key_slice_index',
@@ -141,10 +139,11 @@ class DeepLesionBase(Source):
         position['Slice_range_list'] = position['Slice_range_list'][0]
         return position
 
-    def mask(image: Output, lesion_position: Output):
+    def mask(self, i):
         """Mask of provided bounding boxes. Recall that bboxes annotation
         is very coarse, it only covers a single 2D slice."""
-        mask = np.zeros_like(image)
+        mask = np.zeros_like(self.image(i))
+        lesion_position = self.lesion_position(i)
         min_index = lesion_position['Slice_range_list'][0]
         for i, slice_index in enumerate(lesion_position['Key_slice_index']):
             image_index = slice_index - min_index
@@ -155,17 +154,3 @@ class DeepLesionBase(Source):
                 image_index,
             ] = 1
         return mask
-
-
-DeepLesion = normalize(
-    DeepLesionBase,
-    'DeepLesion',
-    'deeplesion',
-    body_region=('Abdomen', 'Thorax'),
-    license='DeepLesion data license',  # TODO
-    link='https://nihcc.app.box.com/v/DeepLesion',
-    modality='CT',
-    prep_data_size='259G',
-    raw_data_size='259G',
-    task=('Localisation', 'Detection', 'Classification'),
-)
