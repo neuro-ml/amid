@@ -15,7 +15,7 @@ from .internals import Dataset, register
     raw_data_size='259G',
     task=('Localisation', 'Detection', 'Classification'),
 )
-class DeepLesionBase(Dataset):
+class DeepLesion(Dataset):
     """
     DeepLesion is composed of 33,688 bookmarked radiology images from
     10,825 studies of 4,477 unique patients. For every bookmarked image, a bound-

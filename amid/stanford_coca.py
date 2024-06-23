@@ -9,8 +9,7 @@ from typing import NamedTuple
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, Transform, meta
-from connectome.interface.nodes import Silent
+from connectome import Transform
 from dicom_csv import (
     drop_duplicated_instances,
     drop_duplicated_slices,
@@ -23,7 +22,7 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import licenses, normalize
+from .internals import Dataset, licenses, register
 
 
 class CoCaClasses(IntEnum):
@@ -47,7 +46,16 @@ class Calcification(NamedTuple):
     total: int
 
 
-class StanfordCoCaBase(Dataset):
+@register(
+    body_region=('Coronary', 'Chest'),
+    license=licenses.StanfordDSResearch,
+    link='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='28G',
+    task='Coronary Calcium Segmentation',
+)
+class StanfordCoCa(Dataset):
     """
     A Stanford AIMI's Co(ronary) Ca(lcium) dataset.
 
@@ -98,17 +106,17 @@ class StanfordCoCaBase(Dataset):
     def _i(self, i):
         return i.split('-')[1]
 
-    def _folder_with_images(_split):
-        if _split == 'gated':
+    def _folder_with_images(self, i):
+        if self._split(i) == 'gated':
             return Path('Gated_release_final') / 'patient'
-        if _split == 'nongated':
+        if self._split(i) == 'nongated':
             return 'deidentified_nongated'
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
-    def _folder_with_annotations(_split):
-        if _split == 'gated':
+    def _folder_with_annotations(self, i):
+        if self._split(i) == 'gated':
             return Path('Gated_release_final') / 'calcium_xml'
-        if _split == 'nongated':
+        if self._split(i) == 'nongated':
             return None
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
@@ -124,7 +132,7 @@ class StanfordCoCaBase(Dataset):
         return gated_ids + nongated_ids
 
     def _series(self, i):
-        folder_with_dicoms = self.root / _folder_with_images / _i
+        folder_with_dicoms = self.root / self._folder_with_images(i) / i
         series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
         # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
@@ -140,11 +148,11 @@ class StanfordCoCaBase(Dataset):
         return series
 
     def image(self, i):
-        image = stack_images(_series, -1).transpose((1, 0, 2)).astype(np.int16)
+        image = stack_images(self._series(i), -1).transpose((1, 0, 2)).astype(np.int16)
         return image
 
-    def _image_meta(_series):
-        metas = [list(dict(s).values()) for s in _series]
+    def _image_meta(self, i):
+        metas = [list(dict(s).values()) for s in self._series(i)]
         result = {}
         for meta_ in metas:
             for element in meta_:
@@ -158,45 +166,47 @@ class StanfordCoCaBase(Dataset):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
-    def series_uid(_image_meta):
-        return _image_meta.get('SeriesInstanceUID', None)
+    def series_uid(self, i):
+        return self._image_meta(i).get('SeriesInstanceUID', None)
 
-    def study_uid(_image_meta):
-        return _image_meta.get('StudyInstanceUID', None)
+    def study_uid(self, i):
+        return self._image_meta(i).get('StudyInstanceUID', None)
 
-    def pixel_spacing(_series):
-        return get_pixel_spacing(_series).tolist() if _series else None
+    def pixel_spacing(self, i):
+        return get_pixel_spacing(self, i).tolist() if self._series(i) else None
 
-    def slice_locations(_series):
-        return get_slice_locations(_series) if _series else None
+    def slice_locations(self, i):
+        return get_slice_locations(self, i) if self._series(i) else None
 
-    def orientation_matrix(_series):
-        return get_orientation_matrix(_series) if _series else None
+    def orientation_matrix(self, i):
+        return get_orientation_matrix(self, i) if self._series(i) else None
 
     def _raw_annotations(self, i):
         """Annotation as it is in xml"""
-        if _folder_with_annotations is None:
+        folder = self._folder_with_annotations(i)
+        if folder is None:
             warnings.warn("The used split doesn't contain segmentation masks.")
             return None
 
         try:
-            with open(self.root / _folder_with_annotations / f'{_i}.xml', 'rb') as fp:
+            with open(self.root / folder / f'{i}.xml', 'rb') as fp:
                 annotation = plistlib.load(fp)
                 image_annotations = annotation['Images']
 
         except FileNotFoundError:
-            warnings.warn(f'Missing annotation for id: {_i}')
+            warnings.warn(f'Missing annotation for id: {i}')
             return None
 
         return image_annotations
 
-    def calcifications(_raw_annotations):
+    def calcifications(self, i):
         """Returns list of Calcifications"""
-        if _raw_annotations is None:
+        raw_annotations = self._raw_annotations(i)
+        if raw_annotations is None:
             return None
 
         cacs = []
-        for slice_annotation in _raw_annotations:
+        for slice_annotation in raw_annotations:
             for roi in slice_annotation['ROIs']:
                 if roi['Area'] > 0:
                     contour_px = np.array([literal_eval(x) for x in roi['Point_px']])
@@ -212,8 +222,8 @@ class StanfordCoCaBase(Dataset):
         return cacs
 
     @lru_cache(None)
-    def _scores(_root: Silent, _folder_with_images):
-        p = self.root / _folder_with_images / 'scores.xlsx'
+    def _scores(self, i):
+        p = self.root / self._folder_with_images(i) / 'scores.xlsx'
 
         if not p.exists():
             return None
@@ -221,27 +231,14 @@ class StanfordCoCaBase(Dataset):
         return pd.read_excel(p, index_col=0)
 
     def score(self, i):
-        if _scores is None:
+        scores = self._scores(i)
+        if scores is None:
             return None
         try:
-            return _scores.loc[_i + 'A'].to_dict()
+            return scores.loc[i + 'A'].to_dict()
         except KeyError:
-            warnings.warn(f'Missing scores for idx "{_i}"')
+            warnings.warn(f'Missing scores for idx "{i}"')
             return None
-
-
-StanfordCoCa = normalize(
-    StanfordCoCaBase,
-    'StanfordCoCa',
-    'stanford_coca',
-    body_region=('Coronary', 'Chest'),
-    license=licenses.StanfordDSResearch,
-    link='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',
-    modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
-    raw_data_size='28G',
-    task='Coronary Calcium Segmentation',
-)
 
 
 class ContoursToMask(Transform):

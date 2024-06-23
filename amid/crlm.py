@@ -1,20 +1,27 @@
 from functools import partial
-from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict
 
 import highdicom
 import numpy as np
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 from dicom_csv import get_orientation_matrix, get_slice_locations, get_voxel_spacing, stack_images
 from imops import restore_crop
 from more_itertools import locate
 
-from .internals import licenses, normalize
+from .internals import Dataset, licenses, register
 from .utils import series_from_dicom_folder
 
 
-class CRLMBase(Dataset):
+@register(
+    body_region='Abdomen',
+    license=licenses.CC_BY_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?'
+         'pageId=89096268#89096268412b832037484784bd78caf58e052641',
+    modality=('CT, SEG'),
+    prep_data_size='11G',
+    raw_data_size='11G',
+    task=('Segmentation', 'Classification'),
+)
+class CRLM(Dataset):
     """
     Parameters
     ----------
@@ -49,36 +56,33 @@ class CRLMBase(Dataset):
     ----------
     """
 
-    def _base(_root: Silent) -> Path:
-        if _root is None:
-            raise ValueError('Please pass the locations of the zip archives')
-        return self.root
-
     @property
     def ids(self):
-        return sorted(d.name for d in _base.iterdir())
+        return sorted(d.name for d in self.root.iterdir())
 
     def _folders(self, i):
         case = self.root / i
         folders = tuple({p.parent for p in case.glob('*/*/*/*.dcm')})
         return tuple(sorted(folders, key=lambda f: len(list(f.iterdir()))))
 
-    def _series(_folders):
-        return series_from_dicom_folder(_folders[1])
+    def _series(self, i):
+        return series_from_dicom_folder(self._folders(i)[1])
 
-    def image(_series):
-        return stack_images(_series)
+    def image(self, i):
+        return stack_images(self._series(i))
 
-    def mask(image: Output, _series, _folders) -> Dict[str, np.ndarray]:
+    def mask(self, i) -> Dict[str, np.ndarray]:
         """Returns dict: {'liver': ..., 'hepatic': ..., 'tumor_x': ...}"""
-        dicom_seg = highdicom.seg.segread(next(_folders[0].glob('*.dcm')))
-        image_sops = [s.SOPInstanceUID for s in _series]
+        dicom_seg = highdicom.seg.segread(next(self._folders(i)[0].glob('*.dcm')))
+        series = self._series(i)
+        image_sops = [s.SOPInstanceUID for s in series]
         seg_sops = [sop_uid for _, _, sop_uid in dicom_seg.get_source_image_uids()]
 
         sops = [sop for sop in image_sops if sop in set(seg_sops).intersection(image_sops)]
         seg_box_start = list(locate(image_sops, lambda i: i == sops[0]))[0]
         seg_box_stop = list(locate(image_sops, lambda i: i == sops[-1]))[0]
 
+        image = self.image(i)
         seg_box = np.asarray(((0, 0, seg_box_start), (*np.atleast_1d(image.shape[:-1]), seg_box_stop + 1)))
 
         raw_masks = np.swapaxes(
@@ -99,28 +103,13 @@ class CRLMBase(Dataset):
 
         return {**liver_mask, **veins, **tumors}
 
-    def spacing(_series):
+    def spacing(self, i):
         """Returns the voxel spacing along axes (x, y, z)."""
-        return get_voxel_spacing(_series)
+        return get_voxel_spacing(self._series(i))
 
-    def slice_locations(_series):
-        return get_slice_locations(_series)
+    def slice_locations(self, i):
+        return get_slice_locations(self._series(i))
 
-    def affine(_series):
+    def affine(self, i):
         """Returns 4x4 matrix that gives the image's spatial orientation."""
-        return get_orientation_matrix(_series)
-
-
-CRLM = normalize(
-    CRLMBase,
-    'CRLM',
-    'crlm',
-    body_region='Abdomen',
-    license=licenses.CC_BY_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?'
-    'pageId=89096268#89096268412b832037484784bd78caf58e052641',
-    modality=('CT, SEG'),
-    prep_data_size='11G',
-    raw_data_size='11G',
-    task=('Segmentation', 'Classification'),
-)
+        return get_orientation_matrix(self._series(i))

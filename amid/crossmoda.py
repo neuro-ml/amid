@@ -21,7 +21,7 @@ from .internals import Dataset, licenses, register
     raw_data_size='17G',
     task=('Segmentation', 'Classification', 'Domain Adaptation'),
 )
-class CrossMoDABase(Dataset):
+class CrossMoDA(Dataset):
     """
     Parameters
     ----------

@@ -33,14 +33,6 @@ def register(**kwargs):
     return decorator
 
 
-def normalize(cls: Type, name: str, short_name: str, *, normalizers=(), ignore=(), columns=(), **kwargs):
-    # cls = checksum(short_name, normalizers=normalizers, ignore=ignore, columns=columns)(cls)
-    cls.__qualname__ = name
-    description = Description(**kwargs)
-    _register(cls, name, description, 2)
-    return cls
-
-
 def _register(cls, name, description, level):
     module = inspect.getmodule(inspect.stack()[level][0]).__name__
     assert name not in _REGISTRY, name

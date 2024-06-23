@@ -1,14 +1,20 @@
-from pathlib import Path
+from functools import cached_property
 
 import nibabel
 import numpy as np
-from connectome import Source, meta
-from connectome.interface.nodes import Silent
 
-from ..internals import licenses, normalize
+from ..internals import Dataset, licenses, register
 
 
-class RibFracBase(Dataset):
+@register(
+    body_region='Chest',
+    license=licenses.CC_BYNC_40,
+    link='https://ribfrac.grand-challenge.org',
+    modality='CT',
+    raw_data_size='77.8 G',
+    task='Segmentation',
+)
+class RibFrac(Dataset):
     """
     RibFrac dataset is a benchmark for developping algorithms on rib fracture detection,
     segmentation and classification. We hope this large-scale dataset could facilitate
@@ -40,13 +46,6 @@ class RibFracBase(Dataset):
     Segmentation and Classification
     """
 
-    _root: str
-
-    def _base(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the path to the root folder to the `root` argument')
-        return self.root
-
     @property
     def ids(self):
         result = set()
@@ -55,8 +54,9 @@ class RibFracBase(Dataset):
 
         return tuple(sorted(result))
 
-    def _id2folder(_base):
-        folders = [item for item in _base.iterdir() if item.is_dir()]
+    @cached_property
+    def _id2folder(self):
+        folders = [item for item in self.root.iterdir() if item.is_dir()]
         result_dict = {}
         for folder in folders:
             p = self.root / folder
@@ -67,12 +67,12 @@ class RibFracBase(Dataset):
         return result_dict
 
     def image(self, i):
-        image_path = _id2folder[i] / f'{i}-image.nii.gz'
+        image_path = self._id2folder[i] / f'{i}-image.nii.gz'
         image = nibabel.load(image_path).get_fdata()
         return image.astype(np.int16)
 
     def label(self, i):
-        folder_path = _id2folder[i]
+        folder_path = self._id2folder[i]
         folder = folder_path.name
         if folder != 'ribfrac-test-images':
             if folder.startswith('Part'):
@@ -86,18 +86,5 @@ class RibFracBase(Dataset):
 
     def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation"""
-        image_path = _id2folder[i] / f'{i}-image.nii.gz'
+        image_path = self._id2folder[i] / f'{i}-image.nii.gz'
         return nibabel.load(image_path).affine
-
-
-RibFrac = normalize(
-    RibFracBase,
-    'RibFrac',
-    'ribfrac',
-    body_region='Chest',
-    license=licenses.CC_BYNC_40,
-    link='https://ribfrac.grand-challenge.org',
-    modality='CT',
-    raw_data_size='77.8 G',
-    task='Segmentation',
-)

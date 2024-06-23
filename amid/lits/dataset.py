@@ -17,7 +17,7 @@ from ..internals import Dataset, licenses, register
     raw_data_size='35G',
     task='Segmentation',
 )
-class LiTSBase(Dataset):
+class LiTS(Dataset):
     """
     A (Li)ver (T)umor (S)egmentation dataset [1]_ from Medical Segmentation Decathlon [2]_
 

@@ -1,13 +1,20 @@
 from pathlib import Path
 
 import nibabel as nb
-from connectome import Source, meta
-from connectome.interface.nodes import Silent
 
-from ..internals import licenses, normalize
+from ..internals import Dataset, licenses, register
 
 
-class MSLUBBase(Dataset):
+@register(
+    body_region='Head',
+    license=licenses.CC_BY_30,
+    link='https://github.com/muschellij2/open_ms_data?tab=readme-ov-file',
+    modality='MRI',
+    prep_data_size='18G',
+    raw_data_size='5.9G',
+    task='Anomaly segmentation',
+)
+class MSLUB(Dataset):
     @property
     def ids(self):
         result = set()
@@ -34,46 +41,36 @@ class MSLUBBase(Dataset):
         return path
 
     def image(self, i):
-        if 'longitudinal' in str(_file):
-            study_number = _file.stem
-            file_name = _file.parent / f'{study_number}_FLAIR.nii.gz'
+        file = self._file(i)
+        if 'longitudinal' in str(file):
+            study_number = file.stem
+            file_name = file.parent / f'{study_number}_FLAIR.nii.gz'
         else:
-            file_name = _file / 'FLAIR.nii.gz'
+            file_name = file / 'FLAIR.nii.gz'
         image = nb.load(file_name).get_fdata()
         return image
 
     def mask(self, i):
-        if 'longitudinal' in str(_file):
-            file_name = _file.parent / 'gt.nii.gz'
+        file = self._file(i)
+        if 'longitudinal' in str(file):
+            file_name = file.parent / 'gt.nii.gz'
         else:
-            file_name = _file / 'consensus_gt.nii.gz'
+            file_name = file / 'consensus_gt.nii.gz'
         image = nb.load(file_name).get_fdata()
         return image
 
     def patient(self, i):
-        if 'longitudinal' in str(_file):
-            return Path(_file).parent.name
+        file = self._file(i)
+        if 'longitudinal' in str(file):
+            return Path(file).parent.name
         else:
-            return Path(_file).name
+            return Path(file).name
 
     def affine(self, i):
-        if 'longitudinal' in str(_file):
-            study_number = _file.stem
-            file_name = _file.parent / f'{study_number}_FLAIR.nii.gz'
+        file = self._file(i)
+        if 'longitudinal' in str(file):
+            study_number = file.stem
+            file_name = file.parent / f'{study_number}_FLAIR.nii.gz'
         else:
-            file_name = _file / 'FLAIR.nii.gz'
+            file_name = file / 'FLAIR.nii.gz'
         return nb.load(file_name).affine
-
-
-MSLUB = normalize(
-    MSLUBBase,
-    'MSLUB',
-    'mslub',
-    body_region='Head',
-    license=licenses.CC_BY_30,
-    link='https://github.com/muschellij2/open_ms_data?tab=readme-ov-file',
-    modality='MRI',
-    prep_data_size='18G',
-    raw_data_size='5.9G',
-    task='Anomaly segmentation',
-)

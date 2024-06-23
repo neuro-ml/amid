@@ -2,10 +2,10 @@ from pathlib import Path
 from typing import Sequence
 
 from bev.utils import PathOrStr
-from connectome import ExternalBase
+from connectome import External
 
 
-class Dataset(ExternalBase):
+class Dataset(External):
     _path: str
     _fields: Sequence[str] = None
 
