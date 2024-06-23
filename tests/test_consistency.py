@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import pytest
 
-from amid import AMOS, Medseg9
+from amid import AMOS
 from amid.internals import gather_datasets
 
 
@@ -11,8 +11,7 @@ MAPPING = gather_datasets()
 DATASETS = [x[0] for x in MAPPING.values()]
 NAMES = list(MAPPING)
 ROOT_MAPPING = {
-    # AMOS: '/shared/data/amos22',
-    Medseg9: '/home/max/nnunet/src/medseg9',
+    AMOS: '/shared/data/amos22',
 }
 
 
