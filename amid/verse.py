@@ -2,18 +2,24 @@ import gzip
 import json
 import zipfile
 from pathlib import Path
-from typing import Union
+from typing import Dict, Tuple, Union
 from zipfile import ZipFile
 
 import nibabel
 import numpy as np
-from connectome import Source, meta
-from connectome.interface.nodes import Silent
 
-from .internals import licenses, normalize
+from .internals import Dataset, field, licenses, register
 
 
-class VerSeBase(Source):
+@register(
+    body_region=('Thorax', 'Abdomen'),
+    modality='CT',
+    task='Vertebrae Segmentation',
+    link='https://osf.io/4skx2/',
+    raw_data_size='97G',
+    license=licenses.CC_BYSA_40,
+)
+class VerSe(Dataset):
     """
     A Vertebral Segmentation Dataset with Fracture Grading [1]_
 
@@ -24,8 +30,6 @@ class VerSeBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -48,15 +52,10 @@ class VerSeBase(Source):
        Radiol Artif Intell. 2020;2(4):e190138. Published 2020 Jul 29. doi:10.1148/ryai.2020190138
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the locations of the zip archives')
-
+    @property
+    def ids(self):
         result = set()
-        for archive in Path(_root).glob('*.zip'):
+        for archive in self.root.glob('*.zip'):
             with ZipFile(archive) as zf:
                 for file in zf.namelist():
                     if '/rawdata/' not in file:
@@ -76,8 +75,8 @@ class VerSeBase(Source):
 
         return sorted(result)
 
-    def _file(i, _root: Silent):
-        for archive in Path(_root).glob('*.zip'):
+    def _file(self, i):
+        for archive in self.root.glob('*.zip'):
             with ZipFile(archive) as zf:
                 for file in zf.namelist():
                     if '/rawdata/' in file and i in file:
@@ -85,8 +84,9 @@ class VerSeBase(Source):
 
         raise ValueError(f'Id "{i}" not found')
 
-    def image(_file):
-        with _file.open('rb') as opened:
+    @field
+    def image(self, i) -> np.ndarray:
+        with self._file(i).open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
@@ -94,37 +94,43 @@ class VerSeBase(Source):
                 #  (instead of using `image.get_fdata()`)
                 return np.asarray(image.dataobj)
 
-    def affine(_file):
+    @field
+    def affine(self, i) -> np.ndarray:
         """The 4x4 matrix that gives the image's spatial orientation"""
-        with _file.open('rb') as opened:
+        with self._file(i).open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return image.affine
 
-    def split(_file):
+    @field
+    def split(self, i) -> str:
         """The split in which this entry is contained: training, validate, test"""
         # it's ugly, but it gets the job done (;
-        return _file.parent.parent.parent.name.split('_')[-1].split('9')[-1]
+        return self._file(i).parent.parent.parent.name.split('_')[-1].split('9')[-1]
 
-    def patient(_file):
+    @field
+    def patient(self, i) -> str:
         """The unique patient id"""
-        return _file.parent.name[4:]
+        return self._file(i).parent.name[4:]
 
-    def year(_file):
+    @field
+    def year(self, i) -> int:
         """The year in which this entry was published: 2019, 2020"""
-        year = _file.parent.parent.parent.name
+        year = self._file(i).parent.parent.parent.name
         if year.startswith('dataset-verse'):
             assert '19' in year
             return 2019
         return 2020
 
-    def _derivatives(_file):
-        return _file.parent.parent.parent / 'derivatives' / _file.parent.name
+    def _derivatives(self, i):
+        file = self._file(i)
+        return file.parent.parent.parent / 'derivatives' / file.parent.name
 
-    def centers(i, _derivatives):
+    @field
+    def centers(self, i) -> Dict[str, Tuple[int, int, int]]:
         """Vertebrae centers in format {label: [x, y, z]}"""
-        ann = [f for f in _derivatives.iterdir() if f.name.endswith('.json') and i in f.name]
+        ann = [f for f in self._derivatives(i).iterdir() if f.name.endswith('.json') and i in f.name]
         if not ann:
             return {}
         assert len(ann) == 1
@@ -133,11 +139,12 @@ class VerSeBase(Source):
         with ann.open() as file:
             ann = json.load(file)
 
-        return {k['label']: [k['X'], k['Y'], k['Z']] for k in ann[1:]}
+        return {k['label']: (k['X'], k['Y'], k['Z']) for k in ann[1:]}
 
-    def masks(i, _derivatives) -> Union[np.ndarray, None]:
+    @field
+    def masks(self, i) -> Union[np.ndarray, None]:
         """Vertebrae masks"""
-        ann = [f for f in _derivatives.iterdir() if f.name.endswith('.nii.gz') and i in f.name]
+        ann = [f for f in self._derivatives(i).iterdir() if f.name.endswith('.nii.gz') and i in f.name]
         if not ann:
             return
         assert len(ann) == 1
@@ -148,16 +155,3 @@ class VerSeBase(Source):
                 nii = nibabel.FileHolder(fileobj=nii)
                 mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return mask.get_fdata().astype(np.uint8)
-
-
-VerSe = normalize(
-    VerSeBase,
-    'VerSe',
-    'verse',
-    body_region=('Thorax', 'Abdomen'),
-    modality='CT',
-    task='Vertebrae Segmentation',
-    link='https://osf.io/4skx2/',
-    raw_data_size='97G',
-    license=licenses.CC_BYSA_40,
-)

@@ -1,6 +1,5 @@
 import nibabel as nb
 import numpy as np
-from connectome import Transform
 
 from .internals import Dataset, field, register
 
@@ -67,10 +66,3 @@ KITS_LABEL_NAMES = {
     2: 'tumor',
     3: 'cyst',
 }
-
-
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nb.affines.voxel_sizes(affine)

@@ -1,17 +1,25 @@
 import gzip
 import zipfile
 from pathlib import Path
+from typing import Union
 from zipfile import ZipFile
 
 import nibabel
 import numpy as np
-from connectome import Source, Transform, meta
-from connectome.interface.nodes import Silent
 
-from .internals import normalize
+from .internals import Dataset, field, register
 
 
-class FLARE2022Base(Source):
+@register(
+    body_region='Abdomen',
+    license=None,
+    link='https://flare22.grand-challenge.org/',
+    modality='CT',
+    prep_data_size='347G',
+    raw_data_size='247G',
+    task='Semi-supervised abdominal organ segmentation',
+)
+class FLARE2022(Dataset):
     """
     An abdominal organ segmentation dataset for semi-supervised learning [1]_.
 
@@ -46,23 +54,18 @@ class FLARE2022Base(Source):
     Medical Image Analysis 82 (2022): 102616.
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the locations of the downloaded data.')
-
+    @property
+    def ids(self):
         result = set()
 
         # 50 Training Labeled cases
-        archive = Path(_root) / 'Training' / 'FLARE22_LabeledCase50' / 'images.zip'
+        archive = self.root / 'Training' / 'FLARE22_LabeledCase50' / 'images.zip'
         with ZipFile(archive) as zf:
             for file in zf.namelist():
                 result.add(f"TL{file.split('_')[-2]}")
 
         # 2000 Training Unlabeled cases
-        for archive in (Path(_root) / 'Training').glob('*.zip'):
+        for archive in (self.root / 'Training').glob('*.zip'):
             with ZipFile(archive) as zf:
                 for file in zf.namelist():
                     if not file.endswith('.nii.gz'):
@@ -72,7 +75,7 @@ class FLARE2022Base(Source):
                     result.add(f"TU{file.name.split('_')[-2]}")
 
         # 50 Validation Unlabeled cases
-        for file in (Path(_root) / 'Validation').glob('*'):
+        for file in (self.root / 'Validation').glob('*'):
             if not file.name.endswith('.nii.gz'):
                 continue
 
@@ -80,17 +83,17 @@ class FLARE2022Base(Source):
 
         return sorted(result)
 
-    def _file(i, _root: Silent):
+    def _file(self, i):
         # 50 Training Labeled cases
         if i.startswith('TL'):
-            archive = Path(_root) / 'Training' / 'FLARE22_LabeledCase50' / 'images.zip'
+            archive = self.root / 'Training' / 'FLARE22_LabeledCase50' / 'images.zip'
             with ZipFile(archive) as zf:
                 for file in zf.namelist():
                     if i[2:] in file:
                         return zipfile.Path(archive, file)
 
         # 2000 Training Unlabeled cases
-        for archive in (Path(_root) / 'Training').glob('*.zip'):
+        for archive in (self.root / 'Training').glob('*.zip'):
             with ZipFile(archive) as zf:
                 for file in zf.namelist():
                     if i[2:] in file:
@@ -98,31 +101,34 @@ class FLARE2022Base(Source):
 
         # 50 Validation Unlabeled cases
         if i.startswith('VU'):
-            file = Path(_root) / 'Validation' / f'FLARETs_{i[2:]}_0000.nii.gz'
+            file = self.root / 'Validation' / f'FLARETs_{i[2:]}_0000.nii.gz'
             return file
 
         raise ValueError(f'Id "{i}" not found')
 
-    def image(_file):
-        with _file.open('rb') as opened:
+    @field
+    def image(self, i) -> np.ndarray:
+        with self._file(i).open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return np.asarray(image.dataobj)
 
-    def affine(_file):
+    @field
+    def affine(self, i) -> np.ndarray:
         """The 4x4 matrix that gives the image's spatial orientation"""
-        with _file.open('rb') as opened:
+        with self._file(i).open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return image.affine
 
-    def mask(i, _root: Silent):
+    @field
+    def mask(self, i) -> Union[np.ndarray, None]:
         if not i.startswith('TL'):
             return None
 
-        archive = Path(_root) / 'Training' / 'FLARE22_LabeledCase50' / 'labels.zip'
+        archive = self.root / 'Training' / 'FLARE22_LabeledCase50' / 'labels.zip'
         with ZipFile(archive) as zf:
             for file in zf.namelist():
                 if i[2:] in file:
@@ -131,25 +137,3 @@ class FLARE2022Base(Source):
                             nii = nibabel.FileHolder(fileobj=nii)
                             mask = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                             return np.asarray(mask.dataobj)
-
-
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nibabel.affines.voxel_sizes(affine)
-
-
-FLARE2022 = normalize(
-    FLARE2022Base,
-    'FLARE2022',
-    'flare2022',
-    body_region='Abdomen',
-    license=None,
-    link='https://flare22.grand-challenge.org/',
-    modality='CT',
-    prep_data_size='347G',
-    raw_data_size='247G',
-    task='Semi-supervised abdominal organ segmentation',
-    normalizers=[SpacingFromAffine()],
-)

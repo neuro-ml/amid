@@ -1,16 +1,20 @@
-from pathlib import Path
-
 import nibabel as nb
 import numpy as np
 import pandas as pd
-from connectome import Output, Source, Transform, meta
-from connectome.interface.nodes import Silent
 
-from .internals import licenses, normalize
-from .utils import deprecate
+from .internals import Dataset, field, licenses, register
 
 
-class CT_ICHBase(Source):
+@register(
+    body_region='Head',
+    license=licenses.PhysioNet_RHD_150,
+    link='https://physionet.org/content/ct-ich/1.3.1/',
+    modality='CT',
+    prep_data_size='661M',
+    raw_data_size='2,8G',
+    task='Intracranial hemorrhage segmentation',
+)
+class CT_ICH(Dataset):
     """
     (C)omputed (T)omography Images for (I)ntracranial (H)emorrhage Detection and (S)egmentation.
 
@@ -23,8 +27,6 @@ class CT_ICHBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -43,106 +45,100 @@ class CT_ICHBase(Source):
     # (512, 512, 39)
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
-        result = [f'ct_ich_{uid:0=3d}' for uid in np.concatenate([range(49, 59), range(66, 131)])]
+    @property
+    def ids(self):
+        result = [f'ct_ich_{uid:0=3d}' for uid in [*range(49, 59), *range(66, 131)]]
         return tuple(sorted(result))
 
-    def _image_file(i, _root: Silent):
+    def _image_file(self, i):
         num_id = i.split('_')[-1]
-        return nb.load(Path(_root) / 'ct_scans' / f'{num_id}.nii')
+        return nb.load(self.root / 'ct_scans' / f'{num_id}.nii')
 
-    def image(_image_file):
+    @field
+    def image(self, i) -> np.ndarray:
         # most CT/MRI scans are integer-valued, this will help us improve compression rates
-        return np.int16(_image_file.get_fdata()[...])
+        return np.int16(self._image_file(i).get_fdata())
 
-    def mask(i, _root: Silent):
+    @field
+    def mask(self, i) -> np.ndarray:
         num_id = i.split('_')[-1]
-        mask_path = Path(_root) / 'masks' / f'{num_id}.nii'
+        mask_path = self.root / 'masks' / f'{num_id}.nii'
         ct_scan_nifti = nb.load(mask_path)
-        return np.bool_(ct_scan_nifti.get_fdata()[...])
+        return ct_scan_nifti.get_fdata().astype(bool)
 
-    def affine(_image_file):
+    @field
+    def affine(self, i) -> np.ndarray:
         """The 4x4 matrix that gives the image's spatial orientation."""
-        return _image_file.affine
+        return self._image_file(i).affine
 
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
-
-    def spacing(_image_file):
+    def spacing(self, i):
         """Returns voxel spacing along axes (x, y, z)."""
-        return tuple(_image_file.header['pixdim'][1:4])
+        return tuple(self._image_file(i).header['pixdim'][1:4])
 
-    def _patient_metadata(_root: Silent):
-        return pd.read_csv(Path(_root) / 'Patient_demographics.csv', index_col='Patient Number')
+    @property
+    def _patient_metadata(self):
+        return pd.read_csv(self.root / 'Patient_demographics.csv', index_col='Patient Number')
 
-    def _diagnosis_metadata(_root: Silent):
-        return pd.read_csv(Path(_root) / 'hemorrhage_diagnosis_raw_ct.csv')
+    @property
+    def _diagnosis_metadata(self):
+        return pd.read_csv(self.root / 'hemorrhage_diagnosis_raw_ct.csv')
 
-    def _row(i, _patient_metadata):
+    def _row(self, i):
         patient_id = int(i.split('_')[-1])
-        return _patient_metadata.loc[patient_id]
+        return self._patient_metadata.loc[patient_id]
 
-    def age(_row) -> float:
-        return _row['Age\n(years)']
+    @field
+    def age(self, i) -> float:
+        return self._row(i)['Age\n(years)']
 
-    def sex(_row) -> str:
-        return _row['Gender']
+    @field
+    def sex(self, i) -> str:
+        return self._row(i)['Gender']
 
-    def intraventricular_hemorrhage(i, _patient_metadata):
+    @field
+    def intraventricular_hemorrhage(self, i) -> bool:
         """Returns True if hemorrhage exists and its type is intraventricular."""
         num_id = int(i.split('_')[-1])
-        return str(_patient_metadata['Hemorrhage type based on the radiologists diagnosis '].loc[num_id]) != 'nan'
+        return str(self._patient_metadata['Hemorrhage type based on the radiologists diagnosis '].loc[num_id]) != 'nan'
 
-    def intraparenchymal_hemorrhage(i, _patient_metadata):
+    @field
+    def intraparenchymal_hemorrhage(self, i) -> bool:
         """Returns True if hemorrhage was diagnosed and its type is intraparenchymal."""
         num_id = int(i.split('_')[-1])
-        return str(_patient_metadata['Unnamed: 4'].loc[num_id]) != 'nan'
+        return str(self._patient_metadata['Unnamed: 4'].loc[num_id]) != 'nan'
 
-    def subarachnoid_hemorrhage(i, _patient_metadata):
+    @field
+    def subarachnoid_hemorrhage(self, i) -> bool:
         """Returns True if hemorrhage was diagnosed and its type is subarachnoid."""
         num_id = int(i.split('_')[-1])
-        return str(_patient_metadata['Unnamed: 5'].loc[num_id]) != 'nan'
+        return str(self._patient_metadata['Unnamed: 5'].loc[num_id]) != 'nan'
 
-    def epidural_hemorrhage(i, _patient_metadata):
+    @field
+    def epidural_hemorrhage(self, i) -> bool:
         """Returns True if hemorrhage was diagnosed and its type is epidural."""
         num_id = int(i.split('_')[-1])
-        return str(_patient_metadata['Unnamed: 6'].loc[num_id]) != 'nan'
+        return str(self._patient_metadata['Unnamed: 6'].loc[num_id]) != 'nan'
 
-    def subdural_hemorrhage(i, _patient_metadata):
+    @field
+    def subdural_hemorrhage(self, i) -> bool:
         """Returns True if hemorrhage was diagnosed and its type is subdural."""
         num_id = int(i.split('_')[-1])
-        return str(_patient_metadata['Unnamed: 7'].loc[num_id]) != 'nan'
+        return str(self._patient_metadata['Unnamed: 7'].loc[num_id]) != 'nan'
 
-    def fracture(i, _patient_metadata):
+    @field
+    def fracture(self, i) -> bool:
         """Returns True if skull fracture was diagnosed."""
         num_id = int(i.split('_')[-1])
-        return str(_patient_metadata['Fracture (yes 1/no 0)'].loc[num_id]) != 'nan'
+        return str(self._patient_metadata['Fracture (yes 1/no 0)'].loc[num_id]) != 'nan'
 
-    def notes(i, _patient_metadata):
+    @field
+    def notes(self, i) -> str:
         """Returns special notes if they exist."""
         num_id = int(i.split('_')[-1])
-        result = str(_patient_metadata['Note1'].loc[num_id])
+        result = str(self._patient_metadata['Note1'].loc[num_id])
         return result if result != 'nan' else None
 
-    def hemorrhage_diagnosis_raw_metadata(i, _diagnosis_metadata):
+    @field
+    def hemorrhage_diagnosis_raw_metadata(self, i):
         num_id = int(i.split('_')[-1])
-        return _diagnosis_metadata[_diagnosis_metadata['PatientNumber'] == num_id]
-
-
-CT_ICH = normalize(
-    CT_ICHBase,
-    'CT_ICH',
-    'ct_ich',
-    body_region='Head',
-    license=licenses.PhysioNet_RHD_150,
-    link='https://physionet.org/content/ct-ich/1.3.1/',
-    modality='CT',
-    prep_data_size='661M',
-    raw_data_size='2,8G',
-    task='Intracranial hemorrhage segmentation',
-    normalizers=[Transform(__inherit__=True, gender=lambda sex: sex)],
-)
+        return self._diagnosis_metadata[self._diagnosis_metadata['PatientNumber'] == num_id]

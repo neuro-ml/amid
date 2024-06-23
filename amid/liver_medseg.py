@@ -7,14 +7,20 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 
-from .internals import licenses, normalize
-from .utils import deprecate
+from .internals import Dataset, field, licenses, register
 
 
-class LiverMedsegBase(Source):
+@register(
+    body_region=('Chest', 'Abdomen'),
+    license=licenses.CC_BYSA_40,
+    link='https://www.medseg.ai/database/liver-segments-50-cases',
+    modality='CT',
+    prep_data_size='1,88G',
+    raw_data_size='616M',
+    task='Segmentation',
+)
+class LiverMedseg(Dataset):
     """
     LiverMedseg is a public CT segmentation dataset with 50 annotated images.
     Case collection of 50 livers with their segments.
@@ -25,8 +31,6 @@ class LiverMedsegBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -46,15 +50,10 @@ class LiverMedsegBase(Source):
     ----------
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
-        if _root is None:
-            raise ValueError('Please provide the `root` argument')
-
+    @property
+    def ids(self):
         result = set()
-        with ZipFile(Path(_root) / 'img.zip') as zf:
+        with ZipFile(self.root / 'img.zip') as zf:
             for zipinfo in zf.infolist():
                 if zipinfo.is_dir():
                     continue
@@ -63,50 +62,32 @@ class LiverMedsegBase(Source):
 
         return tuple(sorted(result))
 
-    def _file(i: str, _root: Silent):
-        if _root is None:
-            raise ValueError('Please provide the `root` argument')
-
+    def _file(self, i):
         num_id = i.split('_')[-1]
-        return zipfile.Path(Path(_root) / 'img.zip', f'img{num_id}.nii.gz')
+        return zipfile.Path(self.root / 'img.zip', f'img{num_id}.nii.gz')
 
-    def image(_file) -> np.ndarray:
-        with open_nii_gz_file(_file) as nii_file:
+    @field
+    def image(self, i) -> np.ndarray:
+        with open_nii_gz_file(self._file(i)) as nii_file:
             return np.asarray(nii_file.dataobj)
 
-    def affine(_file) -> np.ndarray:
+    @field
+    def affine(self, i) -> np.ndarray:
         """The 4x4 matrix that gives the image's spatial orientation."""
-        with open_nii_gz_file(_file) as nii_file:
+        with open_nii_gz_file(self._file(i)) as nii_file:
             return nii_file.affine
-
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output) -> tuple:
-        return spacing
 
     def spacing(_file) -> tuple:
         with open_nii_gz_file(_file) as nii_file:
             return tuple(nii_file.header['pixdim'][1:4])
 
-    def mask(_file) -> np.ndarray:
-        path = Path(str(_file).replace('img', 'mask'))
+    @field
+    def mask(self, i) -> np.ndarray:
+        path = Path(str(self._file(i)).replace('img', 'mask'))
         folder, image = path.parent, path.name
         _file = zipfile.Path(folder, image)
         with open_nii_gz_file(_file) as nii_file:
             return np.asarray(nii_file.dataobj).astype(np.uint8)
-
-
-LiverMedseg = normalize(
-    LiverMedsegBase,
-    'LiverMedseg',
-    'liver_medseg',
-    body_region=('Chest', 'Abdomen'),
-    license=licenses.CC_BYSA_40,
-    link='https://www.medseg.ai/database/liver-segments-50-cases',
-    modality='CT',
-    prep_data_size='1,88G',
-    raw_data_size='616M',
-    task='Segmentation',
-)
 
 
 # TODO: sync with amid.utils

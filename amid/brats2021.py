@@ -1,26 +1,32 @@
 import contextlib
 from pathlib import Path
+from typing import Union
 from zipfile import ZipFile
 
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 
-from .internals import licenses, normalize
+from .internals import Dataset, field, licenses, register
 from .utils import open_nii_gz_file, unpack
 
 
-class BraTS2021Base(Source):
+@register(
+    body_region='Head',
+    license=licenses.CC_BYNCSA_40,
+    link='http://www.braintumorsegmentation.org/',
+    modality=('MRI T1', 'MRI T1Gd', 'MRI T2', 'MRI T2-FLAIR'),
+    prep_data_size='8,96G',
+    raw_data_size='15G',
+    task=('Segmentation', 'Classification', 'Domain Adaptation'),
+)
+class BraTS2021(Dataset):
     """
     Parameters
     ----------
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -40,69 +46,52 @@ class BraTS2021Base(Source):
     ----------
     """
 
-    _root: str = None
+    @property
+    def ids(self):
+        return sorted(_get_ids_or_file(self.root, 'TrainingData') + _get_ids_or_file(self.root, 'ValidationData'))
 
-    def _base(_root: Silent) -> Path:
-        if _root is None:
-            raise ValueError('Please pass the locations of the zip archives')
-        return Path(_root)
+    @field
+    def fold(self, i) -> str:
+        return 'ValidationData' if _get_ids_or_file(self.root, 'ValidationData', check_id=i) else 'TrainingData'
 
-    @meta
-    def ids(_base):
-        return sorted(_get_ids_or_file(_base, 'TrainingData') + _get_ids_or_file(_base, 'ValidationData'))
+    @property
+    def mapping21_17(self) -> pd.DataFrame:
+        return pd.read_csv(self.root / 'BraTS21-17_Mapping.csv')
 
-    def fold(i, _base):
-        return 'ValidationData' if _get_ids_or_file(_base, 'ValidationData', check_id=i) else 'TrainingData'
-
-    @meta
-    def mapping21_17(_base) -> pd.DataFrame:
-        return pd.read_csv(_base / 'BraTS21-17_Mapping.csv')
-
-    def subject_id(i) -> str:
+    @field
+    def subject_id(self, i) -> str:
         return i.rsplit('_', 1)[0]
 
-    def modality(i) -> str:
+    @field
+    def modality(self, i) -> str:
         return i.rsplit('_', 1)[1]
 
-    def image(i, _base, fold: Output):
-        root, relative = _get_ids_or_file(_base, fold, check_id=i, return_image=True)
+    @field
+    def image(self, i) -> np.ndarray:
+        root, relative = _get_ids_or_file(self.root, self.fold(i), check_id=i, return_image=True)
         with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
             return np.asarray(nii_image.dataobj)
 
-    def mask(i, _base, fold: Output):
-        if fold == 'ValidationData':
+    def mask(self, i) -> Union[np.ndarray, None]:
+        if self.fold(i) == 'ValidationData':
             return None
         else:
-            root, relative = _get_ids_or_file(_base, fold, check_id=i, return_segm=True)
+            root, relative = _get_ids_or_file(self.root, self.fold(i), check_id=i, return_segm=True)
             with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
                 return np.asarray(nii_image.dataobj)
 
-    def spacing(i, _base, fold: Output):
+    def spacing(self, i):
         """Returns the voxel spacing along axes (x, y, z)."""
-        root, relative = _get_ids_or_file(_base, fold, check_id=i, return_image=True)
+        root, relative = _get_ids_or_file(self.root, self.fold(i), check_id=i, return_image=True)
         with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 
-    def affine(i, _base, fold: Output):
+    @field
+    def affine(self, i) -> np.ndarray:
         """Returns 4x4 matrix that gives the image's spatial orientation."""
-        root, relative = _get_ids_or_file(_base, fold, check_id=i, return_image=True)
+        root, relative = _get_ids_or_file(self.root, self.fold(i), check_id=i, return_image=True)
         with _load_nibabel_probably_from_zip(root, relative, '.', '.zip') as nii_image:
             return nii_image.affine
-
-
-BraTS2021 = normalize(
-    BraTS2021Base,
-    'BraTS2021',
-    'brats2021',
-    body_region='Head',
-    license=licenses.CC_BYNCSA_40,
-    link='http://www.braintumorsegmentation.org/',
-    modality=('MRI T1', 'MRI T1Gd', 'MRI T2', 'MRI T2-FLAIR'),
-    prep_data_size='8,96G',
-    raw_data_size='15G',
-    task=('Segmentation', 'Classification', 'Domain Adaptation'),
-    ignore=['mapping21_17'],
-)
 
 
 def _get_ids_or_file(

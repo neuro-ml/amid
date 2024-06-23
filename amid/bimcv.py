@@ -10,7 +10,6 @@ import nibabel as nb
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Transform
 from deli import load
 
 from .internals import Dataset, field, licenses, register
@@ -306,13 +305,6 @@ class BIMCVCovid19(Dataset):
 
     def _current_root(self, i):
         return self._positive_root if self._series2metainfo[i]['is_positive'] else self._negative_root
-
-
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nb.affines.voxel_sizes(affine)
 
 
 @contextlib.contextmanager

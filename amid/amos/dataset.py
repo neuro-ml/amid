@@ -4,7 +4,6 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Transform
 from jboc import collect, composed
 
 from ..internals import Dataset, field, licenses, register
@@ -221,10 +220,3 @@ class AMOS(Dataset):
             return None
 
         return self._meta[self._meta['amos_id'] == int(i)][column].item()
-
-
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nibabel.affines.voxel_sizes(affine)

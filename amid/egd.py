@@ -1,16 +1,20 @@
-from pathlib import Path
-
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 from deli import load
 
-from .internals import normalize
-from .utils import deprecate
+from .internals import Dataset, field, register
 
 
-class EGDBase(Source):
+@register(
+    body_region='Head',
+    license='EGD data license',
+    link='https://xnat.bmia.nl/data/archive/projects/egd',
+    modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2'),
+    prep_data_size='107,49G',
+    raw_data_size='40G',
+    task='Segmentation',
+)
+class EGD(Dataset):
     """
     The Erasmus Glioma Database (EGD): Structural MRI scans, WHO 2016 subtypes,
     and segmentations of 774 patients with glioma [1]_.
@@ -20,8 +24,6 @@ class EGDBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -51,103 +53,95 @@ class EGDBase(Source):
 
     """
 
-    _root: str = None
-
-    def _base(_root: Silent):
-        if _root is None:
-            raise ValueError('Please provide the `root` argument')
-        return Path(_root)
-
-    @meta
-    def ids(_base):
+    @property
+    def ids(self):
         result = []
-        for folder in (_base / 'SUBJECTS').iterdir():
+        for folder in (self.root / 'SUBJECTS').iterdir():
             for suffix in 'FLAIR', 'T1', 'T1GD', 'T2':
                 result.append(f'{folder.name}-{suffix}')
 
         return tuple(sorted(result))
 
-    def brain_mask(i, _base):
-        return np.bool_(nb.load(_base / 'METADATA' / 'Brain_mask.nii.gz').get_fdata())
+    @field
+    def brain_mask(self, i) -> np.ndarray:
+        return nb.load(self.root / 'METADATA' / 'Brain_mask.nii.gz').get_fdata().astype(bool)
 
-    def deface_mask(i, _base):
-        return np.bool_(nb.load(_base / 'METADATA' / 'Deface_mask.nii.gz').get_fdata())
+    @field
+    def deface_mask(self, i) -> np.ndarray:
+        return nb.load(self.root / 'METADATA' / 'Deface_mask.nii.gz').get_fdata().astype(bool)
 
-    def _image_file(i, _base):
+    def _image_file(self, i):
         i, suffix = i.rsplit('-', 1)
-        return nb.load(_base / 'SUBJECTS' / i / f'{suffix}.nii.gz')
+        return nb.load(self.root / 'SUBJECTS' / i / f'{suffix}.nii.gz')
 
-    def modality(i):
+    @field
+    def modality(self, i) -> str:
         _, suffix = i.rsplit('-', 1)
         return suffix
 
-    def subject_id(i):
+    @field
+    def subject_id(self, i) -> str:
         subject, _ = i.rsplit('-', 1)
         return subject
 
-    def affine(_image_file):
-        return _image_file.affine
+    @field
+    def affine(self, i) -> np.ndarray:
+        return self._image_file(i).affine
 
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
-
-    def spacing(_image_file):
+    def spacing(self, i):
         # voxel spacing is [1, 1, 1] for all images in this dataset...
-        return tuple(_image_file.header['pixdim'][1:4])
+        return tuple(self._image_file(i).header['pixdim'][1:4])
 
-    def image(_image_file):
+    @field
+    def image(self, i) -> np.ndarray:
         # intensities are not integer-valued in this dataset...
-        return np.asarray(_image_file.dataobj)
+        return np.asarray(self._image_file(i).dataobj)
 
-    def _metadata(i, _base):
+    def _metadata(self, i):
         i, _ = i.rsplit('-', 1)
-        return load(_base / 'SUBJECTS' / i / 'metadata.json')
+        return load(self.root / 'SUBJECTS' / i / 'metadata.json')
 
-    def genetic_and_histological_label_idh(_metadata):
-        return _metadata['Genetic_and_Histological_labels']['IDH']
+    @field
+    def genetic_and_histological_label_idh(self, i) -> str:
+        return self._metadata(i)['Genetic_and_Histological_labels']['IDH']
 
-    def genetic_and_histological_label_1p19q(_metadata):
-        return _metadata['Genetic_and_Histological_labels']['1p19q']
+    @field
+    def genetic_and_histological_label_1p19q(self, i) -> str:
+        return self._metadata(i)['Genetic_and_Histological_labels']['1p19q']
 
-    def genetic_and_histological_label_grade(_metadata):
-        return _metadata['Genetic_and_Histological_labels']['Grade']
+    @field
+    def genetic_and_histological_label_grade(self, i) -> str:
+        return self._metadata(i)['Genetic_and_Histological_labels']['Grade']
 
-    def age(_metadata):
-        return _metadata['Clinical_data']['Age']
+    @field
+    def age(self, i) -> float:
+        return self._metadata(i)['Clinical_data']['Age']
 
-    def sex(_metadata):
-        return _metadata['Clinical_data']['Sex']
+    @field
+    def sex(self, i) -> str:
+        return self._metadata(i)['Clinical_data']['Sex']
 
-    def observer(_metadata):
-        return _metadata['Segmentation_source']['Observer']
+    @field
+    def observer(self, i) -> str:
+        return self._metadata(i)['Segmentation_source']['Observer']
 
-    def original_scan(_metadata):
-        return _metadata['Segmentation_source']['Original scan']
+    @field
+    def original_scan(self, i) -> str:
+        return self._metadata(i)['Segmentation_source']['Original scan']
 
-    def manufacturer(_metadata):
-        return _metadata['Scan_characteristics']['Manufacturer']
+    @field
+    def manufacturer(self, i) -> str:
+        return self._metadata(i)['Scan_characteristics']['Manufacturer']
 
-    def system(_metadata):
-        return _metadata['Scan_characteristics']['System']
+    @field
+    def system(self, i) -> str:
+        return self._metadata(i)['Scan_characteristics']['System']
 
-    def field(_metadata):
-        return _metadata['Scan_characteristics']['Field']
+    @field
+    def field(self, i) -> str:
+        return self._metadata(i)['Scan_characteristics']['Field']
 
-    def mask(i, _base):
+    @field
+    def mask(self, i) -> np.ndarray:
         i, _ = i.rsplit('-', 1)
-        return np.bool_(nb.load(_base / 'SUBJECTS' / i / 'MASK.nii.gz').get_fdata())
-
-
-EGD = normalize(
-    EGDBase,
-    'EGD',
-    'egd',
-    body_region='Head',
-    license='EGD data license',
-    link='https://xnat.bmia.nl/data/archive/projects/egd',
-    modality=('FLAIR', 'MRI T1', 'MRI T1GD', 'MRI T2'),
-    prep_data_size='107,49G',
-    raw_data_size='40G',
-    task='Segmentation',
-)
+        return nb.load(self.root / 'SUBJECTS' / i / 'MASK.nii.gz').get_fdata().astype(bool)

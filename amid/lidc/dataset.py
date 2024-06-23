@@ -1,16 +1,21 @@
+import datetime
 import os
+from typing import List, Tuple, Union
 
-from typing import List, Union, Tuple
 import numpy as np
 import pylidc as pl
 from bev.utils import PathOrStr
 from dicom_csv import (
-    expand_volumetric, get_common_tag, get_orientation_matrix,
-    get_tag, order_series, stack_images, Series
+    Series,
+    expand_volumetric,
+    get_common_tag,
+    get_orientation_matrix,
+    get_tag,
+    order_series,
+    stack_images,
 )
 from pylidc.utils import consensus
 from scipy import stats
-import datetime
 
 from ..internals import Dataset, field, licenses, register
 from ..utils import get_series_date

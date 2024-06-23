@@ -1,18 +1,26 @@
-from functools import lru_cache
-from pathlib import Path
+from functools import cached_property
+from typing import Dict, Tuple
 
 import numpy as np
 import SimpleITK
-from connectome import Source, Transform, meta
-from connectome.interface.nodes import Silent
+from connectome import Transform
 from deli import load
 from imops import crop_to_box
 
-from .internals import licenses, normalize
+from .internals import Dataset, field, licenses, register
 from .utils import mask_to_box
 
 
-class CLDetection2023Base(Source):
+@register(
+    body_region='Head',
+    license=licenses.CC_BYNC_40,
+    link='https://github.com/cwwang1979/CL-detection2023/',
+    modality='X-ray',
+    prep_data_size='1.8G',
+    raw_data_size='1.5G',
+    task='Keypoint detection',
+)
+class CLDetection2023(Dataset):
     """
     The data for the "Cephalometric Landmark Detection in Lateral X-ray Images" Challenge,
     held with the MICCAI-2023 conference.
@@ -27,8 +35,6 @@ class CLDetection2023Base(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded and unarchived data.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Examples
     --------
@@ -40,38 +46,34 @@ class CLDetection2023Base(Source):
     # (2400, 1935)
     """
 
-    _root: str = None
+    @cached_property
+    def _images(self):
+        return SimpleITK.GetArrayFromImage(SimpleITK.ReadImage(self.root / 'train_stack.mha'))
 
-    def _base(_root: Silent) -> Path:
-        if _root is None:
-            raise ValueError('Please pass the path to the root folder')
-        return Path(_root)
+    @cached_property
+    def _points(self):
+        return load(self.root / 'train-gt.json')['points']
 
-    @lru_cache(1)
-    def _images(_base):
-        return SimpleITK.GetArrayFromImage(SimpleITK.ReadImage(_base / 'train_stack.mha'))
+    @property
+    def ids(self):
+        return tuple(map(str, range(1, len(self._images) + 1)))
 
-    @lru_cache(1)
-    def _points(_base):
-        return load(_base / 'train-gt.json')['points']
-
-    @meta
-    def ids(_images):
-        return tuple(map(str, range(1, len(_images) + 1)))
-
-    def image(i, _images):
+    @field
+    def image(self, i) -> np.ndarray:
         i = int(i)
-        return _images[i - 1]
+        return self._images[i - 1]
 
-    def points(i, _points):
+    @field
+    def points(self, i) -> Dict[str, np.ndarray]:
         i = int(i)
-        return {x['name']: np.array(x['point'][:2]) for x in _points if x['point'][-1] == i}
+        return {x['name']: np.array(x['point'][:2]) for x in self._points if x['point'][-1] == i}
 
-    def spacing(i, _points):
+    @field
+    def spacing(self, i) -> Tuple[float, float]:
         i = int(i)
-        (scale,) = {x['scale'] for x in _points if x['point'][-1] == i}
+        (scale,) = {x['scale'] for x in self._points if x['point'][-1] == i}
         scale = float(scale)
-        return [scale, scale]
+        return scale, scale
 
 
 class CropPadding(Transform):
@@ -92,21 +94,3 @@ class FlipPoints(Transform):
 
     def points(points):
         return {name: pt[::-1] for name, pt in points.items()}
-
-
-CLDetection2023 = normalize(
-    CLDetection2023Base,
-    'CLDetection2023',
-    'cl-detection-2023',
-    body_region='Head',
-    license=licenses.CC_BYNC_40,
-    link='https://github.com/cwwang1979/CL-detection2023/',
-    modality='X-ray',
-    prep_data_size='1.8G',
-    raw_data_size='1.5G',
-    task='Keypoint detection',
-    normalizers=[
-        FlipPoints(),
-        CropPadding(),
-    ],
-)

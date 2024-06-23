@@ -31,8 +31,8 @@ class RSNABreastCancer(Dataset):
         if not dfs:
             raise FileNotFoundError('No metadata found')
         dfs = pd.concat(dfs, ignore_index=True)
-        for field in 'image_id', 'patient_id', 'site_id':
-            dfs[field] = dfs[field].astype(str)
+        for name in 'image_id', 'patient_id', 'site_id':
+            dfs[name] = dfs[name].astype(str)
 
         raw = list(map(str, dfs.image_id.tolist()))
         ids = set(raw)
