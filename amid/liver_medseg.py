@@ -78,7 +78,7 @@ class LiverMedseg(Dataset):
             return nii_file.affine
 
     def spacing(self, i) -> tuple:
-        with open_nii_gz_file(_file) as nii_file:
+        with open_nii_gz_file(self._file(i)) as nii_file:
             return tuple(nii_file.header['pixdim'][1:4])
 
     @field

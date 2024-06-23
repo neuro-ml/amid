@@ -2,7 +2,7 @@ import nibabel as nb
 import numpy as np
 from deli import load
 
-from .internals import Dataset, field, register
+from .internals import Dataset, field as _field, register
 
 
 @register(
@@ -62,11 +62,11 @@ class EGD(Dataset):
 
         return tuple(sorted(result))
 
-    @field
+    @_field
     def brain_mask(self, i) -> np.ndarray:
         return nb.load(self.root / 'METADATA' / 'Brain_mask.nii.gz').get_fdata().astype(bool)
 
-    @field
+    @_field
     def deface_mask(self, i) -> np.ndarray:
         return nb.load(self.root / 'METADATA' / 'Deface_mask.nii.gz').get_fdata().astype(bool)
 
@@ -74,17 +74,17 @@ class EGD(Dataset):
         i, suffix = i.rsplit('-', 1)
         return nb.load(self.root / 'SUBJECTS' / i / f'{suffix}.nii.gz')
 
-    @field
+    @_field
     def modality(self, i) -> str:
         _, suffix = i.rsplit('-', 1)
         return suffix
 
-    @field
+    @_field
     def subject_id(self, i) -> str:
         subject, _ = i.rsplit('-', 1)
         return subject
 
-    @field
+    @_field
     def affine(self, i) -> np.ndarray:
         return self._image_file(i).affine
 
@@ -92,7 +92,7 @@ class EGD(Dataset):
         # voxel spacing is [1, 1, 1] for all images in this dataset...
         return tuple(self._image_file(i).header['pixdim'][1:4])
 
-    @field
+    @_field
     def image(self, i) -> np.ndarray:
         # intensities are not integer-valued in this dataset...
         return np.asarray(self._image_file(i).dataobj)
@@ -101,47 +101,47 @@ class EGD(Dataset):
         i, _ = i.rsplit('-', 1)
         return load(self.root / 'SUBJECTS' / i / 'metadata.json')
 
-    @field
+    @_field
     def genetic_and_histological_label_idh(self, i) -> str:
         return self._metadata(i)['Genetic_and_Histological_labels']['IDH']
 
-    @field
+    @_field
     def genetic_and_histological_label_1p19q(self, i) -> str:
         return self._metadata(i)['Genetic_and_Histological_labels']['1p19q']
 
-    @field
+    @_field
     def genetic_and_histological_label_grade(self, i) -> str:
         return self._metadata(i)['Genetic_and_Histological_labels']['Grade']
 
-    @field
+    @_field
     def age(self, i) -> float:
         return self._metadata(i)['Clinical_data']['Age']
 
-    @field
+    @_field
     def sex(self, i) -> str:
         return self._metadata(i)['Clinical_data']['Sex']
 
-    @field
+    @_field
     def observer(self, i) -> str:
         return self._metadata(i)['Segmentation_source']['Observer']
 
-    @field
+    @_field
     def original_scan(self, i) -> str:
         return self._metadata(i)['Segmentation_source']['Original scan']
 
-    @field
+    @_field
     def manufacturer(self, i) -> str:
         return self._metadata(i)['Scan_characteristics']['Manufacturer']
 
-    @field
+    @_field
     def system(self, i) -> str:
         return self._metadata(i)['Scan_characteristics']['System']
 
-    @field
+    @_field
     def field(self, i) -> str:
         return self._metadata(i)['Scan_characteristics']['Field']
 
-    @field
+    @_field
     def mask(self, i) -> np.ndarray:
         i, _ = i.rsplit('-', 1)
         return nb.load(self.root / 'SUBJECTS' / i / 'MASK.nii.gz').get_fdata().astype(bool)

@@ -15,7 +15,7 @@ from .utils import series_from_dicom_folder
     body_region='Abdomen',
     license=licenses.CC_BY_40,
     link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?'
-         'pageId=89096268#89096268412b832037484784bd78caf58e052641',
+    'pageId=89096268#89096268412b832037484784bd78caf58e052641',
     modality=('CT, SEG'),
     prep_data_size='11G',
     raw_data_size='11G',
