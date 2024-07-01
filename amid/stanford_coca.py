@@ -4,7 +4,7 @@ from ast import literal_eval
 from enum import IntEnum
 from functools import lru_cache
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 import numpy as np
 import pandas as pd
@@ -22,7 +22,7 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import Dataset, licenses, register
+from .internals import Dataset, licenses, register, field
 
 
 class CoCaClasses(IntEnum):
@@ -147,7 +147,8 @@ class StanfordCoCa(Dataset):
 
         return series
 
-    def image(self, i):
+    @field
+    def image(self, i) -> np.ndarray:
         image = stack_images(self._series(i), -1).transpose((1, 0, 2)).astype(np.int16)
         return image
 
@@ -166,19 +167,24 @@ class StanfordCoCa(Dataset):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
-    def series_uid(self, i):
+    @field
+    @field
+    def series_uid(self, i) -> str:
         return self._image_meta(i).get('SeriesInstanceUID', None)
 
-    def study_uid(self, i):
+    def study_uid(self, i) -> str:
         return self._image_meta(i).get('StudyInstanceUID', None)
 
-    def pixel_spacing(self, i):
+    @field
+    def pixel_spacing(self, i) -> Union[list, None]:
         return get_pixel_spacing(self, i).tolist() if self._series(i) else None
 
-    def slice_locations(self, i):
+    @field
+    def slice_locations(self, i) -> Union[list, None]:
         return get_slice_locations(self, i) if self._series(i) else None
 
-    def orientation_matrix(self, i):
+    @field
+    def orientation_matrix(self, i) -> Union[np.ndarray, None]:
         return get_orientation_matrix(self, i) if self._series(i) else None
 
     def _raw_annotations(self, i):
@@ -199,7 +205,8 @@ class StanfordCoCa(Dataset):
 
         return image_annotations
 
-    def calcifications(self, i):
+    @field
+    def calcifications(self, i) -> Union[list, None]:
         """Returns list of Calcifications"""
         raw_annotations = self._raw_annotations(i)
         if raw_annotations is None:
@@ -230,7 +237,8 @@ class StanfordCoCa(Dataset):
 
         return pd.read_excel(p, index_col=0)
 
-    def score(self, i):
+    @field
+    def score(self, i) -> Union[dict, None]:
         scores = self._scores(i)
         if scores is None:
             return None
