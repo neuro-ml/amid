@@ -103,7 +103,7 @@ class StanfordCoCa(Dataset):
     def _split(self, i):
         return i.split('-')[0]
 
-    def _i(self, i):
+    def _identifier(self, i):
         return i.split('-')[1]
 
     def _folder_with_images(self, i):
@@ -134,7 +134,7 @@ class StanfordCoCa(Dataset):
         return gated_ids + nongated_ids
 
     def _series(self, i):
-        folder_with_dicoms = self.root / self._folder_with_images(i) / i
+        folder_with_dicoms = self.root / self._folder_with_images(i) / self._identifier(i)
         series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
         if not series:
             raise FileNotFoundError(f'No dicoms found at {folder_with_dicoms}')
@@ -173,24 +173,27 @@ class StanfordCoCa(Dataset):
         return result
 
     @field
-    @field
     def series_uid(self, i) -> str:
         return self._image_meta(i).get('SeriesInstanceUID', None)
 
+    @field
     def study_uid(self, i) -> str:
         return self._image_meta(i).get('StudyInstanceUID', None)
 
     @field
     def pixel_spacing(self, i) -> Union[list, None]:
-        return get_pixel_spacing(self, i).tolist() if self._series(i) else None
+        series = self._series(i)
+        return get_pixel_spacing(series).tolist() if series else None
 
     @field
     def slice_locations(self, i) -> Union[list, None]:
-        return get_slice_locations(self, i) if self._series(i) else None
+        series = self._series(i)
+        return get_slice_locations(series) if series else None
 
     @field
     def orientation_matrix(self, i) -> Union[np.ndarray, None]:
-        return get_orientation_matrix(self, i) if self._series(i) else None
+        series = self._series(i)
+        return get_orientation_matrix(series) if series else None
 
     def _raw_annotations(self, i):
         """Annotation as it is in xml"""
@@ -200,7 +203,7 @@ class StanfordCoCa(Dataset):
             return None
 
         try:
-            with open(self.root / folder / f'{i}.xml', 'rb') as fp:
+            with open(self.root / folder / f'{self._identifier(i)}.xml', 'rb') as fp:
                 annotation = plistlib.load(fp)
                 image_annotations = annotation['Images']
 
