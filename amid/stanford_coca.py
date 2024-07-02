@@ -22,7 +22,7 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import Dataset, licenses, register, field
+from .internals import Dataset, field, licenses, register
 
 
 class CoCaClasses(IntEnum):
@@ -107,16 +107,18 @@ class StanfordCoCa(Dataset):
         return i.split('-')[1]
 
     def _folder_with_images(self, i):
-        if self._split(i) == 'gated':
+        split = self._split(i)
+        if split == 'gated':
             return Path('Gated_release_final') / 'patient'
-        if self._split(i) == 'nongated':
+        if split == 'nongated':
             return 'deidentified_nongated'
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
     def _folder_with_annotations(self, i):
-        if self._split(i) == 'gated':
+        split = self._split(i)
+        if split == 'gated':
             return Path('Gated_release_final') / 'calcium_xml'
-        if self._split(i) == 'nongated':
+        if split == 'nongated':
             return None
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
@@ -134,6 +136,9 @@ class StanfordCoCa(Dataset):
     def _series(self, i):
         folder_with_dicoms = self.root / self._folder_with_images(i) / i
         series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
+        if not series:
+            raise FileNotFoundError(f'No dicoms found at {folder_with_dicoms}')
+
         # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
