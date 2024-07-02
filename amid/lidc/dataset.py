@@ -4,7 +4,6 @@ from typing import List, Tuple, Union
 
 import numpy as np
 import pylidc as pl
-from bev.utils import PathOrStr
 from dicom_csv import (
     Series,
     expand_volumetric,
@@ -18,7 +17,7 @@ from pylidc.utils import consensus
 from scipy import stats
 
 from ..internals import Dataset, field, licenses, register
-from ..utils import get_series_date
+from ..utils import PathOrStr, get_series_date
 from .nodules import get_nodule
 from .typing import LIDCNodule
 

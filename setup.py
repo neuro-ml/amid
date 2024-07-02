@@ -34,10 +34,6 @@ setup(
     url='https://github.com/neuro-ml/amid',
     download_url='https://github.com/neuro-ml/amid/archive/v%s.tar.gz' % version,
     keywords=['medical imaging', 'dataset'],
-    entry_points={
-        'bev_plugin': ['amid = amid.internals.hooks'],
-        'console_scripts': ['amid = amid.internals.cli:main'],
-    },
     classifiers=classifiers,
     install_requires=requirements,
     python_requires='>=3.8',

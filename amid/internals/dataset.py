@@ -1,8 +1,9 @@
 from pathlib import Path
 from typing import Sequence
 
-from bev.utils import PathOrStr
 from connectome import ExternalBase
+
+from ..utils import PathOrStr
 
 
 class Dataset(ExternalBase):

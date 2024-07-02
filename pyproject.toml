@@ -7,7 +7,7 @@ requires-python = ">=3.8"
 license = { file = "LICENSE" }
 keywords = ["medical imaging", "dataset"]
 authors = [
-    { name = "NeuroML Group", email = "maxs987@gmail.com" }
+    { name = "NeuroML Group", email = "max@ira-labs.com" }
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -25,9 +25,6 @@ classifiers = [
 "Issues" = "https://github.com/neuro-ml/amid/issues"
 "Source" = "https://github.com/neuro-ml/amid"
 "Docs" = "https://neuro-ml.github.io/amid"
-
-[project.scripts]
-amid = "amid.internals.cli:main"
 
 [build-system]
 requires = ["setuptools>=43.0.0", "wheel"]

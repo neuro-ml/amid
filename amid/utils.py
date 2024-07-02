@@ -4,18 +4,19 @@ import functools
 import itertools
 import zipfile
 from gzip import GzipFile
+from os import PathLike
 from pathlib import Path
 from typing import List, Union
 
 import nibabel
 import numpy as np
-from bev.utils import PathOrStr
 from dicom_csv import get_common_tag, order_series, stack_images
 from dicom_csv.exceptions import ConsistencyError, TagTypeError
 from pydicom import Dataset, dcmread
 
 
 Numeric = Union[float, int]
+PathOrStr = Union[str, PathLike]
 
 
 @contextlib.contextmanager

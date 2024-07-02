@@ -6,10 +6,9 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from bev.utils import PathOrStr
 
 from ..internals import Dataset, field, licenses, register
-from ..utils import open_nii_gz_file, unpack
+from ..utils import PathOrStr, open_nii_gz_file, unpack
 from .utils import ARCHIVE_ROOT, add_labels, add_masks
 
 
