@@ -3,21 +3,29 @@ import gzip
 import json
 import tarfile
 import typing as tp
-from functools import lru_cache
+from functools import cached_property
 from pathlib import Path
 
 import nibabel as nb
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Output, Source, Transform, meta
-from connectome.interface.nodes import Silent
 from deli import load
 
-from .internals import licenses, normalize
+from .internals import Dataset, field, licenses, register
 
 
-class BIMCVCovid19Base(Source):
+@register(
+    body_region='Chest',
+    license=licenses.CC_BY_40,
+    link='https://ieee-dataport.org/open-access/bimcv-covid-19'
+    '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
+    modality='CT',
+    prep_data_size='859G',
+    raw_data_size='859G',
+    task='Segmentation',
+)
+class BIMCVCovid19(Dataset):
     """
     BIMCV COVID-19 Dataset, CT-images only
     It includes BIMCV COVID-19 positive partition (https://arxiv.org/pdf/2006.01174.pdf)
@@ -36,8 +44,8 @@ class BIMCVCovid19Base(Source):
     Notes
     -----
     Dataset has 2 partitions: bimcv-covid19-positive and bimcv-covid19-positive
-    Each partition is spread over the 81 different tgz archives. The archives includes metadata about
-    subject, sessions, and labels. Also there are some tgz archives for nifty images in nii.gz format
+    Each partition is spread over the 81 different tgz archives. The archives include metadata about
+    subject, sessions, and labels. Also, there are some tgz archives for nifty images in nii.gz format
 
     Examples
     --------
@@ -69,39 +77,26 @@ class BIMCVCovid19Base(Source):
             Available at: https://dx.doi.org/10.21227/m4j2-ap59.
     """
 
-    _root: str = None
+    @property
+    def ids(self):
+        return tuple(sorted(self._series2metainfo))
 
-    def _base(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the path to the root folder to the `root` argument')
-        return Path(_root)
+    @field
+    def session_id(self, i):
+        return self._series2metainfo[i]['session_id']
 
-    @lru_cache(None)
-    def _positive_root(_base):
-        return find_subroot(_base, 'covid19_posi')
+    @field
+    def subject_id(self, i):
+        return self._series2metainfo[i]['subject_id']
 
-    @lru_cache(None)
-    def _negative_root(_base):
-        return find_subroot(_base, 'covid19_neg')
+    @field
+    def is_positive(self, i):
+        return self._series2metainfo[i]['is_positive']
 
-    def _current_root(_meta, _positive_root, _negative_root):
-        return _positive_root if _meta['is_positive'] else _negative_root
-
-    @meta
-    def ids(_series2metainfo):
-        return tuple(sorted(_series2metainfo))
-
-    def session_id(_meta):
-        return _meta['session_id']
-
-    def subject_id(_meta):
-        return _meta['subject_id']
-
-    def is_positive(_meta):
-        return _meta['is_positive']
-
-    def image(_meta, _current_root):
-        with unpack(_current_root, _meta['archive_path'], _meta['image_path']) as (file, unpacked):
+    @field
+    def image(self, i):
+        meta = self._series2metainfo[i]
+        with unpack(self._current_root(i), meta['archive_path'], meta['image_path']) as (file, unpacked):
             if unpacked:
                 array = np.asarray(nb.load(file).dataobj)
             else:
@@ -119,8 +114,10 @@ class BIMCVCovid19Base(Source):
             assert (array == integer).all(), np.abs(array - integer.astype(float)).max()
             return integer
 
-    def affine(_meta, _current_root):
-        with unpack(_current_root, _meta['archive_path'], _meta['image_path']) as (file, unpacked):
+    @field
+    def affine(self, i):
+        meta = self._series2metainfo[i]
+        with unpack(self._current_root(i), meta['archive_path'], meta['image_path']) as (file, unpacked):
             if unpacked:
                 return nb.load(file).affine
 
@@ -129,98 +126,109 @@ class BIMCVCovid19Base(Source):
                 image = nb.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return image.affine
 
-    def tags(_meta, _current_root) -> dict:
+    @field
+    def tags(self, i) -> dict:
         """
         dicom tags
         """
-        if _meta['meta_path'] is None:
+        meta = self._series2metainfo[i]
+        if meta['meta_path'] is None:
             return {}
 
-        with unpack(_current_root, _meta['archive_path'], _meta['meta_path']) as (file, _):
+        with unpack(self._current_root(i), meta['archive_path'], meta['meta_path']) as (file, _):
             try:
                 return parse_dicom_tags(load(file))
             except ValueError:
                 return {}
 
-    @lru_cache(None)
-    def _labels_dataframe(_positive_root, _negative_root):
+    @cached_property
+    def _labels_dataframe(self):
         with unpack(
-            _positive_root, 'covid19_posi_head.tar.gz', 'covid19_posi/derivatives/labels/labels_covid_posi.tsv'
+            self._positive_root, 'covid19_posi_head.tar.gz', 'covid19_posi/derivatives/labels/labels_covid_posi.tsv'
         ) as (file, _):
             pos_dataframe = pd.read_csv(file, sep='\t', index_col='ReportID').iloc[:, 1:]
 
         with unpack(
-            _negative_root, 'covid19_neg_derivative.tar.gz', 'covid19_neg/derivatives/labels/Labels_covid_NEG_JAN21.tsv'
+            self._negative_root,
+            'covid19_neg_derivative.tar.gz',
+            'covid19_neg/derivatives/labels/Labels_covid_NEG_JAN21.tsv',
         ) as (file, _):
             neg_dataframe = pd.read_csv(file, sep='\t', index_col='ReportID').iloc[:, 1:]
 
         return pd.concat([pos_dataframe, neg_dataframe], ignore_index=False)
 
-    def label_info(_meta, _labels_dataframe) -> dict:
+    @field
+    def label_info(self, i) -> dict:
         """
         labelCUIS, Report, LocalizationsCUIS etc.
         """
-        session_id = _meta['session_id']
+        session_id = self._series2metainfo[i]['session_id']
 
-        if session_id in _labels_dataframe.index:
-            return dict(_labels_dataframe.loc[session_id])
+        if session_id in self._labels_dataframe.index:
+            return dict(self._labels_dataframe.loc[session_id])
         else:
             return {}
 
-    @lru_cache(None)
-    def _subject_df(_positive_root, _negative_root):
-        with unpack(_positive_root, 'covid19_posi_subjects.tar.gz', 'covid19_posi/participants.tsv') as (file, _):
+    @cached_property
+    def _subject_df(self):
+        with unpack(self._positive_root, 'covid19_posi_subjects.tar.gz', 'covid19_posi/participants.tsv') as (file, _):
             pos_data = pd.read_csv(file, sep='\t', index_col='participant')
             pos_data = pos_data[pos_data.index != 'derivatives']
 
-        with unpack(_negative_root, 'covid19_neg_metadata.tar.gz', 'covid19_neg/participants.tsv') as (file, _):
+        with unpack(self._negative_root, 'covid19_neg_metadata.tar.gz', 'covid19_neg/participants.tsv') as (file, _):
             neg_data = pd.read_csv(file, sep='\t', index_col='participant')
             neg_data = neg_data[neg_data.index != 'derivatives']
 
         return pd.concat([pos_data, neg_data])
 
-    def subject_info(_meta, _subject_df) -> dict:
+    @field
+    def subject_info(self, i) -> dict:
         """
         modality_dicom (=[CT]), body_parts(=[chest]), age, gender
         """
-        subject_id = _meta['subject_id']
-        if subject_id in _subject_df.index:
-            return dict(_subject_df.loc[subject_id])
+        subject_id = self._series2metainfo[i]['subject_id']
+        if subject_id in self._subject_df.index:
+            return dict(self._subject_df.loc[subject_id])
         else:
             return {}
 
-    def age(subject_info: Output) -> int:
+    @field
+    def age(self, i) -> int:
         """Minimum of (possibly two) available ages.
         The maximum difference between max and min age for every patient is 1 year."""
-        return min(json.loads(subject_info.get('age')))
+        return min(json.loads(self.subject_info(i).get('age')))
 
-    def sex(subject_info: Output) -> str:
-        return subject_info.get('gender')
+    @field
+    def sex(self, i) -> str:
+        return self.subject_info(i).get('gender')
 
-    def session_info(_meta, _current_root) -> dict:
+    @field
+    def session_info(self, i) -> dict:
         """
         study_date,	medical_evaluation
         """
-        session_id = _meta['session_id']
-        subject_id = _meta['subject_id']
+        meta = self._series2metainfo[i]
+        current_root = self._current_root(i)
+        session_id = meta['session_id']
+        subject_id = meta['subject_id']
 
-        if _meta['is_positive']:
+        if meta['is_positive']:
             step_sessions_tarfile_name = 'covid19_posi_sessions_tsv.tar.gz'
         else:
             step_sessions_tarfile_name = 'covid19_neg_sessions_tsv.tar.gz'
 
-        txt_splits = load(_current_root / (step_sessions_tarfile_name + '.tar-tvf.txt')).split()
+        txt_splits = load(current_root / (step_sessions_tarfile_name + '.tar-tvf.txt')).split()
         (ses_file,) = filter(lambda x: subject_id in x, txt_splits)
 
-        with unpack(_current_root, step_sessions_tarfile_name, ses_file) as (file, _):
+        with unpack(current_root, step_sessions_tarfile_name, ses_file) as (file, _):
             sesions_dataframe = pd.read_csv(file, sep='\t', index_col='session_id')
 
         if session_id in sesions_dataframe.index:
             return dict(sesions_dataframe.loc[session_id])
         return {}
 
-    @lru_cache(None)
-    def _series2metainfo(_positive_root, _negative_root):
+    @cached_property
+    def _series2metainfo(self):
         """
         Main function that gathers the metadata for the whole dataset.
 
@@ -234,7 +242,7 @@ class BIMCVCovid19Base(Source):
                                 'meta_path': ...}}
         """
         series2metainfo = {}
-        for part in _positive_root, _negative_root:
+        for part in self._positive_root, self._negative_root:
             for structure in part.glob('*part*.tar.gz.tar-tvf.txt'):
                 part_filename = structure.name[: -len('.tar-tvf.txt')]
                 if 'pos' in part_filename:
@@ -287,32 +295,16 @@ class BIMCVCovid19Base(Source):
 
         return series2metainfo
 
-    def _meta(key, _series2metainfo):
-        return _series2metainfo[key]
+    @cached_property
+    def _positive_root(self):
+        return find_subroot(self.root, 'covid19_posi')
 
+    @cached_property
+    def _negative_root(self):
+        return find_subroot(self.root, 'covid19_neg')
 
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nb.affines.voxel_sizes(affine)
-
-
-BIMCVCovid19 = normalize(
-    BIMCVCovid19Base,
-    'BIMCVCovid19',
-    'bimcv_covid19',
-    body_region='Chest',
-    license=licenses.CC_BY_40,
-    link='https://ieee-dataport.org/open-access/bimcv-covid-19'
-    '-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0',
-    modality='CT',
-    prep_data_size='859G',
-    raw_data_size='859G',
-    task='Segmentation',
-    columns=['affine', 'is_positive', 'label_info', 'session_id', 'session_info', 'subject_id', 'subject_info', 'tags'],
-    normalizers=[SpacingFromAffine()],
-)
+    def _current_root(self, i):
+        return self._positive_root if self._series2metainfo[i]['is_positive'] else self._negative_root
 
 
 @contextlib.contextmanager

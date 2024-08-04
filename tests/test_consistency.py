@@ -39,17 +39,15 @@ def test_pickleable(cls):
 @pytest.mark.raw
 @pytest.mark.parametrize('cls', ROOT_MAPPING, ids=[cls.__name__ for cls in ROOT_MAPPING])
 def test_cache_consistency(cls):
-    raw = cls(root=ROOT_MAPPING[cls])[0]
-    cached = cls.raw()
+    raw = cls(root=ROOT_MAPPING[cls])
+    cached = raw.cached()
+    fields = {x.name for x in raw._container.outputs} - {'ids', 'id', 'cached'}
 
-    assert tuple(cached.ids) == tuple(raw.ids)
-    cached_fields = set(dir(cached))
-    raw_fields = set(dir(raw))
-    assert cached_fields == raw_fields, (cached_fields - raw_fields, raw_fields - cached_fields)
-
-    i = cached.ids[0]
-    all_fields = cached_fields - {'ids'}
-    compare(raw._compile(all_fields)(i), cached._compile(all_fields)(i))
+    ids = raw.ids
+    assert ids == cached.ids
+    for i in ids:
+        for field in fields:
+            compare(getattr(raw, field)(i), getattr(cached, field)(i))
 
 
 # TODO: find a package for this
@@ -57,7 +55,7 @@ def compare(x, y):
     assert type(x) == type(y)
     if isinstance(x, (str, int, float, bytes)):
         assert x == y
-    elif isinstance(x, np.ndarray):
+    elif isinstance(x, (np.ndarray, np.generic)):
         np.testing.assert_allclose(x, y)
     elif isinstance(x, (list, tuple)):
         list(map(compare, x, y))

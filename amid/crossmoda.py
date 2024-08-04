@@ -8,22 +8,26 @@ from zipfile import ZipFile
 import nibabel as nb
 import numpy as np
 import pandas as pd
-from connectome import Source, meta
-from connectome.interface.nodes import Output, Silent
 
-from .internals import licenses, normalize
-from .utils import deprecate
+from .internals import Dataset, licenses, register
 
 
-class CrossMoDABase(Source):
+@register(
+    body_region='Head',
+    license=licenses.CC_BYNCSA_40,
+    link='https://zenodo.org/record/6504722#.YsgwnNJByV4',
+    modality=('MRI T1c', 'MRI T2hr'),
+    prep_data_size='8,96G',
+    raw_data_size='17G',
+    task=('Segmentation', 'Classification', 'Domain Adaptation'),
+)
+class CrossMoDA(Dataset):
     """
     Parameters
     ----------
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -43,15 +47,10 @@ class CrossMoDABase(Source):
     ----------
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the locations of the zip archives')
-
+    @property
+    def ids(self):
         result = set()
-        for archive in Path(_root).glob('*.zip'):
+        for archive in self.root.glob('*.zip'):
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
                     if zipinfo.is_dir():
@@ -67,12 +66,12 @@ class CrossMoDABase(Source):
 
         return sorted(result)
 
-    @meta
-    def train_source_df(_root):
-        return pd.read_csv(Path(_root) / 'infos_source_training.csv', index_col='crossmoda_name')
+    @property
+    def train_source_df(self):
+        return pd.read_csv(self.root / 'infos_source_training.csv', index_col='crossmoda_name')
 
-    def _file(i, _root: Silent):
-        for archive in Path(_root).glob('*.zip'):
+    def _file(self, i):
+        for archive in self.root.glob('*.zip'):
             with ZipFile(archive) as zf:
                 for zipinfo in zf.infolist():
                     if i == '_'.join(Path(zipinfo.filename).stem.split('_')[:-1]) and 'Label' not in zipinfo.filename:
@@ -80,28 +79,25 @@ class CrossMoDABase(Source):
 
         raise ValueError(f'Id "{i}" not found')
 
-    def image(_file) -> Union[np.ndarray, None]:
-        with open_nii_gz_file(_file) as nii_image:
+    def image(self, i) -> Union[np.ndarray, None]:
+        with open_nii_gz_file(self._file(i)) as nii_image:
             return np.asarray(nii_image.dataobj)
 
-    @deprecate(message='Use `spacing` method instead.')
-    def pixel_spacing(spacing: Output):
-        return spacing
-
-    def spacing(_file):
+    def spacing(self, i):
         """Returns pixel spacing along axes (x, y, z)"""
-        with open_nii_gz_file(_file) as nii_image:
+        with open_nii_gz_file(self._file(i)) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 
-    def affine(_file):
+    def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation"""
-        with open_nii_gz_file(_file) as nii_image:
+        with open_nii_gz_file(self._file(i)) as nii_image:
             return nii_image.affine
 
-    def split(_file) -> str:
+    def split(self, i) -> str:
         """The split in which this entry is contained: training_source, training_target, validation"""
-        idx = int(_file.name.split('_')[2])
-        dataset = _file.name.split('_')[1]
+        file = self._file(i)
+        idx = int(file.name.split('_')[2])
+        dataset = file.name.split('_')[1]
 
         if dataset == 'ldn':
             if 1 <= idx < 106:
@@ -119,37 +115,24 @@ class CrossMoDABase(Source):
             elif 210 <= idx < 242:
                 return 'validation'
 
-        raise ValueError(f'Cannot find split for the file: {_file}')
+        raise ValueError(f'Cannot find split for the file: {file}')
 
-    def year(_file) -> int:
+    def year(self, i) -> int:
         """The year in which this entry was published: 2021 or 2022"""
-        return int(_file.name[9:13])
+        return int(self._file(i).name[9:13])
 
-    def masks(i, _file) -> Union[np.ndarray, None]:
+    def masks(self, i):
         """Combined mask of schwannoma and cochlea (1 and 2 respectively)"""
-        if 'T2' not in _file.name:
-            with open_nii_gz_file(_file.parent / _file.name.replace('ceT1', 'Label')) as nii_image:
+        file = self._file(i)
+        if 'T2' not in file.name:
+            with open_nii_gz_file(file.parent / file.name.replace('ceT1', 'Label')) as nii_image:
                 return nii_image.get_fdata().astype(np.uint8)
 
-    def koos_grade(i, train_source_df: Output, split: Output):
+    def koos_grade(self, i):
         """VS Tumour characteristic according to Koos grading scale: [1..4] or (-1 - post operative)"""
-        if split == 'training_source':
-            grade = train_source_df.loc[i, 'koos']
+        if self.split(i) == 'training_source':
+            grade = self.train_source_df.loc[i, 'koos']
             return -1 if (grade == 'post-operative-london') else int(grade)
-
-
-CrossMoDA = normalize(
-    CrossMoDABase,
-    'CrossMoDA',
-    'crossmoda2022',
-    body_region='Head',
-    license=licenses.CC_BYNCSA_40,
-    link='https://zenodo.org/record/6504722#.YsgwnNJByV4',
-    modality=('MRI T1c', 'MRI T2hr'),
-    prep_data_size='8,96G',
-    raw_data_size='17G',
-    task=('Segmentation', 'Classification', 'Domain Adaptation'),
-)
 
 
 # TODO: sync with amid.utils

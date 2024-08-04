@@ -1,15 +1,20 @@
 import gzip
-from pathlib import Path
+from typing import Union
 
 import nibabel
 import numpy as np
-from connectome import Source, meta
-from connectome.interface.nodes import Silent
 
-from .internals import normalize
+from .internals import Dataset, field, register
 
 
-class MoscowCovid1110Base(Source):
+@register(
+    body_region='Thorax',
+    modality='CT',
+    task='COVID-19 Segmentation',
+    link='https://mosmed.ai/en/datasets/covid191110/',
+    raw_data_size='21G',
+)
+class MoscowCovid1110(Dataset):
     """
     The Moscow Radiology COVID-19 dataset.
 
@@ -18,8 +23,6 @@ class MoscowCovid1110Base(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded files.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -36,20 +39,16 @@ class MoscowCovid1110Base(Source):
     # (512, 512, 43)
     """
 
-    _root: str = None
+    @property
+    def ids(self):
+        return sorted({f.name[:-7] for f in self.root.glob('CT-*/*')})
 
-    @meta
-    def ids(_root: Silent):
-        if _root is None:
-            raise ValueError('Please pass the locations of the zip archives')
+    def _file(self, i):
+        return next(self.root.glob(f'CT-*/{i}.nii.gz'))
 
-        return sorted({f.name[:-7] for f in Path(_root).glob('CT-*/*')})
-
-    def _file(i, _root: Silent):
-        return next(Path(_root).glob(f'CT-*/{i}.nii.gz'))
-
-    def image(_file):
-        with _file.open('rb') as opened:
+    @field
+    def image(self, i) -> np.ndarray:
+        with self._file(i).open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
@@ -57,18 +56,21 @@ class MoscowCovid1110Base(Source):
                 #  (instead of using `image.get_fdata()`)
                 return np.asarray(image.dataobj)
 
-    def affine(_file):
-        with _file.open('rb') as opened:
+    @field
+    def affine(self, i) -> np.ndarray:
+        with self._file(i).open('rb') as opened:
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return image.affine
 
-    def label(_file):
-        return _file.parent.name[3:]
+    @field
+    def label(self, i) -> str:
+        return self._file(i).parent.name[3:]
 
-    def mask(i, _root: Silent):
-        path = Path(_root) / 'masks' / f'{i}_mask.nii.gz'
+    @field
+    def mask(self, i) -> Union[np.ndarray, None]:
+        path = self.root / 'masks' / f'{i}_mask.nii.gz'
         if not path.exists():
             return
 
@@ -77,15 +79,3 @@ class MoscowCovid1110Base(Source):
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
                 return np.asarray(image.dataobj) > 0.5
-
-
-MoscowCovid1110 = normalize(
-    MoscowCovid1110Base,
-    'MoscowCovid1110',
-    'covid_1110',
-    body_region='Thorax',
-    modality='CT',
-    task='COVID-19 Segmentation',
-    link='https://mosmed.ai/en/datasets/covid191110/',
-    raw_data_size='21G',
-)

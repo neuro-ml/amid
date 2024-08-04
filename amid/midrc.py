@@ -1,15 +1,12 @@
 import json
 import os.path
 import warnings
-from functools import lru_cache
-from pathlib import Path
+from functools import cached_property
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 from dicom_csv import (
     drop_duplicated_instances,
     drop_duplicated_slices,
@@ -22,10 +19,19 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import licenses, normalize
+from .internals import Dataset, field, licenses, register
 
 
-class MIDRCBase(Source):
+@register(
+    body_region='Thorax',
+    license=licenses.CC_BYNC_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
+    modality='CT',
+    prep_data_size='7,9G',
+    raw_data_size='12G',
+    task='COVID-19 Segmentation',
+)
+class MIDRC(Dataset):
     """
 
         MIDRC-RICORD dataset 1a is a public COVID-19 CT segmentation dataset with 120 scans.
@@ -35,8 +41,6 @@ class MIDRCBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -65,63 +69,54 @@ class MIDRCBase(Source):
     ----------
     """
 
-    _root: str = None
-    _pathologies: Tuple[str] = (
-        'Infectious opacity',
-        'Infectious TIB/micronodules',
-        'Atelectasis',
-        'Other noninfectious opacity',
-        'Noninfectious nodule/mass',
-        'Infectious cavity',
-    )
+    _fields = 'image', 'image_meta', 'spacing', 'labels', 'mask'
 
-    def _base(_root: Silent):
-        if _root is None:
-            raise ValueError('Please provide the `root` argument')
-        return Path(_root)
-
-    @lru_cache(None)
-    def _joined(_base):
-        joined_path = _base / 'joined.csv'
+    @cached_property
+    def _joined(self):
+        joined_path = self.root / 'joined.csv'
         if joined_path.exists():
-            return pd.read_csv(joined_path)
-        joined = join_tree(_base / 'MIDRC-RICORD-1A', verbose=1)
-        joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
-        joined.to_csv(_base / 'joined.csv')
+            joined = pd.read_csv(joined_path)
+        else:
+            joined = join_tree(self.root / 'MIDRC-RICORD-1A', verbose=1)
+            joined = joined[[x.endswith('.dcm') for x in joined.FileName]]
+            joined.to_csv(self.root / 'joined.csv', index=False)
         return joined
 
-    @meta
-    def ids(_joined):
-        return tuple(_joined['SeriesInstanceUID'].unique())
+    @cached_property
+    def ids(self):
+        return tuple(self._joined['SeriesInstanceUID'].unique())
 
-    def _annotation(_base):
+    @cached_property
+    def _annotation(self):
         json_path = 'MIDRC-RICORD-1a_annotations_labelgroup_all_2020-Dec-8.json'
-        return json_to_dataframe(_base / json_path)['annotations']
+        return json_to_dataframe(self.root / json_path)['annotations']
 
-    def _series(i, _base, _joined):
-        sub = _joined[_joined.SeriesInstanceUID == i]
+    def _series(self, i):
+        sub = self._joined[self._joined.SeriesInstanceUID == i]
         series_files = sub['PathToFolder'] + os.path.sep + sub['FileName']
-        series_files = [_base / 'MIDRC-RICORD-1A' / x for x in series_files]
+        series_files = [self.root / 'MIDRC-RICORD-1A' / x for x in series_files]
         series = list(map(pydicom.dcmread, series_files))
         # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
 
-        if True:  # drop_dupl_slices
-            _original_num_slices = len(series)
-            series = drop_duplicated_slices(series)
-            if len(series) < _original_num_slices:
-                warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
+        # if drop_dupl_slices:
+        _original_num_slices = len(series)
+        series = drop_duplicated_slices(series)
+        if len(series) < _original_num_slices:
+            warnings.warn(f'Dropped duplicated slices for series {series[0]["StudyInstanceUID"]}.')
 
         series = order_series(series, decreasing=False)
         return series
 
-    def image(_series):
-        image = stack_images(_series, -1).astype(np.int16).transpose(1, 0, 2)
+    @field
+    def image(self, i):
+        image = stack_images(self._series(i), -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
-    def image_meta(_series):
-        metas = [list(dict(s).values()) for s in _series]
+    @field
+    def image_meta(self, i):
+        metas = [list(dict(s).values()) for s in self._series(i)]
         result = {}
         for meta_ in metas:
             for element in meta_:
@@ -135,26 +130,34 @@ class MIDRCBase(Source):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
-    def _study_id(i, _joined):
-        study_ids = _joined[_joined.SeriesInstanceUID == i].StudyInstanceUID.unique()
+    def _study_id(self, i):
+        study_ids = self._joined[self._joined.SeriesInstanceUID == i].StudyInstanceUID.unique()
         assert len(study_ids) == 1
         # series_id_to_study
         return study_ids[0]
 
-    def spacing(_series):
-        pixel_spacing = get_pixel_spacing(_series).tolist()
-        slice_locations = get_slice_locations(_series)
+    @field
+    def spacing(self, i):
+        series = self._series(i)
+        pixel_spacing = get_pixel_spacing(series).tolist()
+        slice_locations = get_slice_locations(series)
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
         spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return tuple(spacing.tolist())
 
-    def labels(_study_id, _annotation):
-        sub = _annotation[(_annotation.scope == 'STUDY') & (_annotation.StudyInstanceUID == _study_id)]
+    @field
+    def labels(self, i):
+        sub = self._annotation[
+            (self._annotation.scope == 'STUDY') & (self._annotation.StudyInstanceUID == self._study_id(i))
+        ]
         return tuple(sub['labelName'].unique())
 
-    def mask(i, image_meta: Output, _annotation, _pathologies):
+    @field
+    def mask(self, i):
         # TODO: mask has 6 channels now. Consider adding different methods ot at least a docstring naming channels...
-        sub = _annotation[(_annotation.SeriesInstanceUID == i) & (_annotation.scope == 'INSTANCE')]
+        sub = self._annotation[(self._annotation.SeriesInstanceUID == i) & (self._annotation.scope == 'INSTANCE')]
+        image_meta = self.image_meta(i)
+
         shape = (image_meta['Rows'], image_meta['Columns'], len(image_meta['SOPInstanceUID']))
         mask = np.zeros((len(_pathologies), *shape), dtype=bool)
         if len(sub) == 0:
@@ -170,17 +173,13 @@ class MIDRCBase(Source):
         return mask
 
 
-MIDRC = normalize(
-    MIDRCBase,
-    'MIDRC',
-    'midrc',
-    body_region='Thorax',
-    license=licenses.CC_BYNC_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742',
-    modality='CT',
-    prep_data_size='7,9G',
-    raw_data_size='12G',
-    task='COVID-19 Segmentation',
+_pathologies: Tuple[str, ...] = (
+    'Infectious opacity',
+    'Infectious TIB/micronodules',
+    'Atelectasis',
+    'Other noninfectious opacity',
+    'Noninfectious nodule/mass',
+    'Infectious cavity',
 )
 
 
@@ -216,7 +215,6 @@ def json_to_dataframe(json_file, datasets=None):
         result.columns = ['labels', 'labelGroupId', 'labelGroupName']
 
         def unpack_dictionary(df, column):
-            ret = None
             ret = pd.concat([df, pd.DataFrame((d for idx, d in df[column].items()))], axis=1, sort=False)
             del ret[column]
             return ret

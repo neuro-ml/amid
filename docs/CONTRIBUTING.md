@@ -42,7 +42,7 @@ We will be using [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.p
 git checkout lits
 ```
 
-3\. Create a class that loads the raw data. [LiTSBase](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) is a good
+3\. Create a class that loads the raw data. [LiTS](https://github.com/neuro-ml/amid/blob/master/amid/lits.py) is a good
 example. Note how each field is implemented as a separate function.
 
 There are no strict rules regarding the dataset fields,
@@ -69,21 +69,16 @@ i.e., do not apply heavy processing that modifies the data irreversibly.
 4\. Register the dataset like so:
 
 ```python
-from amid.internals import normalize
+from amid.internals import register
 
-LiTS = normalize(
-    LiTSBase, 'LiTS', 'lits',
+@register(
     ...,
 )
+class LiTS(Dataset):
+    ...
 ```
 
-where the first 3 arguments are
-
-- the raw dataset
-- the final dataset name
-- a short name for the dataset (mostly used for various files generation)
-
-and `...` stands for the following arguments:
+where `...` stands for the following arguments:
 
 - `modality` — the images' modality/modalities, e.g., CT, MRI
 - `body_region` — the anatomical regions present in the dataset, e.g., Head, Thorax, Abdomen

@@ -1,11 +1,8 @@
 import json
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, meta
-from connectome.interface.nodes import Output, Silent
 from dicom_csv import (
     get_common_tag,
     get_pixel_spacing,
@@ -18,11 +15,20 @@ from dicom_csv import (
 from scipy import stats
 from skimage.draw import polygon
 
-from ..internals import licenses, normalize
+from ..internals import Dataset, licenses, register
 from ..utils import get_series_date
 
 
-class VSSEGBase(Source):
+@register(
+    body_region='Head',
+    license=licenses.CC_BY_40,
+    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053',
+    modality=('MRI T1c', 'MRI T2'),
+    prep_data_size='14,42G',
+    raw_data_size='27G',
+    task='Segmentation',
+)
+class VSSEG(Dataset):
     """
     Segmentation of vestibular schwannoma from MRI, an open annotated dataset ... (VS-SEG) [1]_.
 
@@ -34,8 +40,7 @@ class VSSEGBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -81,95 +86,74 @@ class VSSEGBase(Source):
 
     """
 
-    _root: str = None
-
-    def _base(_root: Silent):
-        if _root is None:
-            raise ValueError('Please provide the `root` argument')
-        return Path(_root)
-
-    @meta
-    def ids(_base):
-        subject_id_paths = list((_base / 'Vestibular-Schwannoma-SEG').glob('VS-SEG-*'))
+    @property
+    def ids(self):
+        subject_id_paths = list((self.root / 'Vestibular-Schwannoma-SEG').glob('VS-SEG-*'))
         t1_ids = [p.name + '-T1' for p in subject_id_paths]
         t2_ids = [p.name + '-T2' for p in subject_id_paths]
         return tuple(sorted(t1_ids + t2_ids))
 
-    def modality(i):
+    def modality(self, i):
         return i.rsplit('-', 1)[1]
 
-    def subject_id(i):
+    def subject_id(self, i):
         return i.rsplit('-', 1)[0]
 
     # ### series and images: ###
 
-    def _series(i, _base):
-        return _load_series(i, _base)
+    def _series(self, i):
+        return _load_series(i, self.root)
 
-    def image(_series):
-        return stack_images(_series, -1).transpose(1, 0, 2)
+    def image(self, i):
+        return stack_images(self._series(i), -1).transpose(1, 0, 2)
 
     # ### contours and masks ###
 
-    def _contours(subject_id: Output, modality: Output, _base):
-        subject_num = int(subject_id.rsplit('-', 1)[-1])
-        for file in (_base / 'contours').glob(f'vs_gk_{subject_num}_{modality.lower()}/*'):
+    def _contours(self, i):
+        subject_num = int(self.subject_id(i).rsplit('-', 1)[-1])
+        for file in (self.root / 'contours').glob(f'vs_gk_{subject_num}_{self.modality(i).lower()}/*'):
             with open(str(file), 'r') as f:
                 return json.load(f)
 
-    def _pixel_spacing(_series):
-        return get_pixel_spacing(_series).tolist()
+    def _pixel_spacing(self, i):
+        return get_pixel_spacing(self, i).tolist()
 
-    def _slice_locations(_series):
-        return get_slice_locations(_series)
+    def _slice_locations(self, i):
+        return get_slice_locations(self, i)
 
-    def spacing(_pixel_spacing, _slice_locations):
+    def spacing(self, i):
         """The maximum relative difference in `slice_locations` < 1e-12,
         so we allow ourselves to use the common spacing for the whole 3D image."""
-        return (*_pixel_spacing, stats.mode(np.diff(_slice_locations))[0].item())
+        return (*self._pixel_spacing(i), stats.mode(np.diff(self._slice_locations(i)))[0].item())
 
-    def _normed_contours(_contours, spacing: Output, _patient_position):
-        return _norm_contours(_contours, spacing, _patient_position)
+    def _normed_contours(self, i):
+        return _norm_contours(self._contours(i), self.spacing(i), self._patient_position(i))
 
-    def _patient_position(_series):
-        return tuple(map(float, get_tag(_series[0], 'ImagePositionPatient')))
+    def _patient_position(self, i):
+        return tuple(map(float, get_tag(self._series(i)[0], 'ImagePositionPatient')))
 
-    def schwannoma(_normed_contours, image: Output):
-        return _get_mask(_normed_contours, image.shape, obj='schwannoma')
+    def schwannoma(self, i):
+        return _get_mask(self._normed_contours(i), self.image(i).shape, obj='schwannoma')
 
-    def cochlea(_normed_contours, image: Output):
-        return _get_mask(_normed_contours, image.shape, obj='cochlea')
+    def cochlea(self, i):
+        return _get_mask(self._normed_contours(i), self.image(i).shape, obj='cochlea')
 
-    def meningioma(_normed_contours, image: Output):
-        return _get_mask(_normed_contours, image.shape, obj='meningioma')
+    def meningioma(self, i):
+        return _get_mask(self._normed_contours(i), self.image(i).shape, obj='meningioma')
 
     # ### other DICOM metadata: ###
 
-    def study_uid(_series):
-        return get_common_tag(_series, 'StudyInstanceUID')
+    def study_uid(self, i):
+        return get_common_tag(self._series(i), 'StudyInstanceUID')
 
-    def series_uid(_series):
-        return get_common_tag(_series, 'SeriesInstanceUID')
+    def series_uid(self, i):
+        return get_common_tag(self._series(i), 'SeriesInstanceUID')
 
-    def patient_id(_series):
-        return get_common_tag(_series, 'PatientID', default=None)
+    def patient_id(self, i):
+        return get_common_tag(self._series(i), 'PatientID', default=None)
 
-    def study_date(_series):
-        return get_series_date(_series)
-
-
-VSSEG = normalize(
-    VSSEGBase,
-    'VSSEG',
-    'vs_seg',
-    body_region='Head',
-    license=licenses.CC_BY_40,
-    link='https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053',
-    modality=('MRI T1c', 'MRI T2'),
-    prep_data_size='14,42G',
-    raw_data_size='27G',
-    task='Segmentation',
-)
+    def study_date(self, i):
+        return get_series_date(self, i)
 
 
 def _load_series(_id, root):

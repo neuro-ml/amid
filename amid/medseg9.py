@@ -6,14 +6,20 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, meta
-from connectome.interface.nodes import Silent
 
-from .internals import licenses, normalize
-from .utils import deprecate
+from .internals import Dataset, field, licenses, register
 
 
-class Medseg9Base(Source):
+@register(
+    body_region='Chest',
+    license=licenses.CC0_10,
+    link='http://medicalsegmentation.com/covid19/',
+    modality='CT',
+    prep_data_size='300M',
+    raw_data_size='310M',
+    task='COVID-19 segmentation',
+)
+class Medseg9(Dataset):
     """
 
     Medseg9 is a public COVID-19 CT segmentation dataset with 9 annotated images.
@@ -23,8 +29,6 @@ class Medseg9Base(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
 
     Notes
     -----
@@ -46,13 +50,11 @@ class Medseg9Base(Source):
 
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root: Silent):
+    @property
+    def ids(self):
         result = set()
 
-        with ZipFile(Path(_root) / 'rp_msk.zip') as zf:
+        with ZipFile(self.root / 'rp_msk.zip') as zf:
             for zipinfo in zf.infolist():
                 if zipinfo.is_dir():
                     continue
@@ -61,57 +63,42 @@ class Medseg9Base(Source):
 
         return tuple(sorted(result))
 
-    def _file(i, _root: Silent):
+    @staticmethod
+    def _filename(i):
         num_id = i.split('_')[-1]
-        return zipfile.Path(Path(_root) / 'rp_im.zip', f'rp_im/{num_id}.nii.gz')
+        return f'{num_id}.nii.gz'
 
-    def image(_file):
-        with open_nii_gz_file(_file) as nii_image:
+    def _file(self, i):
+        return zipfile.Path(self.root / 'rp_im.zip', f'rp_im/{self._filename(i)}')
+
+    @field
+    def image(self, i):
+        with open_nii_gz_file(self._file(i)) as nii_image:
             # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return np.int16(nii_image.get_fdata())
 
-    def affine(_file):
+    @field
+    def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
-        with open_nii_gz_file(_file) as nii_image:
+        with open_nii_gz_file(self._file(i)) as nii_image:
             return nii_image.affine
 
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
-
-    def spacing(_file):
-        """Returns voxel spacing along axes (x, y, z)."""
-        with open_nii_gz_file(_file) as nii_image:
-            return tuple(nii_image.header['pixdim'][1:4])
-
-    def lungs(_file):
-        mask_file = zipfile.Path(Path(_file.root.filename).parent / 'rp_lung_msk.zip', f'rp_lung_msk/{_file.name}')
+    @field
+    def lungs(self, i):
+        mask_file = zipfile.Path(self.root / 'rp_lung_msk.zip', f'rp_lung_msk/{self._filename(i)}')
         with open_nii_gz_file(mask_file) as nii_image:
             return np.bool_(nii_image.get_fdata())
 
-    def covid(_file):
+    @field
+    def covid(self, i):
         """
         int16 mask.
         0 - normal, 1 - ground-glass opacities (матовое стекло), 2 - consolidation (консолидация).
         """
-        mask_file = zipfile.Path(Path(_file.root.filename).parent / 'rp_msk.zip', f'rp_msk/{_file.name}')
+        mask_file = zipfile.Path(self.root / 'rp_msk.zip', f'rp_msk/{self._filename(i)}')
         with open_nii_gz_file(mask_file) as nii_image:
             # most CT/MRI scans are integer-valued, this will help us improve compression rates
             return np.uint8(nii_image.get_fdata())
-
-
-Medseg9 = normalize(
-    Medseg9Base,
-    'Medseg9',
-    'medseg9',
-    body_region='Chest',
-    license=licenses.CC0_10,
-    link='http://medicalsegmentation.com/covid19/',
-    modality='CT',
-    prep_data_size='300M',
-    raw_data_size='310M',
-    task='COVID-19 segmentation',
-)
 
 
 # TODO: sync with amid.utils

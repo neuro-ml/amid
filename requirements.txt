@@ -1,6 +1,4 @@
 connectome>=0.9.0,<1.0.0
-bev>=0.11.0,<1.0.0
-tarn>=0.12.0,<1.0.0
 numpy
 nibabel
 more-itertools
@@ -10,7 +8,6 @@ pandas
 pylidc
 joblib
 deli<1.0.0
-typer<1.0.0
 scipy
 scikit-image
 pydicom

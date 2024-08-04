@@ -1,25 +1,33 @@
-from functools import lru_cache
-from pathlib import Path
+from functools import cached_property
 from zipfile import ZipFile
 
 import nibabel
 import numpy as np
 import pandas as pd
-from connectome import Source, Transform, meta
-from connectome.interface.nodes import Silent
+from jboc import collect, composed
 
-from ..internals import licenses, normalize
+from ..internals import Dataset, field, licenses, register
 from ..utils import open_nii_gz_file, unpack
-from .utils import label
 
 
 ARCHIVE_NAME_SEG = 'amos22.zip'
 ARCHIVE_ROOT_NAME = 'amos22'
 ERRORS = ['5514', '5437']  # these ids are damaged in the zip archives
+
+
 # TODO: add MRI
 
 
-class AMOSBase(Source):
+@register(
+    body_region='Abdomen',
+    license=licenses.CC_BY_40,
+    link='https://zenodo.org/record/7262581',
+    modality=('CT', 'MRI'),
+    raw_data_size='23G',  # TODO: update size with unlabelled
+    prep_data_size='89,5G',
+    task='Supervised multi-modality abdominal multi-organ segmentation',
+)
+class AMOS(Dataset):
     """
     AMOS provides 500 CT and 100 MRI scans collected from multi-center, multi-vendor, multi-modality, multi-phase,
     multi-disease patients, each with voxel-level annotations of 15 abdominal organs, providing challenging examples
@@ -52,64 +60,61 @@ class AMOSBase(Source):
     versatile medical image segmentation [Data set]. Zenodo. https://doi.org/10.5281/zenodo.7262581
     """
 
-    _root: str = None
-
-    def _base(_root: Silent):
-        return Path(_root)
-
-    @meta
-    def ids(_id2split, _ids_unlabelled):
-        labelled = sorted(_id2split)
-        unlabelled = sorted(_ids_unlabelled)
+    @property
+    def ids(self):
+        labelled = sorted(self._id2split)
+        unlabelled = sorted(self._ids_unlabelled)
         return labelled + unlabelled
 
-    def image(i, _id2split, _base, _archive_name):
+    @field
+    def image(self, i):
         """Corresponding 3D image."""
         if i in ERRORS:
             return None  # this image is damaged in the archive
 
-        archive_name, archive_root = _archive_name
-        if i in _id2split:
+        archive_name, archive_root = self._archive_name(i)
+        if i in self._id2split:
             archive_name = ARCHIVE_NAME_SEG
             archive_root = ARCHIVE_ROOT_NAME
-            file = f'images{_id2split[i]}/amos_{i}.nii.gz'
+            file = f'images{self._id2split[i]}/amos_{i}.nii.gz'
         else:
             file = f'amos_{i}.nii.gz'
 
-        with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
+        with unpack(self.root / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return np.asarray(nibabel.load(unpacked).dataobj)
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return np.asarray(image.dataobj)
 
-    def affine(i, _id2split, _base, _archive_name):
+    @field
+    def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
         if i in ERRORS:
             return None  # this image is damaged in the archive
-        archive_name, archive_root = _archive_name
-        if i in _id2split:
+        archive_name, archive_root = self._archive_name(i)
+        if i in self._id2split:
             archive_name = ARCHIVE_NAME_SEG
             archive_root = ARCHIVE_ROOT_NAME
-            file = f'images{_id2split[i]}/amos_{i}.nii.gz'
+            file = f'images{self._id2split[i]}/amos_{i}.nii.gz'
         else:
             file = f'amos_{i}.nii.gz'
 
-        with unpack(_base / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
+        with unpack(self.root / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
             else:
                 with open_nii_gz_file(unpacked) as image:
                     return image.affine
 
-    def mask(i, _id2split, _base):
-        if i in _id2split:
-            file = f'labels{_id2split[i]}/amos_{i}.nii.gz'
-        else:
+    @field
+    def mask(self, i):
+        if i not in self._id2split:
             return
 
+        file = f'labels{self._id2split[i]}/amos_{i}.nii.gz'
         try:
-            with unpack(_base / ARCHIVE_NAME_SEG, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
+            with unpack(self.root / ARCHIVE_NAME_SEG, file, ARCHIVE_ROOT_NAME, '.zip') as (unpacked, is_unpacked):
                 if is_unpacked:
                     return np.asarray(nibabel.load(unpacked).dataobj)
                 else:
@@ -118,54 +123,71 @@ class AMOSBase(Source):
         except FileNotFoundError:
             return
 
-    def image_modality(i):
+    @field
+    def image_modality(self, i):
         """Returns image modality, `CT` or `MRI`."""
         if 500 < int(i) <= 600:
             return 'MRI'
         return 'CT'
 
     # labels
+    @field
+    def birth_date(self, i):
+        return self._label(i, "Patient's Birth Date")
 
-    birth_date = label("Patient's Birth Date")
-    sex = label("Patient's Sex")
-    age = label("Patient's Age")
-    manufacturer_model = label("Manufacturer's Model Name")
-    manufacturer = label('Manufacturer')
-    acquisition_date = label('Acquisition Date')
-    site = label('Site')
+    @field
+    def sex(self, i):
+        return self._label(i, "Patient's Sex")
 
-    @lru_cache(None)
-    def _id2split(_base):
-        id2split = {}
+    @field
+    def age(self, i):
+        return self._label(i, "Patient's Age")
 
-        with ZipFile(_base / ARCHIVE_NAME_SEG) as zf:
+    @field
+    def manufacturer_model(self, i):
+        return self._label(i, "Manufacturer's Model Name")
+
+    @field
+    def manufacturer(self, i):
+        return self._label(i, 'Manufacturer')
+
+    @field
+    def acquisition_date(self, i):
+        return self._label(i, 'Acquisition Date')
+
+    @field
+    def site(self, i):
+        return self._label(i, 'Site')
+
+    @cached_property
+    @composed(dict)
+    def _id2split(self):
+        with ZipFile(self.root / ARCHIVE_NAME_SEG) as zf:
             for x in zf.namelist():
                 if (len(x.strip('/').split('/')) == 3) and x.endswith('.nii.gz'):
                     file, split = x.split('/')[-1], x.split('/')[-2][-2:]
                     id_ = file.split('.')[0].split('_')[-1]
 
-                    id2split[id_] = split
+                    yield id_, split
 
-        return id2split
-
-    def _ids_unlabelled(_base):
-        ids_unlabelled = []
+    @cached_property
+    @collect
+    def _ids_unlabelled(self):
         for archive in [
             'amos22_unlabeled_ct_5000_5399.zip',
             'amos22_unlabeled_ct_5400_5899.zip',
             'amos22_unlabeled_ct_5900_6199.zip',
             'amos22_unlabeled_ct_6200_6899.zip',
         ]:
-            with ZipFile(_base / archive) as zf:
+            with ZipFile(self.root / archive) as zf:
                 for x in zf.namelist():
                     if x.endswith('.nii.gz'):
                         file = x.split('/')[-1]
                         id_ = file.split('.')[0].split('_')[-1]
-                        ids_unlabelled.append(id_)
-        return ids_unlabelled
+                        yield id_
 
-    @lru_cache(None)
-    def _meta(_base):
+    @cached_property
+    def _meta(self):
         files = [
             'labeled_data_meta_0000_0599.csv',
             'unlabeled_data_meta_5400_5899.csv',
@@ -175,11 +197,12 @@ class AMOSBase(Source):
 
         dfs = []
         for file in files:
-            with unpack(_base, file) as (unpacked, _):
+            with unpack(self.root, file) as (unpacked, _):
                 dfs.append(pd.read_csv(unpacked))
         return pd.concat(dfs)
 
-    def _archive_name(i):
+    @staticmethod
+    def _archive_name(self, i):
         if 5000 <= int(i) < 5400:
             return 'amos22_unlabeled_ct_5000_5399.zip', 'amos_unlabeled_ct_5000_5399'
         elif 5400 <= int(i) < 5900:
@@ -189,24 +212,11 @@ class AMOSBase(Source):
         else:
             return 'amos22_unlabeled_ct_6200_6899.zip', 'amos22_unlabeled_6200_6899'
 
+    def _label(self, i, column):
+        # ambiguous data in meta
+        if int(i) in [500, 600]:
+            return None
+        elif int(i) not in self._meta['amos_id']:
+            return None
 
-class SpacingFromAffine(Transform):
-    __inherit__ = True
-
-    def spacing(affine):
-        return nibabel.affines.voxel_sizes(affine)
-
-
-AMOS = normalize(
-    AMOSBase,
-    'AMOS',
-    'amos',
-    body_region='Abdomen',
-    license=licenses.CC_BY_40,
-    link='https://zenodo.org/record/7262581',
-    modality=('CT', 'MRI'),
-    raw_data_size='23G',  # TODO: update size with unlabelled
-    prep_data_size='89,5G',
-    task='Supervised multi-modality abdominal multi-organ segmentation',
-    normalizers=[SpacingFromAffine()],
-)
+        return self._meta[self._meta['amos_id'] == int(i)][column].item()

@@ -1,5 +1,13 @@
+import nibabel
 import numpy as np
 from connectome import Output, Transform
+
+
+class SpacingFromAffine(Transform):
+    __inherit__ = True
+
+    def spacing(affine):
+        return nibabel.affines.voxel_sizes(affine)
 
 
 class ParseAffineMatrix(Transform):

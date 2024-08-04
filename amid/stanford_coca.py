@@ -4,13 +4,12 @@ from ast import literal_eval
 from enum import IntEnum
 from functools import lru_cache
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 import numpy as np
 import pandas as pd
 import pydicom
-from connectome import Source, Transform, meta
-from connectome.interface.nodes import Silent
+from connectome import Transform
 from dicom_csv import (
     drop_duplicated_instances,
     drop_duplicated_slices,
@@ -23,7 +22,7 @@ from dicom_csv import (
 )
 from skimage.draw import polygon
 
-from .internals import licenses, normalize
+from .internals import Dataset, field, licenses, register
 
 
 class CoCaClasses(IntEnum):
@@ -47,7 +46,16 @@ class Calcification(NamedTuple):
     total: int
 
 
-class StanfordCoCaBase(Source):
+@register(
+    body_region=('Coronary', 'Chest'),
+    license=licenses.StanfordDSResearch,
+    link='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',
+    modality='CT',
+    prep_data_size=None,  # TODO: should be measured...
+    raw_data_size='28G',
+    task='Coronary Calcium Segmentation',
+)
+class StanfordCoCa(Dataset):
     """
     A Stanford AIMI's Co(ronary) Ca(lcium) dataset.
 
@@ -57,8 +65,7 @@ class StanfordCoCaBase(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -93,42 +100,45 @@ class StanfordCoCaBase(Source):
 
     """
 
-    _root: str = None
-
-    def _split(i):
+    def _split(self, i):
         return i.split('-')[0]
 
-    def _i(i):
+    def _identifier(self, i):
         return i.split('-')[1]
 
-    def _folder_with_images(_split):
-        if _split == 'gated':
+    def _folder_with_images(self, i):
+        split = self._split(i)
+        if split == 'gated':
             return Path('Gated_release_final') / 'patient'
-        if _split == 'nongated':
+        if split == 'nongated':
             return 'deidentified_nongated'
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
-    def _folder_with_annotations(_split):
-        if _split == 'gated':
+    def _folder_with_annotations(self, i):
+        split = self._split(i)
+        if split == 'gated':
             return Path('Gated_release_final') / 'calcium_xml'
-        if _split == 'nongated':
+        if split == 'nongated':
             return None
         raise ValueError("Unknown split. Use 'gated' or 'nongated' options.")
 
-    @meta
-    def ids(_root: Silent):
+    @property
+    def ids(self):
         gated_ids = tuple(
-            sorted('gated-' + x.name for x in (Path(_root) / 'Gated_release_final' / 'patient').iterdir() if x.is_dir())
+            sorted('gated-' + x.name for x in (self.root / 'Gated_release_final' / 'patient').iterdir() if x.is_dir())
         )
         nongated_ids = tuple(
-            sorted('nongated-' + x.name for x in (Path(_root) / 'deidentified_nongated').iterdir() if x.is_dir())
+            sorted('nongated-' + x.name for x in (self.root / 'deidentified_nongated').iterdir() if x.is_dir())
         )
 
         return gated_ids + nongated_ids
 
-    def _series(_i, _root: Silent, _folder_with_images):
-        folder_with_dicoms = Path(_root) / _folder_with_images / _i
+    def _series(self, i):
+        folder_with_dicoms = self.root / self._folder_with_images(i) / self._identifier(i)
         series = list(map(pydicom.dcmread, folder_with_dicoms.glob('*/*.dcm')))
+        if not series:
+            raise FileNotFoundError(f'No dicoms found at {folder_with_dicoms}')
+
         # series = sorted(series, key=lambda x: x.InstanceNumber)
         series = expand_volumetric(series)
         series = drop_duplicated_instances(series)
@@ -142,12 +152,13 @@ class StanfordCoCaBase(Source):
 
         return series
 
-    def image(i, _series):
-        image = stack_images(_series, -1).transpose((1, 0, 2)).astype(np.int16)
+    @field
+    def image(self, i) -> np.ndarray:
+        image = stack_images(self._series(i), -1).transpose((1, 0, 2)).astype(np.int16)
         return image
 
-    def _image_meta(_series):
-        metas = [list(dict(s).values()) for s in _series]
+    def _image_meta(self, i):
+        metas = [list(dict(s).values()) for s in self._series(i)]
         result = {}
         for meta_ in metas:
             for element in meta_:
@@ -161,45 +172,56 @@ class StanfordCoCaBase(Source):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
-    def series_uid(_image_meta):
-        return _image_meta.get('SeriesInstanceUID', None)
+    @field
+    def series_uid(self, i) -> str:
+        return self._image_meta(i).get('SeriesInstanceUID', None)
 
-    def study_uid(_image_meta):
-        return _image_meta.get('StudyInstanceUID', None)
+    @field
+    def study_uid(self, i) -> str:
+        return self._image_meta(i).get('StudyInstanceUID', None)
 
-    def pixel_spacing(_series):
-        return get_pixel_spacing(_series).tolist() if _series else None
+    @field
+    def pixel_spacing(self, i) -> Union[list, None]:
+        series = self._series(i)
+        return get_pixel_spacing(series).tolist() if series else None
 
-    def slice_locations(_series):
-        return get_slice_locations(_series) if _series else None
+    @field
+    def slice_locations(self, i) -> Union[list, None]:
+        series = self._series(i)
+        return get_slice_locations(series) if series else None
 
-    def orientation_matrix(_series):
-        return get_orientation_matrix(_series) if _series else None
+    @field
+    def orientation_matrix(self, i) -> Union[np.ndarray, None]:
+        series = self._series(i)
+        return get_orientation_matrix(series) if series else None
 
-    def _raw_annotations(_i, _root: Silent, _folder_with_annotations):
+    def _raw_annotations(self, i):
         """Annotation as it is in xml"""
-        if _folder_with_annotations is None:
+        folder = self._folder_with_annotations(i)
+        if folder is None:
             warnings.warn("The used split doesn't contain segmentation masks.")
             return None
 
         try:
-            with open(Path(_root) / _folder_with_annotations / f'{_i}.xml', 'rb') as fp:
+            with open(self.root / folder / f'{self._identifier(i)}.xml', 'rb') as fp:
                 annotation = plistlib.load(fp)
                 image_annotations = annotation['Images']
 
         except FileNotFoundError:
-            warnings.warn(f'Missing annotation for id: {_i}')
+            warnings.warn(f'Missing annotation for id: {i}')
             return None
 
         return image_annotations
 
-    def calcifications(_raw_annotations):
+    @field
+    def calcifications(self, i) -> Union[list, None]:
         """Returns list of Calcifications"""
-        if _raw_annotations is None:
+        raw_annotations = self._raw_annotations(i)
+        if raw_annotations is None:
             return None
 
         cacs = []
-        for slice_annotation in _raw_annotations:
+        for slice_annotation in raw_annotations:
             for roi in slice_annotation['ROIs']:
                 if roi['Area'] > 0:
                     contour_px = np.array([literal_eval(x) for x in roi['Point_px']])
@@ -215,36 +237,24 @@ class StanfordCoCaBase(Source):
         return cacs
 
     @lru_cache(None)
-    def _scores(_root: Silent, _folder_with_images):
-        p = Path(_root) / _folder_with_images / 'scores.xlsx'
+    def _scores(self, i):
+        p = self.root / self._folder_with_images(i) / 'scores.xlsx'
 
         if not p.exists():
             return None
 
         return pd.read_excel(p, index_col=0)
 
-    def score(_i, _scores):
-        if _scores is None:
+    @field
+    def score(self, i) -> Union[dict, None]:
+        scores = self._scores(i)
+        if scores is None:
             return None
         try:
-            return _scores.loc[_i + 'A'].to_dict()
+            return scores.loc[i + 'A'].to_dict()
         except KeyError:
-            warnings.warn(f'Missing scores for idx "{_i}"')
+            warnings.warn(f'Missing scores for idx "{i}"')
             return None
-
-
-StanfordCoCa = normalize(
-    StanfordCoCaBase,
-    'StanfordCoCa',
-    'stanford_coca',
-    body_region=('Coronary', 'Chest'),
-    license=licenses.StanfordDSResearch,
-    link='https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa',
-    modality='CT',
-    prep_data_size=None,  # TODO: should be measured...
-    raw_data_size='28G',
-    task='Coronary Calcium Segmentation',
-)
 
 
 class ContoursToMask(Transform):

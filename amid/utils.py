@@ -4,6 +4,7 @@ import functools
 import itertools
 import zipfile
 from gzip import GzipFile
+from os import PathLike
 from pathlib import Path
 from typing import List, Union
 
@@ -15,10 +16,11 @@ from pydicom import Dataset, dcmread
 
 
 Numeric = Union[float, int]
+PathOrStr = Union[str, PathLike]
 
 
 @contextlib.contextmanager
-def unpack(root: str, relative: str, archive_root_name: str = None, archive_ext: str = None):
+def unpack(root: PathOrStr, relative: str, archive_root_name: str = None, archive_ext: str = None):
     """Provides the absolute path to the file in both scenarios: inside archive or inside folder.
 
     Parameters

@@ -6,14 +6,20 @@ from zipfile import ZipFile
 
 import nibabel as nb
 import numpy as np
-from connectome import Output, Source, Transform, meta
-from connectome.interface.nodes import Silent
 
-from ..internals import licenses, normalize
-from ..utils import deprecate
+from ..internals import Dataset, licenses, register
 
 
-class CC359Base(Source):
+@register(
+    body_region='Head',
+    license=licenses.CC_BYND_40,
+    link='https://sites.google.com/view/calgary-campinas-dataset/home',
+    modality='MRI T1',
+    prep_data_size='14,66G',
+    raw_data_size='4,1G',
+    task='Segmentation',
+)
+class CC359(Dataset):
     """
     A (C)algary-(C)ampinas public brain MR dataset with (359) volumetric images [1]_.
 
@@ -25,8 +31,7 @@ class CC359Base(Source):
     root : str, Path, optional
         path to the folder containing the raw downloaded archives.
         If not provided, the cache is assumed to be already populated.
-    version : str, optional
-        the data version. Only has effect if the library was installed from a cloned git repository.
+
 
     Notes
     -----
@@ -74,12 +79,10 @@ class CC359Base(Source):
 
     """
 
-    _root: str = None
-
-    @meta
-    def ids(_root):
+    @property
+    def ids(self):
         result = set()
-        with ZipFile(Path(_root) / 'Original.zip') as zf:
+        with ZipFile(self.root / 'Original.zip') as zf:
             for zipinfo in zf.infolist():
                 if zipinfo.is_dir():
                     continue
@@ -90,75 +93,56 @@ class CC359Base(Source):
 
         return tuple(sorted(result))
 
-    def _image_file(i, _root: Silent):
-        return get_zipfile(i, 'Original.zip', _root)
+    def _image_file(self, i):
+        return get_zipfile(i, 'Original.zip', self.root)
 
-    def vendor(_image_file):
-        return zipfile2meta(_image_file)['vendor']
+    def vendor(self, i):
+        return zipfile2meta(self._image_file(i))['vendor']
 
-    def field(_image_file):
-        return zipfile2meta(_image_file)['field']
+    def field(self, i):
+        return zipfile2meta(self._image_file(i))['field']
 
-    def age(_image_file):
-        return zipfile2meta(_image_file)['age']
+    def age(self, i):
+        return zipfile2meta(self._image_file(i))['age']
 
-    def sex(_image_file):
-        return zipfile2meta(_image_file)['gender']
+    def sex(self, i):
+        return zipfile2meta(self._image_file(i))['gender']
 
-    def image(_image_file):
-        with open_nii_gz_file(_image_file) as nii_image:
+    def image(self, i):
+        with open_nii_gz_file(self._image_file(i)) as nii_image:
             return np.asarray(nii_image.dataobj)
 
-    def affine(_image_file):
+    def affine(self, i):
         """The 4x4 matrix that gives the image's spatial orientation."""
-        with open_nii_gz_file(_image_file) as nii_image:
+        with open_nii_gz_file(self._image_file(i)) as nii_image:
             return nii_image.affine
 
-    @deprecate(message='Use `spacing` method instead.')
-    def voxel_spacing(spacing: Output):
-        return spacing
-
-    def spacing(_image_file):
+    def spacing(self, i):
         """Returns voxel spacing along axes (x, y, z)."""
-        with open_nii_gz_file(_image_file) as nii_image:
+        with open_nii_gz_file(self._image_file(i)) as nii_image:
             return tuple(nii_image.header['pixdim'][1:4])
 
     # masks:
 
-    def brain(i, _root: Silent):
-        zf = get_zipfile(i, 'Silver-standard-machine-learning.zip', _root)
+    def brain(self, i):
+        zf = get_zipfile(i, 'Silver-standard-machine-learning.zip', self.root)
         with open_nii_gz_file(zf) as nii_image:
             return np.uint8(nii_image.get_fdata())
 
-    def hippocampus(i, _root: Silent):
+    def hippocampus(self, i):
         try:
-            zf = get_zipfile(i, 'hippocampus_staple.zip', _root)
+            zf = get_zipfile(i, 'hippocampus_staple.zip', self.root)
         except KeyError:
             return None
 
         with open_nii_gz_file(zf) as nii_image:
             return np.uint8(nii_image.get_fdata())
 
-    def wm_gm_csf(i, _root: Silent):
-        for file in (Path(_root) / 'WM-GM-CSF').glob('*'):
+    def wm_gm_csf(self, i):
+        for file in (self.root / 'WM-GM-CSF').glob('*'):
             if file.name.startswith(i):
                 with open_nii_gz_file(file) as nii_image:
                     return np.uint8(nii_image.get_fdata())
-
-
-CC359 = normalize(
-    CC359Base,
-    'CC359',
-    'cc359',
-    body_region='Head',
-    license=licenses.CC_BYND_40,
-    link='https://sites.google.com/view/calgary-campinas-dataset/home',
-    modality='MRI T1',
-    prep_data_size='14,66G',
-    raw_data_size='4,1G',
-    task='Segmentation',
-    normalizers=[Transform(__inherit__=True, gender=lambda sex: sex)],
-)
 
 
 # TODO: sync with amid.utils
