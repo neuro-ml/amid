@@ -152,8 +152,8 @@ class NSCLC(Dataset):
         return study_ids[0]
 
     def spacing(self, i):
-        pixel_spacing = get_pixel_spacing(self, i).tolist()
-        slice_locations = get_slice_locations(self, i)
+        pixel_spacing = get_pixel_spacing(self._series(i)).tolist()
+        slice_locations = get_slice_locations(self._series(i))
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
         spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return spacing
@@ -202,10 +202,10 @@ class NSCLC(Dataset):
         dicom_pathes = list((annotation_path / found_markup['SeriesUID']).glob('*'))
         assert len(dicom_pathes) == 1, annotation_path
         cancer_dicom = pydicom.dcmread(dicom_pathes[0])
-        assert np.allclose(get_orientation_matrix(self, i), get_cancer_orientation_matrix(cancer_dicom)), i
+        assert np.allclose(get_orientation_matrix(self._series(i)), get_cancer_orientation_matrix(cancer_dicom)), i
         mask = np.moveaxis(cancer_dicom.pixel_array, 0, -1).astype(bool).transpose(1, 0, 2)
         mask_slice_locations = get_mask_slice_locations(cancer_dicom)
-        slice_locations = get_slice_locations(self, i)
+        slice_locations = get_slice_locations(self._series(i))
         image = stack_images(self._series(i), -1).transpose(1, 0, 2)
         segments = [x.SegmentDescription for x in cancer_dicom.SegmentSequence]
         assert len(mask_slice_locations) == len(slice_locations) * len(segments), i
