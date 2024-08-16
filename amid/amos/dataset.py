@@ -202,12 +202,13 @@ class AMOS(Dataset):
         return pd.concat(dfs)
 
     @staticmethod
-    def _archive_name(self, i):
-        if 5000 <= int(i) < 5400:
+    def _archive_name(i):
+        i = int(i)
+        if 5000 <= i < 5400:
             return 'amos22_unlabeled_ct_5000_5399.zip', 'amos_unlabeled_ct_5000_5399'
-        elif 5400 <= int(i) < 5900:
+        elif 5400 <= i < 5900:
             return 'amos22_unlabeled_ct_5400_5899.zip', 'amos_unlabeled_ct_5400_5899'
-        elif 5900 <= int(i) < 6200:
+        elif 5900 <= i < 6200:
             return 'amos22_unlabeled_ct_5900_6199.zip', 'amos22_unlabeled_ct_5900_6199'
         else:
             return 'amos22_unlabeled_ct_6200_6899.zip', 'amos22_unlabeled_6200_6899'
