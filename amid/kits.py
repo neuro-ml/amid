@@ -34,7 +34,7 @@ class KiTS23(Dataset):
 
     def __init__(self, root: PathOrStr):
         super().__init__(root)
-        if not (self.root / 'dataset').exists():
+        if not (self.root / "dataset").exists():
             raise FileNotFoundError(f"Dataset not found in {self.root}")
 
     @property
