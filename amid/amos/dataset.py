@@ -4,7 +4,7 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 import pandas as pd
-from jboc import collect, composed
+from jboc import composed
 
 from ..internals import Dataset, field, licenses, register
 from ..utils import open_nii_gz_file, unpack
@@ -62,9 +62,26 @@ class AMOS(Dataset):
 
     @property
     def ids(self):
-        labelled = sorted(self._id2split)
-        unlabelled = sorted(self._ids_unlabelled)
-        return labelled + unlabelled
+        ids = list(self._id2split)
+
+        for archive in [
+            'amos22_unlabeled_ct_5000_5399.zip',
+            'amos22_unlabeled_ct_5400_5899.zip',
+            'amos22_unlabeled_ct_5900_6199.zip',
+            'amos22_unlabeled_ct_6200_6899.zip',
+        ]:
+            file = self.root / archive
+            if not file.exists():
+                continue
+
+            with ZipFile(file) as zf:
+                for x in zf.namelist():
+                    if x.endswith('.nii.gz'):
+                        file = x.split('/')[-1]
+
+                        ids.append(file.split('.')[0].split('_')[-1])
+
+        return sorted(ids)
 
     @field
     def image(self, i):
@@ -72,14 +89,7 @@ class AMOS(Dataset):
         if i in ERRORS:
             return None  # this image is damaged in the archive
 
-        archive_name, archive_root = self._archive_name(i)
-        if i in self._id2split:
-            archive_name = ARCHIVE_NAME_SEG
-            archive_root = ARCHIVE_ROOT_NAME
-            file = f'images{self._id2split[i]}/amos_{i}.nii.gz'
-        else:
-            file = f'amos_{i}.nii.gz'
-
+        archive_name, archive_root, file = self._archive_name(i)
         with unpack(self.root / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return np.asarray(nibabel.load(unpacked).dataobj)
@@ -92,14 +102,8 @@ class AMOS(Dataset):
         """The 4x4 matrix that gives the image's spatial orientation."""
         if i in ERRORS:
             return None  # this image is damaged in the archive
-        archive_name, archive_root = self._archive_name(i)
-        if i in self._id2split:
-            archive_name = ARCHIVE_NAME_SEG
-            archive_root = ARCHIVE_ROOT_NAME
-            file = f'images{self._id2split[i]}/amos_{i}.nii.gz'
-        else:
-            file = f'amos_{i}.nii.gz'
 
+        archive_name, archive_root, file = self._archive_name(i)
         with unpack(self.root / archive_name, file, archive_root, '.zip') as (unpacked, is_unpacked):
             if is_unpacked:
                 return nibabel.load(unpacked).affine
@@ -171,22 +175,6 @@ class AMOS(Dataset):
                     yield id_, split
 
     @cached_property
-    @collect
-    def _ids_unlabelled(self):
-        for archive in [
-            'amos22_unlabeled_ct_5000_5399.zip',
-            'amos22_unlabeled_ct_5400_5899.zip',
-            'amos22_unlabeled_ct_5900_6199.zip',
-            'amos22_unlabeled_ct_6200_6899.zip',
-        ]:
-            with ZipFile(self.root / archive) as zf:
-                for x in zf.namelist():
-                    if x.endswith('.nii.gz'):
-                        file = x.split('/')[-1]
-                        id_ = file.split('.')[0].split('_')[-1]
-                        yield id_
-
-    @cached_property
     def _meta(self):
         files = [
             'labeled_data_meta_0000_0599.csv',
@@ -201,17 +189,20 @@ class AMOS(Dataset):
                 dfs.append(pd.read_csv(unpacked))
         return pd.concat(dfs)
 
-    @staticmethod
-    def _archive_name(i):
+    def _archive_name(self, i):
+        if i in self._id2split:
+            return ARCHIVE_NAME_SEG, ARCHIVE_ROOT_NAME, f'images{self._id2split[i]}/amos_{i}.nii.gz'
+
         i = int(i)
+        file = f'amos_{i}.nii.gz'
         if 5000 <= i < 5400:
-            return 'amos22_unlabeled_ct_5000_5399.zip', 'amos_unlabeled_ct_5000_5399'
+            return 'amos22_unlabeled_ct_5000_5399.zip', 'amos_unlabeled_ct_5000_5399', file
         elif 5400 <= i < 5900:
-            return 'amos22_unlabeled_ct_5400_5899.zip', 'amos_unlabeled_ct_5400_5899'
+            return 'amos22_unlabeled_ct_5400_5899.zip', 'amos_unlabeled_ct_5400_5899', file
         elif 5900 <= i < 6200:
-            return 'amos22_unlabeled_ct_5900_6199.zip', 'amos22_unlabeled_ct_5900_6199'
+            return 'amos22_unlabeled_ct_5900_6199.zip', 'amos22_unlabeled_ct_5900_6199', file
         else:
-            return 'amos22_unlabeled_ct_6200_6899.zip', 'amos22_unlabeled_6200_6899'
+            return 'amos22_unlabeled_ct_6200_6899.zip', 'amos22_unlabeled_6200_6899', file
 
     def _label(self, i, column):
         # ambiguous data in meta

@@ -5,5 +5,3 @@ __pycache__/
 .coverage
 docs/build/
 docs/source/_*/
-docs/datasets.md
-docs/datasets-api.md

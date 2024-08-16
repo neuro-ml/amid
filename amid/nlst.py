@@ -1,5 +1,4 @@
-import json
-
+import deli
 import numpy as np
 import pydicom
 from dicom_csv import (
@@ -67,10 +66,8 @@ class NLST(Dataset):
         ids = []
         for path in tqdm(list(self.root.iterdir())):
             series_uid2num_slices = {
-                p.name[: -len('.json')]: int(_load_json(p)['Total'][5])
-                for p in path.glob('*/*/*')
-                if p.is_file()
-                if p.name.endswith('.json')
+                p.stem: int(deli.load(p)['Total'][5])
+                for p in path.glob('*/*/*.json')
             }
             ids.append(max(series_uid2num_slices, key=series_uid2num_slices.get))
 
@@ -133,8 +130,3 @@ class NLST(Dataset):
     @field
     def accession_number(self, i):
         return get_common_tag(self._series(i), 'AccessionNumber', default=None)
-
-
-def _load_json(file):
-    with open(file, 'r') as f:
-        return json.load(f)
