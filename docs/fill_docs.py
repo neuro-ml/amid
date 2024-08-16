@@ -21,10 +21,6 @@ with open(root / 'datasets-api.md', 'w') as file:
     file.write('# Datasets API\n\n')
     for name, (cls, module, description) in tqdm(list(gather_datasets().items())):
         file.write(f'::: {module}.{name}\n\n')
-        if name not in raw_data:
-            print(name)
-            continue
-
         if name in cache:
             count = cache[name]
         else:
