@@ -65,10 +65,7 @@ class NLST(Dataset):
     def ids(self):
         ids = []
         for path in tqdm(list(self.root.iterdir())):
-            series_uid2num_slices = {
-                p.stem: int(deli.load(p)['Total'][5])
-                for p in path.glob('*/*/*.json')
-            }
+            series_uid2num_slices = {p.stem: int(deli.load(p)['Total'][5]) for p in path.glob('*/*/*.json')}
             ids.append(max(series_uid2num_slices, key=series_uid2num_slices.get))
 
         return ids
