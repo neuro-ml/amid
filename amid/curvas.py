@@ -5,15 +5,15 @@ from zipfile import ZipFile
 import nibabel
 import numpy as np
 
-from .internals import Dataset, field, register
+from .internals import Dataset, field, licenses, register
 
 
 @register(
     body_region='Abdomen',
-    license=None,
+    license=licenses.CC_BY_40,
     link='https://zenodo.org/records/13767408',
     modality='CT',
-    # TODO: prep_data_size='G',
+    prep_data_size='30G',
     raw_data_size='30G',
     task='Abdominal organ pathologies segmentation',
 )
