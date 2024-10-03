@@ -47,7 +47,7 @@ def gather_datasets():
     return OrderedDict((k, _REGISTRY[k]) for k in sorted(_REGISTRY))
 
 
-def prepare_for_table(name, cls, module, description, version):
+def prepare_for_table(name, count, module, description, version):
     def stringify(x):
         if pd.isnull(x):
             return ''
@@ -57,7 +57,7 @@ def prepare_for_table(name, cls, module, description, version):
             return ', '.join(x)
         return x
 
-    entry = {'name': name, 'entries': len(cls().ids)}
+    entry = {'name': name, 'entries': count}
     entry.update({k: v for k, v in description._asdict().items() if not pd.isnull(v)})
     license_ = entry.get('license', None)
     if license_:

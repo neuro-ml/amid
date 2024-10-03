@@ -19,7 +19,7 @@ from dicom_csv import (
     stack_images,
 )
 
-from .internals import Dataset, licenses, register
+from .internals import Dataset, field, licenses, register
 
 
 @register(
@@ -115,11 +115,13 @@ class NSCLC(Dataset):
 
         return order_series(series, decreasing=False)
 
-    def image(self, i):
+    @field
+    def image(self, i) -> np.ndarray:
         image = stack_images(self._series(i), -1).astype(np.int16).transpose(1, 0, 2)
         return image
 
-    def image_meta(self, i):
+    @field
+    def image_meta(self, i) -> dict:
         metas = [list(dict(s).values()) for s in self._series(i)]
         result = {}
         for meta_ in metas:
@@ -134,10 +136,12 @@ class NSCLC(Dataset):
         result = {k: v[0] if len(v) == 1 else v for k, v in result.items()}
         return result
 
+    @field
     def sex(self, i) -> str:
         """Sex of the patient."""
         return self._sub(i)['PatientSex'].iloc[1]
 
+    @field
     def age(self, i) -> Union[int, None]:
         """Age of the patient, dataset contains 97 patients with unknown Age."""
         age = self._sub(i)['PatientAge'].iloc[1]
@@ -151,32 +155,40 @@ class NSCLC(Dataset):
         # series_id_to_study
         return study_ids[0]
 
-    def spacing(self, i):
-        pixel_spacing = get_pixel_spacing(self, i).tolist()
-        slice_locations = get_slice_locations(self, i)
+    @field
+    def spacing(self, i) -> np.ndarray:
+        pixel_spacing = get_pixel_spacing(self._series(i)).tolist()
+        slice_locations = get_slice_locations(self._series(i))
         diffs, counts = np.unique(np.round(np.diff(slice_locations), decimals=5), return_counts=True)
         spacing = np.float32([pixel_spacing[1], pixel_spacing[0], diffs[np.argsort(counts)[-1]]])
         return spacing
 
-    def mask(self, i):
+    @field
+    def mask(self, i) -> np.ndarray:
         return self._extract_segment_masks(i).get('GTV-1', None)
 
-    def lung_left(self, i):
+    @field
+    def lung_left(self, i) -> np.ndarray:
         return self._extract_segment_masks(i).get('Lung-Left', None)
 
-    def lung_right(self, i):
+    @field
+    def lung_right(self, i) -> np.ndarray:
         return self._extract_segment_masks(i).get('Lung-Right', None)
 
-    def lungs_total(self, i):
+    @field
+    def lungs_total(self, i) -> np.ndarray:
         return self._extract_segment_masks(i).get('Lungs-Total', None)
 
-    def heart(self, i):
+    @field
+    def heart(self, i) -> np.ndarray:
         return self._extract_segment_masks(i).get('Heart', None)
 
-    def esophagus(self, i):
+    @field
+    def esophagus(self, i) -> np.ndarray:
         return self._extract_segment_masks(i).get('Esophagus', None)
 
-    def spinal_cord(self, i):
+    @field
+    def spinal_cord(self, i) -> np.ndarray:
         return self._extract_segment_masks(i).get('Spinal-Cord', None)
 
     def _extract_segment_masks(self, i):
@@ -202,10 +214,10 @@ class NSCLC(Dataset):
         dicom_pathes = list((annotation_path / found_markup['SeriesUID']).glob('*'))
         assert len(dicom_pathes) == 1, annotation_path
         cancer_dicom = pydicom.dcmread(dicom_pathes[0])
-        assert np.allclose(get_orientation_matrix(self, i), get_cancer_orientation_matrix(cancer_dicom)), i
+        assert np.allclose(get_orientation_matrix(self._series(i)), get_cancer_orientation_matrix(cancer_dicom)), i
         mask = np.moveaxis(cancer_dicom.pixel_array, 0, -1).astype(bool).transpose(1, 0, 2)
         mask_slice_locations = get_mask_slice_locations(cancer_dicom)
-        slice_locations = get_slice_locations(self, i)
+        slice_locations = get_slice_locations(self._series(i))
         image = stack_images(self._series(i), -1).transpose(1, 0, 2)
         segments = [x.SegmentDescription for x in cancer_dicom.SegmentSequence]
         assert len(mask_slice_locations) == len(slice_locations) * len(segments), i

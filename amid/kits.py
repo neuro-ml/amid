@@ -2,6 +2,7 @@ import nibabel as nb
 import numpy as np
 
 from .internals import Dataset, field, register
+from .utils import PathOrStr
 
 
 @register(
@@ -30,6 +31,11 @@ class KiTS23(Dataset):
         Absolute path to the root containing the downloaded archive and meta.
         If not provided, the cache is assumed to be already populated.
     """
+
+    def __init__(self, root: PathOrStr):
+        super().__init__(root)
+        if not (self.root / "dataset").exists():
+            raise FileNotFoundError(f"Dataset not found in {self.root}")
 
     @property
     def ids(self):
