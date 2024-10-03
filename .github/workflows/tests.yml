@@ -49,19 +49,19 @@ jobs:
           # pytest tests -m "not raw" --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
           # for now we only test that everything is importable
           python -c "from $MODULE_NAME import *"
-      - name: Generate coverage report
-        if: "! github.event.pull_request.head.repo.fork "
-        run: |
-          coverage xml -o reports/coverage-${{ matrix.python-version }}.xml
-          sed -i -e "s|$MODULE_PARENT/||g" reports/coverage-${{ matrix.python-version }}.xml
-          sed -i -e "s|$(echo $MODULE_PARENT/ | tr "/" .)||g" reports/coverage-${{ matrix.python-version }}.xml
-
-      - name: Upload artifacts
-        if: "! github.event.pull_request.head.repo.fork "
-        uses: actions/upload-artifact@v3
-        with:
-          name: reports-${{ matrix.python-version }}
-          path: reports/*-${{ matrix.python-version }}.xml
+#      - name: Generate coverage report
+#        if: "! github.event.pull_request.head.repo.fork "
+#        run: |
+#          coverage xml -o reports/coverage-${{ matrix.python-version }}.xml
+#          sed -i -e "s|$MODULE_PARENT/||g" reports/coverage-${{ matrix.python-version }}.xml
+#          sed -i -e "s|$(echo $MODULE_PARENT/ | tr "/" .)||g" reports/coverage-${{ matrix.python-version }}.xml
+#
+#      - name: Upload artifacts
+#        if: "! github.event.pull_request.head.repo.fork "
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: reports-${{ matrix.python-version }}
+#          path: reports/*-${{ matrix.python-version }}.xml
 
 # TODO: coverage is not informative in the CI anyway
 #      - name: Upload coverage results
