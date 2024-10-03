@@ -33,7 +33,7 @@ class CURVAS(Dataset):
     -----
     Download link: https://zenodo.org/records/13767408
 
-    The `root` folder should contain the three downloaded .zip archives, namely: 
+    The `root` folder should contain the three downloaded .zip archives, namely:
     `training_set.zip`, `validation_set.zip` and `testing_set.zip`.
 
     Examples
@@ -68,11 +68,9 @@ class CURVAS(Dataset):
         uid, split = i.split('-')
 
         archive = self.root / f'{split}_set.zip'
-        with ZipFile(archive) as zf:
-            file = f'{split}_set/{uid}/{obj}.nii.gz'
-            return zipfile.Path(archive, file)
+        file = f'{split}_set/{uid}/{obj}.nii.gz'
 
-        raise ValueError(f'Id "{i}" not found')
+        return zipfile.Path(archive, file)
 
     @field
     def image(self, i) -> np.ndarray:
