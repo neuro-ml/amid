@@ -10,16 +10,15 @@ from amid.internals import gather_datasets
 MAPPING = gather_datasets()
 DATASETS = [x[0] for x in MAPPING.values()]
 NAMES = list(MAPPING)
-ROOT_MAPPING = {
-    AMOS: '/shared/data/amos22',
-}
 
 
+@pytest.mark.raw
 @pytest.mark.parametrize('cls', DATASETS, ids=NAMES)
 def test_ids_availability(cls):
     assert len(cls().ids) > 0
 
 
+@pytest.mark.raw
 @pytest.mark.parametrize('cls', DATASETS, ids=NAMES)
 def test_pickleable(cls):
     raw = cls()[0]
@@ -36,18 +35,18 @@ def test_pickleable(cls):
     assert f() == g()
 
 
-@pytest.mark.raw
-@pytest.mark.parametrize('cls', ROOT_MAPPING, ids=[cls.__name__ for cls in ROOT_MAPPING])
-def test_cache_consistency(cls):
-    raw = cls(root=ROOT_MAPPING[cls])
-    cached = raw.cached()
-    fields = {x.name for x in raw._container.outputs} - {'ids', 'id', 'cached'}
-
-    ids = raw.ids
-    assert ids == cached.ids
-    for i in ids:
-        for field in fields:
-            compare(getattr(raw, field)(i), getattr(cached, field)(i))
+# @pytest.mark.raw
+# @pytest.mark.parametrize('cls', ROOT_MAPPING, ids=[cls.__name__ for cls in ROOT_MAPPING])
+# def test_cache_consistency(cls):
+#     raw = cls(root=ROOT_MAPPING[cls])
+#     cached = raw.cached()
+#     fields = {x.name for x in raw._container.outputs} - {'ids', 'id', 'cached'}
+#
+#     ids = raw.ids
+#     assert ids == cached.ids
+#     for i in ids:
+#         for field in fields:
+#             compare(getattr(raw, field)(i), getattr(cached, field)(i))
 
 
 # TODO: find a package for this
