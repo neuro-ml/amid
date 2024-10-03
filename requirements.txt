@@ -1,4 +1,4 @@
-connectome>=0.9.0,<1.0.0
+connectome>=0.10.0,<1.0.0
 numpy
 nibabel
 more-itertools

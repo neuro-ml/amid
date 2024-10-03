@@ -22,38 +22,6 @@ jobs:
           pip install -e .
           pip install -r docs/requirements.txt
 
-      - name: Create the storage
-        if: "! github.event.pull_request.head.repo.fork "
-        env:
-          CACHE_HOST: ${{ secrets.CACHE_HOST }}
-          CACHE_HOST_KEY: ${{ secrets.CACHE_HOST_KEY }}
-          CACHE_HOST_USER: ${{ secrets.CACHE_HOST_USER }}
-        run: |
-          mkdir -p ~/.config/amid ~/.ssh
-          cat >~/.config/amid/.bev.yml <<EOL
-          local:
-            storage: '/home/runner/work/amid/amid/storage'
-            cache: '/home/runner/work/amid/amid/cache'
-          
-          remote:
-            storage:
-              remote: 
-                sftp: 'amid:bucket'
-          
-          meta:
-            fallback: local
-          EOL
-          amid init
-          cat >~/.ssh/config <<EOL
-          Host amid
-            HostName $CACHE_HOST
-            User $CACHE_HOST_USER
-            IdentityFile ~/.ssh/amid
-          EOL
-          echo "$CACHE_HOST_KEY" > ~/.ssh/amid
-          chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/amid
-
       # release
       - id: get_version
         if: github.event_name == 'release'
@@ -63,16 +31,13 @@ jobs:
       - name: Deploy the docs
         if: github.event_name == 'release'
         run: |
-          cd docs
-          VERSION=${{ steps.get_version.outputs.version-without-v }} python fill_docs.py
-          cd ..
           PYTHONPATH=$PYTHONPATH:./docs mike deploy ${{ steps.get_version.outputs.version-without-v }} latest --push --update-aliases
 
       # dev
-      - name: Deploy the docs
-        if: ${{ github.ref == 'refs/heads/dev' }}
-        run: |
-          cd docs
-          VERSION=dev python fill_docs.py
-          cd ..
-          PYTHONPATH=$PYTHONPATH:./docs mike deploy dev --push
+#      - name: Deploy the docs
+#        if: ${{ github.ref == 'refs/heads/dev' }}
+#        run: |
+#          cd docs
+#          VERSION=dev python fill_docs.py
+#          cd ..
+#          PYTHONPATH=$PYTHONPATH:./docs mike deploy dev --push
