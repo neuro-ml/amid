@@ -58,11 +58,13 @@ class CURVAS(Dataset):
                 ids = [f'{x.split("/")[1]}-{split}' for x in namelist]
                 return ids
 
-        return sorted([
-            *_extract('training'),    # 20 Training   cases
-            *_extract('validation'),  # 5  Validation cases
-            *_extract('testing'),     # 65 Testing    cases
-        ])
+        return sorted(
+            [
+                *_extract('training'),  # 20 Training   cases
+                *_extract('validation'),  # 5  Validation cases
+                *_extract('testing'),  # 65 Testing    cases
+            ]
+        )
 
     def _file(self, i, obj):
         uid, split = i.split('-')
