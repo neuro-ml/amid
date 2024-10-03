@@ -48,6 +48,7 @@ jobs:
         run: |
           # pytest tests -m "not raw" --junitxml=reports/junit-${{ matrix.python-version }}.xml --cov="$MODULE_PARENT/$MODULE_NAME" --cov-report=xml --cov-branch
           # for now we only test that everything is importable
+          pip install setuptools # needed for pylidc to work
           python -c "from $MODULE_NAME import *"
 #      - name: Generate coverage report
 #        if: "! github.event.pull_request.head.repo.fork "
