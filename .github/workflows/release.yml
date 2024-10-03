@@ -30,7 +30,8 @@ jobs:
           echo $MATCH
           if [ "$GITHUB_BASE_REF" = "master" ] && [ "$MATCH" != "" ]; then echo "Version $VERSION already present" && exit 1; fi
           if [ "$VERSION" != "$RELEASE" ]; then echo "$VERSION vs $RELEASE" && exit 1; fi
-          python setup.py sdist
+          pip install build
+          python -m build --sdist
 
       - name: Publish to PyPi
         uses: pypa/gh-action-pypi-publish@master

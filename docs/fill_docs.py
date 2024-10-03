@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import deli
@@ -12,8 +11,9 @@ from amid.internals.registry import gather_datasets, prepare_for_table
 # version = os.environ.get('VERSION')
 # if not version:
 #     raise RuntimeError('Please define the "VERSION" env variable')
-raw_data = deli.load(os.environ.get('RAW_DATA'))
-cache = deli.load('cache.json')
+raw_data = deli.load('/shared/amid/raw.json')
+cache_path = '/shared/amid/cache.json'
+cache = deli.load(cache_path)
 
 records = []
 root = Path(__file__).resolve().parent
@@ -26,7 +26,7 @@ with open(root / 'datasets-api.md', 'w') as file:
         else:
             count = len(cls(root=raw_data[name]).ids)
             cache[name] = count
-            deli.save(cache, 'cache.json')
+            deli.save(cache, cache_path)
 
         records.append(prepare_for_table(name, count, module, description, version))
 

@@ -1,4 +1,3 @@
-import os
 import re
 from pathlib import Path
 
@@ -15,8 +14,9 @@ with open(file, 'r') as fd:
 
 start = re.search(r'# Available datasets', content).end()
 stop = re.search(r'Check out \[our docs\]', content).start()
-raw_data = deli.load(os.environ.get('RAW_DATA'))
-cache = deli.load('cache.json')
+raw_data = deli.load('/shared/amid/raw.json')
+cache_path = '/shared/amid/cache.json'
+cache = deli.load(cache_path)
 
 records = []
 for name, (cls, module, description) in tqdm(list(gather_datasets().items())):  # noqa
@@ -25,7 +25,7 @@ for name, (cls, module, description) in tqdm(list(gather_datasets().items())):  
     else:
         count = len(cls(root=raw_data[name]).ids)
         cache[name] = count
-        deli.save(cache, 'cache.json')
+        deli.save(cache, cache_path)
     records.append(prepare_for_table(name, count, module, description, 'latest'))
 
 table = pd.DataFrame.from_records(records).fillna('')
