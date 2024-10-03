@@ -3,7 +3,6 @@ import pickle
 import numpy as np
 import pytest
 
-from amid import AMOS
 from amid.internals import gather_datasets
 
 
