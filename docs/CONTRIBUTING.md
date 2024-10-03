@@ -101,25 +101,9 @@ id_ = dataset.ids[0]
 print(dataset.image(id_).shape)
 ```
 
-6\. Populate the dataset:
-
-```shell
-amid populate LiTS /shared/data/LiTS
-```
-
-!!! tip 
-    Use the option `--n-jobs` to speed up the process.
-
-!!! tip
-    Use the option `--help` for a more detailed information on this command.
-
-7\. If there is no error, the file `amid/data/lits.hash` will appear (the name depends on `short_name` given to `normalize`).
-
-8\. Check the codestyle using the `lint.sh` script in the repository's root and make changes if flake8 is not happy:
+6\. Check the codestyle using the `lint.sh` script in the repository's root and make changes if flake8 is not happy:
 
 ```shell
 pip install -r lint-requirements.txt # only for the first time
 ./lint.sh
 ```
-
-9\. Commit all the files you added, including the `*.hash` one.
