@@ -10,8 +10,8 @@ from .cl_detection import CLDetection2023
 from .covid_1110 import MoscowCovid1110
 from .crlm import CRLM
 from .crossmoda import CrossMoDA
-from .curvas import CURVAS
 from .ct_ich import CT_ICH
+from .curvas import CURVAS
 from .deeplesion import DeepLesion
 from .egd import EGD
 from .flare2022 import FLARE2022
