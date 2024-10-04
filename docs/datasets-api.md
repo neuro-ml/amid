@@ -14,6 +14,8 @@
 
 ::: amid.ct_ich.CT_ICH
 
+::: amid.curvas.CURVAS
+
 ::: amid.crossmoda.CrossMoDA
 
 ::: amid.deeplesion.DeepLesion
