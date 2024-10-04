@@ -1,5 +1,6 @@
 import gzip
 import zipfile
+from typing import Dict
 from zipfile import ZipFile
 
 import nibabel
@@ -80,7 +81,7 @@ class CURVAS(Dataset):
             with gzip.GzipFile(fileobj=opened) as nii:
                 nii = nibabel.FileHolder(fileobj=nii)
                 image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
-                return np.asarray(image.dataobj)
+                return np.asarray(image.dataobj).astype(np.int16)
 
     @field
     def affine(self, i) -> np.ndarray:
@@ -92,7 +93,7 @@ class CURVAS(Dataset):
                 return image.affine
 
     @field
-    def masks(self, i) -> dict:
+    def masks(self, i) -> Dict[str, np.ndarray]:
         masks = {}
         for x in range(1, 4):
             with self._file(i, f'annotation_{x}').open('rb') as opened:
@@ -100,6 +101,6 @@ class CURVAS(Dataset):
                     nii = nibabel.FileHolder(fileobj=nii)
                     image = nibabel.Nifti1Image.from_file_map({'header': nii, 'image': nii})
 
-                    masks[f'annotation_{x}'] = np.asarray(image.dataobj)
+                    masks[f'annotation_{x}'] = np.asarray(image.dataobj).astype(np.uint8)
 
         return masks
