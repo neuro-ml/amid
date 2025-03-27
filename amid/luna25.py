@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from functools import cached_property
 from typing import Dict, NamedTuple, Sequence
 
@@ -89,11 +89,11 @@ class LUNA25(Dataset):
 
     @field
     def patient_id(self, i):
-        return self._data_column_value(i, 'PatientID')
+        return str(self._data_column_value(i, 'PatientID'))
 
     @field
     def study_date(self, i):
-        study_date = self._data_column_value(i, 'StudyDate')
+        study_date = str(self._data_column_value(i, 'StudyDate'))
         return datetime.strptime(study_date, "%Y%m%d").date()
 
     @field
@@ -113,14 +113,20 @@ class LUNA25(Dataset):
             assert np.all(nodule_block_metadata['spacing'] == self.spacing(i))
             center_voxel = (coords[::-1] - self.origin(i)) / self.spacing(i)
             bbox_start_point = (nodule_block_metadata['origin'] - self.origin(i)) / self.spacing(i)
+            if np.any(center_voxel < 0) or np.any(bbox_start_point < 0):
+                center_voxel = None
+                bbox=None
+            else:
+                center_voxel = np.round(center_voxel)
+                bbox = limit_box([bbox_start_point, bbox_start_point + np.array([64, 128, 128])], self.image(i).shape)
             yield LUNA25Nodule(
                 coords=coords,
                 lesion_id=row.LesionID,
-                annotation_id=row.AnnotationID,
-                nodule_id=row.NoduleID,
+                annotation_id=str(row.AnnotationID),
+                nodule_id=str(row.NoduleID),
                 malignancy=row.label,
-                center_voxel=np.round(center_voxel),
-                bbox=limit_box([bbox_start_point, bbox_start_point + np.array([64, 128, 128])], self.image(i).shape),
+                center_voxel=center_voxel,
+                bbox=bbox,
             )
 
     def nodule_block_image(self, annotation_id):
