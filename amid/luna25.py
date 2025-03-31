@@ -69,9 +69,11 @@ class LUNA25(Dataset):
     def spacing(self, i):
         return self._image(i).GetSpacing()[::-1]
 
-    @field
-    def origin(self, i):
+    def _image_origin(self, i):
         return self._image(i).GetOrigin()[::-1]
+
+    def _direction(self, i):
+        return self._image(i).GetDirection()[::-1]
 
     @cached_property
     def _data(self):
@@ -111,22 +113,19 @@ class LUNA25(Dataset):
             coords = np.array([row.CoordX, row.CoordY, row.CoordZ])
             nodule_block_metadata = self.nodule_block_metadata(row.AnnotationID)
             assert np.all(nodule_block_metadata['spacing'] == self.spacing(i))
-            center_voxel = (coords[::-1] - self.origin(i)) / self.spacing(i)
-            bbox_start_point = (nodule_block_metadata['origin'] - self.origin(i)) / self.spacing(i)
-            if np.any(center_voxel < 0) or np.any(bbox_start_point < 0):
-                center_voxel = None
-                bbox=None
-            else:
-                center_voxel = np.round(center_voxel)
-                bbox = limit_box([bbox_start_point, bbox_start_point + np.array([64, 128, 128])], self.image(i).shape)
+            image_origin = self._image_origin(i)
+            direction = np.array(self._direction(i)[::4])
+            center_voxel = ((coords[::-1] - image_origin) / self.spacing(i)) * direction
+            bbox_start_point = ((nodule_block_metadata['origin'] - image_origin) / self.spacing(i)) * direction
+            bbox = limit_box([bbox_start_point, bbox_start_point + np.array([64, 128, 128])], self.image(i).shape)
             yield LUNA25Nodule(
                 coords=coords,
                 lesion_id=row.LesionID,
                 annotation_id=str(row.AnnotationID),
                 nodule_id=str(row.NoduleID),
                 malignancy=row.label,
-                center_voxel=center_voxel,
-                bbox=bbox,
+                center_voxel=np.round(center_voxel).astype(int),
+                bbox=np.round(bbox).astype(int)
             )
 
     def nodule_block_image(self, annotation_id):
