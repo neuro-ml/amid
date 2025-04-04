@@ -125,7 +125,7 @@ class LUNA25(Dataset):
                 nodule_id=str(row.NoduleID),
                 malignancy=row.label,
                 center_voxel=np.round(center_voxel).astype(int),
-                bbox=np.round(bbox).astype(int)
+                bbox=np.round(bbox).astype(int),
             )
 
     def nodule_block_image(self, annotation_id):
