@@ -5,8 +5,6 @@ from typing import Dict, NamedTuple, Sequence
 import numpy as np
 import pandas as pd
 import SimpleITK as sitk
-from dpipe.im.box import limit_box
-from dpipe.itertools import collect
 
 from .internals import Dataset, field, licenses, register
 
@@ -107,8 +105,8 @@ class LUNA25(Dataset):
         return self._data_column_value(i, 'Gender')
 
     @field
-    @collect
     def nodules(self, i):
+        nodules = []
         for row in self._data_rows(i).itertuples():
             coords = np.array([row.CoordX, row.CoordY, row.CoordZ])
             nodule_block_metadata = self.nodule_block_metadata(row.AnnotationID)
@@ -117,8 +115,8 @@ class LUNA25(Dataset):
             direction = np.array(self._direction(i)[::4])
             center_voxel = ((coords[::-1] - image_origin) / self.spacing(i)) * direction
             bbox_start_point = ((nodule_block_metadata['origin'] - image_origin) / self.spacing(i)) * direction
-            bbox = limit_box([bbox_start_point, bbox_start_point + np.array([64, 128, 128])], self.image(i).shape)
-            yield LUNA25Nodule(
+            bbox = [bbox_start_point, np.minimum(bbox_start_point + np.array([64, 128, 128]), self.image(i).shape)]
+            nodules.append(LUNA25Nodule(
                 coords=coords,
                 lesion_id=row.LesionID,
                 annotation_id=str(row.AnnotationID),
@@ -126,7 +124,8 @@ class LUNA25(Dataset):
                 malignancy=row.label,
                 center_voxel=np.round(center_voxel).astype(int),
                 bbox=np.round(bbox).astype(int),
-            )
+            ))
+        return nodules
 
     def nodule_block_image(self, annotation_id):
         return np.load(self.root / f'luna25_nodule_blocks/image/{annotation_id}.npy')
