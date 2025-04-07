@@ -19,6 +19,7 @@ from .hcp import HCP
 from .lidc import LIDC
 from .lits import LiTS
 from .liver_medseg import LiverMedseg
+from .luna25 import LUNA25
 from .medseg9 import Medseg9
 from .midrc import MIDRC
 from .mood import MOOD
