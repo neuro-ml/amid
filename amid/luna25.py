@@ -1,6 +1,6 @@
 from datetime import datetime
 from functools import cached_property
-from typing import Dict, NamedTuple, Sequence
+from typing import NamedTuple, Sequence
 
 import numpy as np
 import pandas as pd
@@ -42,14 +42,14 @@ class LUNA25(Dataset):
     Parameters
     ----------
     root : str, Path, optional
-        path to the folder containing `luna25_images` and `luna25_nodule_blocks` folders and 
+        path to the folder containing `luna25_images` and `luna25_nodule_blocks` folders and
         `LUNA25_Public_Training_Development_Data.csv` file obtained by the instruction at
         https://luna25.grand-challenge.org/datasets/.
         If not provided, the cache is assumed to be already populated.
 
     Notes
     -----
-    Join the challenge at https://luna25.grand-challenge.org/. 
+    Join the challenge at https://luna25.grand-challenge.org/.
     Then follow the download and extraction instructions at https://luna25.grand-challenge.org/datasets/.
     """
 
@@ -109,8 +109,8 @@ class LUNA25(Dataset):
             coords = (row.CoordX, row.CoordY, row.CoordZ)
             center_voxel = sitk_image.TransformPhysicalPointToIndex(map(int, coords))[::-1]
 
-            nodule_block_metadata = self.nodule_block_metadata(row.AnnotationID)
-            bbox_start_point = sitk_image.TransformPhysicalPointToIndex(map(int, nodule_block_metadata['origin'][::-1]))[::-1]
+            nodule_block_origin = self.nodule_block_metadata(row.AnnotationID)['origin'][::-1]
+            bbox_start_point = sitk_image.TransformPhysicalPointToIndex(map(int, nodule_block_origin))[::-1]
             bbox = np.array([bbox_start_point, np.minimum(bbox_start_point + bbox_size, shape)])
             nodules.append(
                 LUNA25Nodule(
