@@ -116,15 +116,17 @@ class LUNA25(Dataset):
             center_voxel = ((coords[::-1] - image_origin) / self.spacing(i)) * direction
             bbox_start_point = ((nodule_block_metadata['origin'] - image_origin) / self.spacing(i)) * direction
             bbox = [bbox_start_point, np.minimum(bbox_start_point + np.array([64, 128, 128]), self.image(i).shape)]
-            nodules.append(LUNA25Nodule(
-                coords=coords,
-                lesion_id=row.LesionID,
-                annotation_id=str(row.AnnotationID),
-                nodule_id=str(row.NoduleID),
-                malignancy=row.label,
-                center_voxel=np.round(center_voxel).astype(int),
-                bbox=np.round(bbox).astype(int),
-            ))
+            nodules.append(
+                LUNA25Nodule(
+                    coords=coords,
+                    lesion_id=row.LesionID,
+                    annotation_id=str(row.AnnotationID),
+                    nodule_id=str(row.NoduleID),
+                    malignancy=row.label,
+                    center_voxel=np.round(center_voxel).astype(int),
+                    bbox=np.round(bbox).astype(int),
+                )
+            )
         return nodules
 
     def nodule_block_image(self, annotation_id):
