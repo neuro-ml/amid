@@ -9,11 +9,6 @@ import SimpleITK as sitk
 from .internals import Dataset, field, licenses, register
 
 
-class NoduleBlock(NamedTuple):
-    image: np.ndarray
-    metadata: Dict
-
-
 class LUNA25Nodule(NamedTuple):
     coords: Sequence[float]
     lesion_id: int
@@ -29,8 +24,8 @@ class LUNA25Nodule(NamedTuple):
     license=licenses.CC_BY_40,
     link='https://luna25.grand-challenge.org/',
     modality='CT',
-    prep_data_size=None,
-    raw_data_size=None,
+    prep_data_size='214G',
+    raw_data_size='205G',
     task='Lung nodule malignancy risk estimation',
 )
 class LUNA25(Dataset):
@@ -47,31 +42,31 @@ class LUNA25(Dataset):
     Parameters
     ----------
     root : str, Path, optional
-        path to the folder containing the raw downloaded archives.
+        path to the folder containing `luna25_images` and `luna25_nodule_blocks` folders and 
+        `LUNA25_Public_Training_Development_Data.csv` file obtained by the instruction at
+        https://luna25.grand-challenge.org/datasets/.
         If not provided, the cache is assumed to be already populated.
 
+    Notes
+    -----
+    Join the challenge at https://luna25.grand-challenge.org/. 
+    Then follow the download and extraction instructions at https://luna25.grand-challenge.org/datasets/.
     """
 
     @property
     def ids(self):
         return [file.name[: -len('.mha')] for file in (self.root / 'luna25_images').iterdir()]
 
-    def _image(self, i):
+    def _sitk_image(self, i):
         return sitk.ReadImage(self.root / f'luna25_images/{i}.mha')
 
     @field
     def image(self, i):
-        return sitk.GetArrayFromImage(self._image(i))
+        return sitk.GetArrayFromImage(self._sitk_image(i))
 
     @field
     def spacing(self, i):
-        return self._image(i).GetSpacing()[::-1]
-
-    def _image_origin(self, i):
-        return self._image(i).GetOrigin()[::-1]
-
-    def _direction(self, i):
-        return self._image(i).GetDirection()[::-1]
+        return self._sitk_image(i).GetSpacing()[::-1]
 
     @cached_property
     def _data(self):
@@ -101,21 +96,22 @@ class LUNA25(Dataset):
         return self._data_column_value(i, 'Age_at_StudyDate')
 
     @field
-    def sex(self, i):
+    def gender(self, i):
         return self._data_column_value(i, 'Gender')
 
     @field
     def nodules(self, i):
         nodules = []
+        sitk_image = self._sitk_image(i)
+        shape = self.image(i).shape
+        bbox_size = np.array([64, 128, 128])  # all nodule blocks in LUNA25 are of the same size
         for row in self._data_rows(i).itertuples():
-            coords = np.array([row.CoordX, row.CoordY, row.CoordZ])
+            coords = (row.CoordX, row.CoordY, row.CoordZ)
+            center_voxel = sitk_image.TransformPhysicalPointToIndex(map(int, coords))[::-1]
+
             nodule_block_metadata = self.nodule_block_metadata(row.AnnotationID)
-            assert np.all(nodule_block_metadata['spacing'] == self.spacing(i))
-            image_origin = self._image_origin(i)
-            direction = np.array(self._direction(i)[::4])
-            center_voxel = ((coords[::-1] - image_origin) / self.spacing(i)) * direction
-            bbox_start_point = ((nodule_block_metadata['origin'] - image_origin) / self.spacing(i)) * direction
-            bbox = [bbox_start_point, np.minimum(bbox_start_point + np.array([64, 128, 128]), self.image(i).shape)]
+            bbox_start_point = sitk_image.TransformPhysicalPointToIndex(map(int, nodule_block_metadata['origin'][::-1]))[::-1]
+            bbox = np.array([bbox_start_point, np.minimum(bbox_start_point + bbox_size, shape)])
             nodules.append(
                 LUNA25Nodule(
                     coords=coords,
@@ -123,8 +119,8 @@ class LUNA25(Dataset):
                     annotation_id=str(row.AnnotationID),
                     nodule_id=str(row.NoduleID),
                     malignancy=row.label,
-                    center_voxel=np.round(center_voxel).astype(int),
-                    bbox=np.round(bbox).astype(int),
+                    center_voxel=center_voxel,
+                    bbox=bbox,
                 )
             )
         return nodules
