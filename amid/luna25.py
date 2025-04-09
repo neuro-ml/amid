@@ -109,7 +109,7 @@ class LUNA25(Dataset):
             coords = (row.CoordX, row.CoordY, row.CoordZ)
             center_voxel = sitk_image.TransformPhysicalPointToIndex(map(int, coords))[::-1]
 
-            nodule_block_origin = self.nodule_block_metadata(row.AnnotationID)['origin'][::-1]
+            nodule_block_origin = self.get_nodule_block_metadata(row.AnnotationID)['origin'][::-1]
             bbox_start_point = sitk_image.TransformPhysicalPointToIndex(map(int, nodule_block_origin))[::-1]
             bbox = np.array([bbox_start_point, np.minimum(bbox_start_point + bbox_size, shape)])
             nodules.append(
@@ -125,10 +125,10 @@ class LUNA25(Dataset):
             )
         return nodules
 
-    def nodule_block_image(self, annotation_id):
+    def get_nodule_block_image(self, annotation_id):
         return np.load(self.root / f'luna25_nodule_blocks/image/{annotation_id}.npy')
 
-    def nodule_block_metadata(self, annotation_id):
+    def get_nodule_block_metadata(self, annotation_id):
         metadata = np.load(self.root / f'luna25_nodule_blocks/metadata/{annotation_id}.npy', allow_pickle=True)
         assert metadata.shape == ()
         return metadata.item()
