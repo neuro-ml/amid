@@ -1,0 +1,888 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://neuro-ml.github.io/amid/latest/datasets/">
+      
+      
+        <link rel="prev" href="../datasets-api/">
+      
+      
+        <link rel="next" href="../recipes/RSNABreastCancer/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.1">
+    
+    
+      
+        <title>Datasets - AMID: Awesome Medical Imaging Datasets</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.72749a73.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.a5377069.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#datasets" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="AMID: Awesome Medical Imaging Datasets" class="md-header__button md-logo" aria-label="AMID: Awesome Medical Imaging Datasets" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AMID: Awesome Medical Imaging Datasets
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Datasets
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/neuro-ml/amid" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AMID: Awesome Medical Imaging Datasets" class="md-nav__button md-logo" aria-label="AMID: Awesome Medical Imaging Datasets" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    AMID: Awesome Medical Imaging Datasets
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/neuro-ml/amid" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Contribution Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datasets-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Datasets API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Datasets
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Recipes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Recipes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/RSNABreastCancer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RSNABreastCancer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="datasets">Datasets</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: right;">Entries</th>
+<th style="text-align: left;">Body region</th>
+<th style="text-align: left;">License</th>
+<th style="text-align: left;">Modality</th>
+<th style="text-align: left;">Prep data size</th>
+<th style="text-align: left;">Raw data size</th>
+<th style="text-align: left;">Task</th>
+<th style="text-align: left;">Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.amos.dataset.AMOS">AMOS</a></td>
+<td style="text-align: right;">2465</td>
+<td style="text-align: left;">Abdomen</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></td>
+<td style="text-align: left;">CT, MRI</td>
+<td style="text-align: left;">89,5G</td>
+<td style="text-align: left;">23G</td>
+<td style="text-align: left;">Supervised multi-modality abdominal multi-organ segmentation</td>
+<td style="text-align: left;"><a href="https://zenodo.org/record/7262581">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.bimcv.BIMCVCovid19">BIMCVCovid19</a></td>
+<td style="text-align: right;">16364</td>
+<td style="text-align: left;">Chest</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">859G</td>
+<td style="text-align: left;">859G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://ieee-dataport.org/open-access/bimcv-covid-19-large-annotated-dataset-rx-and-ct-images-covid-19-patients-0">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.brats2021.BraTS2021">BraTS2021</a></td>
+<td style="text-align: right;">5880</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></td>
+<td style="text-align: left;">MRI T1, MRI T1Gd, MRI T2, MRI T2-FLAIR</td>
+<td style="text-align: left;">8,96G</td>
+<td style="text-align: left;">15G</td>
+<td style="text-align: left;">Segmentation, Classification, Domain Adaptation</td>
+<td style="text-align: left;"><a href="http://www.braintumorsegmentation.org/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.cc359.dataset.CC359">CC359</a></td>
+<td style="text-align: right;">359</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</a></td>
+<td style="text-align: left;">MRI T1</td>
+<td style="text-align: left;">14,66G</td>
+<td style="text-align: left;">4,1G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://sites.google.com/view/calgary-campinas-dataset/home">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.cl_detection.CLDetection2023">CLDetection2023</a></td>
+<td style="text-align: right;">400</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></td>
+<td style="text-align: left;">X-ray</td>
+<td style="text-align: left;">1.8G</td>
+<td style="text-align: left;">1.5G</td>
+<td style="text-align: left;">Keypoint detection</td>
+<td style="text-align: left;"><a href="https://github.com/cwwang1979/CL-detection2023/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.crlm.CRLM">CRLM</a></td>
+<td style="text-align: right;">197</td>
+<td style="text-align: left;">Abdomen</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></td>
+<td style="text-align: left;">CT, SEG</td>
+<td style="text-align: left;">11G</td>
+<td style="text-align: left;">11G</td>
+<td style="text-align: left;">Segmentation, Classification</td>
+<td style="text-align: left;"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=89096268#89096268412b832037484784bd78caf58e052641">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.ct_ich.CT_ICH">CT_ICH</a></td>
+<td style="text-align: right;">75</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://www.physionet.org/about/licenses/physionet-restricted-health-data-license-150/">PhysioNet Restricted Health Data License 1.5.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">661M</td>
+<td style="text-align: left;">2,8G</td>
+<td style="text-align: left;">Intracranial hemorrhage segmentation</td>
+<td style="text-align: left;"><a href="https://physionet.org/content/ct-ich/1.3.1/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.curvas.CURVAS">CURVAS</a></td>
+<td style="text-align: right;">90</td>
+<td style="text-align: left;">Abdomen</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">30G</td>
+<td style="text-align: left;">30G</td>
+<td style="text-align: left;">Abdominal organ pathologies segmentation</td>
+<td style="text-align: left;"><a href="https://zenodo.org/records/13767408">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.crossmoda.CrossMoDA">CrossMoDA</a></td>
+<td style="text-align: right;">484</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></td>
+<td style="text-align: left;">MRI T1c, MRI T2hr</td>
+<td style="text-align: left;">8,96G</td>
+<td style="text-align: left;">17G</td>
+<td style="text-align: left;">Segmentation, Classification, Domain Adaptation</td>
+<td style="text-align: left;"><a href="https://zenodo.org/record/6504722#.YsgwnNJByV4">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.deeplesion.DeepLesion">DeepLesion</a></td>
+<td style="text-align: right;">20094</td>
+<td style="text-align: left;">Abdomen, Thorax</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">259G</td>
+<td style="text-align: left;">259G</td>
+<td style="text-align: left;">Localisation, Detection, Classification</td>
+<td style="text-align: left;"><a href="https://nihcc.app.box.com/v/DeepLesion">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.egd.EGD">EGD</a></td>
+<td style="text-align: right;">3096</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;">EGD data license</td>
+<td style="text-align: left;">FLAIR, MRI T1, MRI T1GD, MRI T2</td>
+<td style="text-align: left;">107,49G</td>
+<td style="text-align: left;">40G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://xnat.bmia.nl/data/archive/projects/egd">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.flare2022.FLARE2022">FLARE2022</a></td>
+<td style="text-align: right;">2100</td>
+<td style="text-align: left;">Abdomen</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">347G</td>
+<td style="text-align: left;">247G</td>
+<td style="text-align: left;">Semi-supervised abdominal organ segmentation</td>
+<td style="text-align: left;"><a href="https://flare22.grand-challenge.org/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.hcp.HCP">HCP</a></td>
+<td style="text-align: right;">1113</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a></td>
+<td style="text-align: left;">MRI</td>
+<td style="text-align: left;">125G</td>
+<td style="text-align: left;">125G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://www.humanconnectome.org/study/hcp-young-adult/document/1200-subjects-data-release">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.kits.KiTS23">KiTS23</a></td>
+<td style="text-align: right;">489</td>
+<td style="text-align: left;">thorax</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">50G</td>
+<td style="text-align: left;">12G</td>
+<td style="text-align: left;">Kidney Tumor Segmentation</td>
+<td style="text-align: left;"><a href="https://kits-challenge.org/kits23/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.lidc.dataset.LIDC">LIDC</a></td>
+<td style="text-align: right;">1018</td>
+<td style="text-align: left;">Chest</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">71,2G</td>
+<td style="text-align: left;">126G</td>
+<td style="text-align: left;">Lung nodules segmentation</td>
+<td style="text-align: left;"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=1966254">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.lits.dataset.LiTS">LiTS</a></td>
+<td style="text-align: right;">201</td>
+<td style="text-align: left;">Abdominal</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">24,7G</td>
+<td style="text-align: left;">35G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://competitions.codalab.org/competitions/17094">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.liver_medseg.LiverMedseg">LiverMedseg</a></td>
+<td style="text-align: right;">50</td>
+<td style="text-align: left;">Chest, Abdomen</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">1,88G</td>
+<td style="text-align: left;">616M</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://www.medseg.ai/database/liver-segments-50-cases">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.midrc.MIDRC">MIDRC</a></td>
+<td style="text-align: right;">229</td>
+<td style="text-align: left;">Thorax</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">7,9G</td>
+<td style="text-align: left;">12G</td>
+<td style="text-align: left;">COVID-19 Segmentation</td>
+<td style="text-align: left;"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=80969742">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.mood.MOOD">MOOD</a></td>
+<td style="text-align: right;">1358</td>
+<td style="text-align: left;">Head, Abdominal</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">MRI, CT</td>
+<td style="text-align: left;">405G</td>
+<td style="text-align: left;">120G</td>
+<td style="text-align: left;">Out-of-distribution detection</td>
+<td style="text-align: left;"><a href="http://medicalood.dkfz.de/web/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.msd.MSD">MSD</a></td>
+<td style="text-align: right;">2628</td>
+<td style="text-align: left;">Chest, Abdominal, Head</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CT, CE CT, MRI, MRI FLAIR, MRI T1w, MRI t1gd, MRI T2w, MRI T2, MRI ADC</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">97.8G</td>
+<td style="text-align: left;">Image segmentation</td>
+<td style="text-align: left;"><a href="http://medicaldecathlon.com/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.mslub.dataset.MSLUB">MSLUB</a></td>
+<td style="text-align: right;">70</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></td>
+<td style="text-align: left;">MRI</td>
+<td style="text-align: left;">18G</td>
+<td style="text-align: left;">5.9G</td>
+<td style="text-align: left;">Anomaly segmentation</td>
+<td style="text-align: left;"><a href="https://github.com/muschellij2/open_ms_data?tab=readme-ov-file">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.medseg9.Medseg9">Medseg9</a></td>
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">Chest</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">300M</td>
+<td style="text-align: left;">310M</td>
+<td style="text-align: left;">COVID-19 segmentation</td>
+<td style="text-align: left;"><a href="http://medicalsegmentation.com/covid19/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.cancer_500.dataset.MoscowCancer500">MoscowCancer500</a></td>
+<td style="text-align: right;">979</td>
+<td style="text-align: left;">Thorax</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">103G</td>
+<td style="text-align: left;">187G</td>
+<td style="text-align: left;">Lung Cancer Detection</td>
+<td style="text-align: left;"><a href="https://mosmed.ai/en/datasets/mosmeddata-kt-s-priznakami-raka-legkogo-tip-viii/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.covid_1110.MoscowCovid1110">MoscowCovid1110</a></td>
+<td style="text-align: right;">1110</td>
+<td style="text-align: left;">Thorax</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">21G</td>
+<td style="text-align: left;">COVID-19 Segmentation</td>
+<td style="text-align: left;"><a href="https://mosmed.ai/en/datasets/covid191110/">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.nlst.NLST">NLST</a></td>
+<td style="text-align: right;">26254</td>
+<td style="text-align: left;">Thorax</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="https://wiki.cancerimagingarchive.net/display/NLST/National+Lung+Screening+Trial">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.nsclc.NSCLC">NSCLC</a></td>
+<td style="text-align: right;">422</td>
+<td style="text-align: left;">Thorax</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">13G</td>
+<td style="text-align: left;">34G</td>
+<td style="text-align: left;">Tumor Segmentation</td>
+<td style="text-align: left;"><a href="https://wiki.cancerimagingarchive.net/display/Public/NSCLC-Radiomics">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.rsna_bc.dataset.RSNABreastCancer">RSNABreastCancer</a></td>
+<td style="text-align: right;">54710</td>
+<td style="text-align: left;">Thorax</td>
+<td style="text-align: left;">Non-Commercial Use</td>
+<td style="text-align: left;">MG</td>
+<td style="text-align: left;">294G</td>
+<td style="text-align: left;">271G</td>
+<td style="text-align: left;">Breast cancer classification</td>
+<td style="text-align: left;"><a href="https://www.kaggle.com/competitions/rsna-breast-cancer-detection/data">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.ribfrac.dataset.RibFrac">RibFrac</a></td>
+<td style="text-align: right;">660</td>
+<td style="text-align: left;">Chest</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">77.8 G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://ribfrac.grand-challenge.org">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.stanford_coca.StanfordCoCa">StanfordCoCa</a></td>
+<td style="text-align: right;">1000</td>
+<td style="text-align: left;">Coronary, Chest</td>
+<td style="text-align: left;"><a href="https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa">Stanford University Dataset Research Use Agreement</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">28G</td>
+<td style="text-align: left;">Coronary Calcium Segmentation</td>
+<td style="text-align: left;"><a href="https://stanfordaimi.azurewebsites.net/datasets/e8ca74dc-8dd4-4340-815a-60b41f6cb2aa">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.tbad.TBAD">TBAD</a></td>
+<td style="text-align: right;">100</td>
+<td style="text-align: left;">Chest</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">14G</td>
+<td style="text-align: left;">14G</td>
+<td style="text-align: left;">Aortic dissection segmentation</td>
+<td style="text-align: left;"><a href="https://github.com/XiaoweiXu/Dataset_Type-B-Aortic-Dissection">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.totalsegmentator.dataset.Totalsegmentator">Totalsegmentator</a></td>
+<td style="text-align: right;">1204</td>
+<td style="text-align: left;">Head, Thorax, Abdomen, Pelvis, Legs</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;">35G</td>
+<td style="text-align: left;">35G</td>
+<td style="text-align: left;">Supervised anatomical structures segmentation</td>
+<td style="text-align: left;"><a href="https://zenodo.org/record/6802614#.Y6M2MxXP1D8">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.upenn_gbm.upenn_gbm.UPENN_GBM">UPENN_GBM</a></td>
+<td style="text-align: right;">671</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></td>
+<td style="text-align: left;">FLAIR, MRI T1, MRI T1GD, MRI T2, DSC MRI, DTI MRI</td>
+<td style="text-align: left;">70G</td>
+<td style="text-align: left;">69G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70225642">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.vs_seg.dataset.VSSEG">VSSEG</a></td>
+<td style="text-align: right;">484</td>
+<td style="text-align: left;">Head</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></td>
+<td style="text-align: left;">MRI T1c, MRI T2</td>
+<td style="text-align: left;">14,42G</td>
+<td style="text-align: left;">27G</td>
+<td style="text-align: left;">Segmentation</td>
+<td style="text-align: left;"><a href="https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=70229053">Source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://neuro-ml.github.io/amid/0.14.0/datasets-api/#amid.verse.VerSe">VerSe</a></td>
+<td style="text-align: right;">374</td>
+<td style="text-align: left;">Thorax, Abdomen</td>
+<td style="text-align: left;"><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></td>
+<td style="text-align: left;">CT</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">97G</td>
+<td style="text-align: left;">Vertebrae Segmentation</td>
+<td style="text-align: left;"><a href="https://osf.io/4skx2/">Source</a></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.4e0fa4ba.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.number.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.date.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.dotsep.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/sorts/tablesort.monthname.min.js"></script>
+      
+        <script src="../javascript/tablesort.filesize.js"></script>
+      
+        <script src="../javascript/tablesort.js"></script>
+      
+    
+  </body>
+</html>
