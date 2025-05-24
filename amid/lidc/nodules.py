@@ -11,6 +11,7 @@ from .typing import (
     Spiculation,
     Subtlety,
     Texture,
+    Margin,
 )
 
 
@@ -38,6 +39,7 @@ def get_nodule(ann: Annotation) -> LIDCNodule:
         spiculation=init_enum(Spiculation, ann.spiculation),
         subtlety=init_enum(Subtlety, ann.subtlety),
         texture=init_enum(Texture, ann.texture),
+        margin=init_enum(Margin, ann.margin),
     )
 
 

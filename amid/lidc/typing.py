@@ -36,6 +36,10 @@ class Texture(Enum):
     NonSolidGGO, NonSolidMixed, PartSolidMixed, SolidMixed, Solid = 1, 2, 3, 4, 5
 
 
+class Margin(Enum):
+    PoorlyDefined, NearPoorlyDefined, MediumMargin, NearSharp, Sharp = 1, 2, 3, 4, 5
+
+
 class LIDCNodule(NamedTuple):
     center_voxel: Sequence[float]
     bbox: np.ndarray
@@ -50,3 +54,4 @@ class LIDCNodule(NamedTuple):
     spiculation: Optional[Spiculation] = None
     subtlety: Optional[Subtlety] = None
     texture: Optional[Texture] = None
+    margin: Optional[Margin] = None
