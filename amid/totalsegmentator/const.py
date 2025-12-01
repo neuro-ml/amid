@@ -46,6 +46,7 @@ ANATOMICAL_STRUCTURES = [
     'lung_upper_lobe_right',
     'pancreas',
     'portal_vein_and_splenic_vein',
+    'prostate',
     'pulmonary_artery',
     'rib_left_1',
     'rib_left_10',
